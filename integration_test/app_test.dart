@@ -1,4 +1,4 @@
-// End-to-end flow against a real backend. Run on a device with the Spring
+﻿// End-to-end flow against a real backend. Run on a device with the Spring
 // backend started locally (`./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`)
 // and the port forwarded: `adb reverse tcp:8080 tcp:8080`, then
 // `flutter test integration_test -d <device>`.
@@ -31,7 +31,7 @@ Future<void> waitFor(WidgetTester tester, Finder finder, {Duration timeout = con
 }
 
 void main() {
-  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('real backend: browse, sign in, profile, preferences, scan gate', (tester) async {
     await app.main();
@@ -41,10 +41,8 @@ void main() {
     // Catalogue comes from the API (dev seed has six collectibles).
     router.go(Routes.catalog);
     await waitFor(tester, find.byType(Card));
-    await binding.takeScreenshot('01-catalog');
     await tester.tap(find.byType(Card).first);
     await pumpFor(tester);
-    await binding.takeScreenshot('02-detail');
 
     // Auctions and communities.
     router.go(Routes.auctions);
@@ -59,7 +57,6 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(1), _password);
     await tester.tap(find.byType(FilledButton).last);
     await waitFor(tester, find.textContaining('@$_username'));
-    await binding.takeScreenshot('03-profile');
 
     // Preferences apply live.
     router.go(Routes.settings);
@@ -69,7 +66,6 @@ void main() {
     await tester.tap(find.text('English'));
     await pumpFor(tester, const Duration(seconds: 1));
     expect(find.text('Appearance'), findsOneWidget);
-    await binding.takeScreenshot('04-settings-dark-en');
     await tester.tap(find.text('Español'));
     await tester.tap(find.byIcon(Icons.brightness_auto_outlined));
     await pumpFor(tester, const Duration(seconds: 1));
@@ -78,6 +74,5 @@ void main() {
     router.go(Routes.scan);
     await pumpFor(tester);
     expect(find.byIcon(Icons.photo_camera_outlined), findsWidgets);
-    await binding.takeScreenshot('05-scan');
   });
 }
