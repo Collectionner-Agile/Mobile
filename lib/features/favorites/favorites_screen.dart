@@ -61,7 +61,7 @@ class FavoritesScreen extends ConsumerWidget {
                   index: index,
                   child: CollectibleCard(
                     item: list[index],
-                    onTap: () => context.push(Routes.collectible(list[index].id)),
+                    onTap: () => context.go(Routes.collectible(list[index].id)),
                   ),
                 ),
               );
