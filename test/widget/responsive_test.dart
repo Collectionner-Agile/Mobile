@@ -17,6 +17,7 @@ void main() {
   };
   const routes = [
     Routes.onboarding,
+    Routes.favorites,
     Routes.home,
     Routes.catalog,
     Routes.auctions,

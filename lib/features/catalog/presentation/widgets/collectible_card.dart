@@ -5,6 +5,7 @@ import '../../../../core/widgets/collectible_image.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../core/widgets/slab.dart';
 import '../../../../core/widgets/ui.dart';
+import '../../../favorites/favorites.dart';
 import '../../domain/catalog_models.dart';
 
 class CollectibleCard extends StatelessWidget {
@@ -19,82 +20,101 @@ class CollectibleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: Pressable(
-        onTap: onTap,
-        semanticLabel: '${item.name}, ${context.money(item.value)}',
-        child: ExcludeSemantics(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // In fixed-height slots (grid cells, rails) the photo takes the
-              // space the text leaves; elsewhere it is square.
-              final brand = context.brand;
-              final well = HeroMode(
-                enabled: hero,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(Radii.md),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Hero(
-                        tag: 'collectible-${item.id}',
-                        child: ColoredBox(
-                          color: brand.surfaceMuted,
-                          child: CollectibleImage(item.artwork, cacheWidth: 360),
-                        ),
-                      ),
-                      if (item.auctionId != null)
-                        Positioned(
-                          left: Space.xs,
-                          top: Space.xs,
-                          child: LiveBadge(label: context.l10n.inAuction),
-                        ),
-                    ],
-                  ),
-                ),
-              );
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (constraints.hasBoundedHeight) Expanded(child: well) else AspectRatio(aspectRatio: 1, child: well),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(2, Space.sm, 2, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.name, style: context.text.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
-                        if (item.category != null)
-                          Text(
-                            item.category!,
-                            style: context.text.bodySmall?.copyWith(color: brand.muted),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+    // The heart sits over the photo's corner, outside the card's own tap
+    // target and excluded semantics so it stays a separate control.
+    return Stack(
+      children: [
+        SizedBox(
+          width: width,
+          child: Pressable(
+            onTap: onTap,
+            semanticLabel: '${item.name}, ${context.money(item.value)}',
+            child: ExcludeSemantics(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // In fixed-height slots (grid cells, rails) the photo takes the
+                  // space the text leaves; elsewhere it is square.
+                  final brand = context.brand;
+                  final well = HeroMode(
+                    enabled: hero,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(Radii.md),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Hero(
+                            tag: 'collectible-${item.id}',
+                            child: ColoredBox(
+                              color: brand.surfaceMuted,
+                              child: CollectibleImage(item.artwork, cacheWidth: 360),
+                            ),
                           ),
-                        const SizedBox(height: Space.xxs),
-                        Row(
+                          if (item.auctionId != null)
+                            Positioned(
+                              left: Space.xs,
+                              top: Space.xs,
+                              child: LiveBadge(label: context.l10n.inAuction),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (constraints.hasBoundedHeight)
+                        Expanded(child: well)
+                      else
+                        AspectRatio(aspectRatio: 1, child: well),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2, Space.sm, 2, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Text(
-                                context.money(item.value),
-                                style: Fonts.figures(context.text.titleMedium)
-                                    .copyWith(fontVariations: Fonts.axes(width: 100, weight: 720)),
+                            Text(
+                              item.name,
+                              style: context.text.titleSmall,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (item.category != null)
+                              Text(
+                                item.category!,
+                                style: context.text.bodySmall?.copyWith(color: brand.muted),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
+                            const SizedBox(height: Space.xxs),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    context.money(item.value),
+                                    style: Fonts.figures(context.text.titleMedium)
+                                        .copyWith(fontVariations: Fonts.axes(width: 100, weight: 720)),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (item.reviewCount > 0) RatingPill(rating: item.rating),
+                              ],
                             ),
-                            if (item.reviewCount > 0) RatingPill(rating: item.rating),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
           ),
         ),
-      ),
+        Positioned(
+          top: Space.xs,
+          right: Space.xs,
+          child: FavoriteButton(id: item.id, size: 36),
+        ),
+      ],
     );
   }
 }

@@ -15,6 +15,7 @@ import '../../../core/widgets/ui.dart';
 import '../../auctions/application/auction_providers.dart';
 import '../../auctions/presentation/create_auction_sheet.dart';
 import '../../auth/application/session_controller.dart';
+import '../../favorites/favorites.dart';
 import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
 import 'widgets/collectible_card.dart';
@@ -199,6 +200,10 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
               ),
             ),
             actions: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                child: FavoriteButton(id: item.id),
+              ),
               if (isOwner)
                 PopupMenuButton<String>(
                   onSelected: (value) => switch (value) {

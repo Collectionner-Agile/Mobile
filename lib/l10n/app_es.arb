@@ -535,5 +535,9 @@
   "onboardingSkip": "Saltar",
   "onboardingNext": "Siguiente",
   "onboardingStart": "Empezar",
-  "replayIntro": "Ver la introducción"
+  "replayIntro": "Ver la introducción",
+  "favoritesTitle": "Favoritos",
+  "favoritesEmpty": "Aún no guardaste piezas. Toca el corazón de cualquier pieza para tenerla aquí.",
+  "addFavorite": "Guardar en favoritos",
+  "removeFavorite": "Quitar de favoritos"
 }

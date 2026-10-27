@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../features/auth/application/session_controller.dart';
+import '../../features/favorites/favorites.dart';
 import 'ui.dart';
 
 /// App-bar entry to the profile (signed in) or to sign-in (guest).
@@ -44,4 +45,24 @@ class SettingsButton extends StatelessWidget {
     icon: const Icon(Icons.tune),
     onPressed: () => context.push(Routes.settings),
   );
+}
+
+/// Opens saved pieces; shows how many there are.
+class FavoritesButton extends ConsumerWidget {
+  const FavoritesButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(favoritesProvider).length;
+    return IconButton(
+      tooltip: context.l10n.favoritesTitle,
+      onPressed: () => context.push(Routes.favorites),
+      icon: Badge(
+        isLabelVisible: count > 0,
+        backgroundColor: context.brand.live,
+        label: Text('$count'),
+        child: const Icon(Icons.favorite_border_rounded),
+      ),
+    );
+  }
 }

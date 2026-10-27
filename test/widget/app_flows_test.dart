@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:collectionner/app/preferences.dart';
 import 'package:collectionner/app/router/app_router.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
+import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
+import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../support/fake_backend.dart';
 import '../support/harness.dart';
@@ -276,5 +281,19 @@ void main() {
     await settle(tester);
     expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
     expect(app.container.read(onboardedProvider), isTrue);
+  });
+
+  testWidgets('saving a piece puts it in favourites and survives as a preference', (tester) async {
+    final app = await pumpApp(tester);
+    app.container.read(routerProvider).go(Routes.catalog);
+    await settle(tester);
+    await tester.tap(find.bySemanticsLabel('Guardar en favoritos').first);
+    await settle(tester, 8);
+    expect(app.container.read(favoritesProvider), hasLength(1));
+    unawaited(app.container.read(routerProvider).push(Routes.favorites));
+    await settle(tester);
+    expect(find.byType(CollectibleCard), findsOneWidget);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getStringList('pref.favorites'), hasLength(1));
   });
 }

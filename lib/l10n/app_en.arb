@@ -535,5 +535,9 @@
   "onboardingSkip": "Skip",
   "onboardingNext": "Next",
   "onboardingStart": "Get started",
-  "replayIntro": "Replay the introduction"
+  "replayIntro": "Replay the introduction",
+  "favoritesTitle": "Favourites",
+  "favoritesEmpty": "No saved pieces yet. Tap the heart on any piece to keep it here.",
+  "addFavorite": "Save to favourites",
+  "removeFavorite": "Remove from favourites"
 }

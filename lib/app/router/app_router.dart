@@ -13,6 +13,7 @@ import '../../features/communities/presentation/communities_screen.dart';
 import '../../features/communities/presentation/community_detail_screen.dart';
 import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
+import '../../features/favorites/favorites_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
@@ -25,6 +26,7 @@ import 'app_shell.dart';
 abstract final class Routes {
   static const home = '/home';
   static const onboarding = '/onboarding';
+  static const favorites = '/favorites';
   static const catalog = '/catalog';
   static const scan = '/scan';
   static const scanResult = '/scan/result';
@@ -85,6 +87,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/', redirect: (_, _) => Routes.home),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.onboarding, builder: (_, _) => const OnboardingScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.favorites, builder: (_, _) => const FavoritesScreen()),
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),

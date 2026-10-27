@@ -79,6 +79,7 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
               actions: const [
+                FavoritesButton(),
                 SettingsButton(),
                 AccountButton(),
                 SizedBox(width: Space.xxs),
