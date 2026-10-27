@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/widgets/account_button.dart';
+import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
@@ -193,10 +194,13 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
           builder: (context, constraints) => SliverGrid.builder(
             gridDelegate: _gridDelegate(constraints.crossAxisExtent),
             itemCount: items.length,
-            itemBuilder: (context, index) => CollectibleCard(
-              item: items[index],
-              hero: true,
-              onTap: () => context.go(Routes.collectible(items[index].id)),
+            itemBuilder: (context, index) => Reveal(
+              index: index,
+              child: CollectibleCard(
+                item: items[index],
+                hero: true,
+                onTap: () => context.go(Routes.collectible(items[index].id)),
+              ),
             ),
           ),
         ),

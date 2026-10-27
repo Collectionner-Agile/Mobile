@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/widgets/account_button.dart';
+import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/auction_providers.dart';
 import '../domain/auction_models.dart';
@@ -81,10 +82,13 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
                     sliver: SliverList.separated(
                       itemCount: items.length,
                       separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-                      itemBuilder: (context, index) => ContentWidth(
-                        child: AuctionCard(
-                          auction: items[index],
-                          onTap: () => context.go(Routes.auction(items[index].id)),
+                      itemBuilder: (context, index) => Reveal(
+                        index: index,
+                        child: ContentWidth(
+                          child: AuctionCard(
+                            auction: items[index],
+                            onTap: () => context.go(Routes.auction(items[index].id)),
+                          ),
                         ),
                       ),
                     ),

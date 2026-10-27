@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/widgets/account_button.dart';
+import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/community_providers.dart';
 import '../domain/community_models.dart';
@@ -126,10 +127,13 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen> {
                   sliver: SliverList.separated(
                     itemCount: value.length,
                     separatorBuilder: (_, _) => const SizedBox(height: Space.md),
-                    itemBuilder: (context, index) => ContentWidth(
-                      child: CommunityTile(
-                        community: value[index],
-                        onTap: () => context.go(Routes.community(value[index].id)),
+                    itemBuilder: (context, index) => Reveal(
+                      index: index,
+                      child: ContentWidth(
+                        child: CommunityTile(
+                          community: value[index],
+                          onTap: () => context.go(Routes.community(value[index].id)),
+                        ),
                       ),
                     ),
                   ),

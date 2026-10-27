@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../utils/formatters.dart';
+import 'motion.dart';
 
 extension L10nContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
@@ -74,7 +75,7 @@ class Skeleton extends StatefulWidget {
 class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1100),
+    duration: const Duration(milliseconds: 1400),
   );
 
   @override
@@ -83,7 +84,7 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
     if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
       _controller.stop();
     } else if (!_controller.isAnimating) {
-      _controller.repeat(reverse: true);
+      _controller.repeat();
     }
   }
 
@@ -95,15 +96,28 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final color = context.brand.skeleton;
+    final brand = context.brand;
+    final base = brand.skeleton;
+    final shine = Color.lerp(base, brand.surface, 0.7)!;
+    // A soft highlight sweeps across the block (static when motion is reduced).
     return ExcludeSemantics(
-      child: FadeTransition(
-        opacity: Tween<double>(begin: 0.55, end: 1).animate(_controller),
-        child: Container(
-          width: widget.width,
-          height: widget.height,
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(widget.radius)),
-        ),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final t = _controller.value * 2 - 0.5;
+          return Container(
+            width: widget.width,
+            height: widget.height,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.radius),
+              gradient: LinearGradient(
+                begin: Alignment(-1 + 2 * t - 0.6, -0.2),
+                end: Alignment(-1 + 2 * t + 0.6, 0.2),
+                colors: [base, shine, base],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -274,7 +288,11 @@ class BusyButton extends StatelessWidget {
       button: true,
       label: busy ? null : label,
       liveRegion: busy,
-      child: outlined ? OutlinedButton(onPressed: action, child: child) : FilledButton(onPressed: action, child: child),
+      child: TapScale(
+        child: outlined
+            ? OutlinedButton(onPressed: action, child: child)
+            : FilledButton(onPressed: action, child: child),
+      ),
     );
   }
 }

@@ -8,6 +8,7 @@ import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
 import '../../core/widgets/account_button.dart';
 import '../../core/widgets/collectible_image.dart';
+import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/application/auction_providers.dart';
 import '../catalog/application/catalog_providers.dart';
@@ -353,8 +354,10 @@ class _LatestGrid extends StatelessWidget {
               mainAxisExtent: cellWidth + collectibleCardTextHeight(context),
             ),
             itemCount: shown.length,
-            itemBuilder: (context, index) =>
-                CollectibleCard(item: shown[index], onTap: () => context.go(Routes.collectible(shown[index].id))),
+            itemBuilder: (context, index) => Reveal(
+              index: index,
+              child: CollectibleCard(item: shown[index], onTap: () => context.go(Routes.collectible(shown[index].id))),
+            ),
           );
         },
       ),
@@ -429,10 +432,14 @@ class _StatsStrip extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: Space.sm, horizontal: Space.xs),
                   child: Column(
                     children: [
-                      Text(
-                        value == null ? '—' : '$value',
-                        style: Fonts.figures(Fonts.display(context.text.headlineSmall, weight: 780)),
-                      ),
+                      if (value == null)
+                        Text('—', style: Fonts.figures(Fonts.display(context.text.headlineSmall, weight: 780)))
+                      else
+                        AnimatedNumber(
+                          value: value.toDouble(),
+                          format: (v) => v.round().toString(),
+                          style: Fonts.figures(Fonts.display(context.text.headlineSmall, weight: 780)),
+                        ),
                       const SizedBox(height: 2),
                       Text(
                         label,

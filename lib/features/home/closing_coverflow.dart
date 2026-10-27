@@ -7,6 +7,7 @@ import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/glass.dart';
+import '../../core/widgets/motion.dart';
 import '../../core/widgets/slab.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/domain/auction_models.dart';
@@ -184,12 +185,16 @@ class _CoverCard extends StatelessWidget {
                           textBaseline: TextBaseline.alphabetic,
                           children: [
                             Flexible(
-                              child: Text(
-                                context.money(auction.currentPrice),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Fonts.figures(context.text.titleLarge)
-                                    .copyWith(color: Colors.white, fontVariations: Fonts.axes(width: 100, weight: 720)),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: AlignmentDirectional.centerStart,
+                                child: AnimatedNumber(
+                                  value: auction.currentPrice,
+                                  format: (v) => context.money(v.roundToDouble()),
+                                  style: Fonts.figures(
+                                    context.text.titleLarge,
+                                  ).copyWith(color: Colors.white, fontVariations: Fonts.axes(width: 100, weight: 720)),
+                                ),
                               ),
                             ),
                             const SizedBox(width: Space.xs),
@@ -202,21 +207,23 @@ class _CoverCard extends StatelessWidget {
                         const SizedBox(height: Space.xs),
                         CountdownBlocks(auction: auction, onDark: true, compact: true),
                         const SizedBox(height: Space.sm),
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: _gold,
-                            foregroundColor: const Color(0xFF241500),
-                            minimumSize: const Size.fromHeight(44),
-                            shape: const StadiumBorder(),
-                          ),
-                          onPressed: onTap,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(child: Text(l10n.viewAuction, overflow: TextOverflow.ellipsis)),
-                              const SizedBox(width: Space.xs),
-                              const Icon(Icons.arrow_forward_rounded, size: 18),
-                            ],
+                        TapScale(
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: _gold,
+                              foregroundColor: const Color(0xFF241500),
+                              minimumSize: const Size.fromHeight(44),
+                              shape: const StadiumBorder(),
+                            ),
+                            onPressed: onTap,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(child: Text(l10n.viewAuction, overflow: TextOverflow.ellipsis)),
+                                const SizedBox(width: Space.xs),
+                                const Icon(Icons.arrow_forward_rounded, size: 18),
+                              ],
+                            ),
                           ),
                         ),
                       ],

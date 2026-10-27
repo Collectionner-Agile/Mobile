@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/glass.dart';
+import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../../auth/domain/user.dart';
@@ -86,9 +87,12 @@ class ProfileScreen extends ConsumerWidget {
                                 mainAxisExtent: cell + collectibleCardTextHeight(context),
                               ),
                               itemCount: list.length,
-                              itemBuilder: (context, index) => CollectibleCard(
-                                item: list[index],
-                                onTap: () => context.go(Routes.collectible(list[index].id)),
+                              itemBuilder: (context, index) => Reveal(
+                                index: index,
+                                child: CollectibleCard(
+                                  item: list[index],
+                                  onTap: () => context.go(Routes.collectible(list[index].id)),
+                                ),
                               ),
                             );
                           },

@@ -11,6 +11,7 @@ import '../../../core/media/artwork.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/glass.dart';
+import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/slab.dart';
 import '../../../core/widgets/ui.dart';
@@ -191,10 +192,13 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                         sliver: SliverList.separated(
                           itemCount: items.length,
                           separatorBuilder: (_, _) => const SizedBox(height: Space.md),
-                          itemBuilder: (context, index) => ContentWidth(
-                            child: items[index].type == FeedItemType.post
-                                ? _PostCard(item: items[index], onTap: () => _openItem(items[index]))
-                                : _MediaCard(item: items[index], onTap: () => _openItem(items[index])),
+                          itemBuilder: (context, index) => Reveal(
+                            index: index,
+                            child: ContentWidth(
+                              child: items[index].type == FeedItemType.post
+                                  ? _PostCard(item: items[index], onTap: () => _openItem(items[index]))
+                                  : _MediaCard(item: items[index], onTap: () => _openItem(items[index])),
+                            ),
                           ),
                         ),
                       ),
