@@ -186,23 +186,43 @@ abstract final class Motion {
       MediaQuery.maybeDisableAnimationsOf(context) ?? false ? Duration.zero : duration;
 }
 
-/// Archivo is the only family; its width axis carries the hierarchy:
-/// expanded for titles, normal for reading, condensed for slab labels.
+/// Two voices: Fraunces, a soft editorial serif (auction-catalogue feel), for
+/// titles, prices and figures; Archivo at its normal width for everything you
+/// read or tap.
 abstract final class Fonts {
   static const family = 'Archivo';
+  static const displayFamily = 'Fraunces';
 
+  /// Archivo axes (width 62–125, weight 100–900).
   static List<FontVariation> axes({required double width, required double weight}) => [
     FontVariation('wdth', width),
     FontVariation('wght', weight),
   ];
 
-  /// Expanded display voice.
-  static TextStyle display(TextStyle? base, {double weight = 760}) =>
-      (base ?? const TextStyle()).copyWith(fontVariations: axes(width: 118, weight: weight));
+  /// Fraunces display voice. [weight] keeps the 100–900 scale callers already
+  /// use; it is eased down because the serif reads heavier than the sans.
+  /// Optical size follows the font size so small and large titles both stay
+  /// crisp.
+  static TextStyle display(TextStyle? base, {double weight = 760}) {
+    final style = base ?? const TextStyle();
+    final size = style.fontSize ?? 24;
+    return style.copyWith(
+      fontFamily: displayFamily,
+      fontVariations: [
+        FontVariation('wght', (weight * 0.8).clamp(420, 720)),
+        FontVariation('opsz', size.clamp(9, 144)),
+        const FontVariation('SOFT', 50),
+        const FontVariation('WONK', 0),
+      ],
+    );
+  }
 
-  /// Condensed label voice used on slab labels and lot numbers.
-  static TextStyle label(TextStyle? base, {double weight = 620}) =>
-      (base ?? const TextStyle()).copyWith(fontVariations: axes(width: 76, weight: weight), letterSpacing: 0.2);
+  /// Small labels: Archivo at normal width, a touch heavier and tracked.
+  static TextStyle label(TextStyle? base, {double weight = 620}) => (base ?? const TextStyle()).copyWith(
+    fontFamily: family,
+    fontVariations: axes(width: 100, weight: weight),
+    letterSpacing: 0.25,
+  );
 
   /// Figures that do not jump while a countdown or bid changes.
   static TextStyle figures(TextStyle? base) =>

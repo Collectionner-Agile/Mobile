@@ -58,13 +58,13 @@ abstract final class AppTheme {
     );
 
     final text = TextTheme(
-      displayLarge: display(44, 800, height: 1.02, spacing: -1.4),
-      displayMedium: display(36, 800, height: 1.04, spacing: -1.1),
-      displaySmall: display(30, 780, height: 1.06, spacing: -0.8),
-      headlineLarge: display(28, 760, spacing: -0.7),
-      headlineMedium: display(24, 760, spacing: -0.5),
-      headlineSmall: display(21, 740, spacing: -0.4),
-      titleLarge: display(18, 700, height: 1.18, spacing: -0.2),
+      displayLarge: display(44, 760, height: 1.04, spacing: -0.9),
+      displayMedium: display(36, 760, height: 1.06, spacing: -0.7),
+      displaySmall: display(30, 740, height: 1.08, spacing: -0.5),
+      headlineLarge: display(28, 740, height: 1.12, spacing: -0.4),
+      headlineMedium: display(25, 720, height: 1.14, spacing: -0.3),
+      headlineSmall: display(21, 700, height: 1.18, spacing: -0.2),
+      titleLarge: display(19, 680, height: 1.22, spacing: -0.1),
       titleMedium: base(16, FontWeight.w600, height: 1.25),
       titleSmall: base(14.5, FontWeight.w600, height: 1.3),
       bodyLarge: base(16, FontWeight.w400, height: 1.55),

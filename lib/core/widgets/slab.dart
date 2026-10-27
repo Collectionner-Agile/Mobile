@@ -112,7 +112,7 @@ class SlabLabel extends StatelessWidget {
                 textAlign: TextAlign.end,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: style.copyWith(color: brand.muted, fontVariations: Fonts.axes(width: 76, weight: 560)),
+                style: style.copyWith(color: brand.muted, fontVariations: Fonts.axes(width: 100, weight: 560)),
               ),
             ),
           ],
