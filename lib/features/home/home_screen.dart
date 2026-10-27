@@ -430,11 +430,14 @@ class _LiveAuctionCard extends StatelessWidget {
               left: Space.md,
               top: Space.md,
               right: Space.md,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Wraps under the pill when large text leaves no room beside it.
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                spacing: Space.xs,
+                runSpacing: Space.xs,
                 children: [
                   LivePill(label: l10n.liveLabel),
-                  const Spacer(),
                   CountdownTiles(deadline: auction.deadline, onPhoto: true, compact: true),
                 ],
               ),

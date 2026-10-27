@@ -739,15 +739,20 @@ class CountdownTiles extends StatelessWidget {
         ];
         return Semantics(
           label: formatDurationLabel(left, l10n),
-          child: ExcludeSemantics(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final (i, (value, label)) in units.indexed) ...[
-                  if (i > 0) SizedBox(width: compact ? 4 : 6),
-                  _TimeTile(value: value, label: label, onPhoto: onPhoto, compact: compact),
+          // Fixed-size tiles: digits may grow a little with the user's text
+          // size, never enough to push the tiles off a card.
+          child: MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.25,
+            child: ExcludeSemantics(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final (i, (value, label)) in units.indexed) ...[
+                    if (i > 0) SizedBox(width: compact ? 4 : 6),
+                    _TimeTile(value: value, label: label, onPhoto: onPhoto, compact: compact),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );
