@@ -4,6 +4,7 @@ import 'package:collectionner/app/providers.dart';
 import 'package:collectionner/core/network/api_client.dart';
 import 'package:collectionner/core/storage/secure_session_store.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
+import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,6 +54,7 @@ Future<TestApp> pumpApp(
   double textScale = 1,
   Map<String, Object> prefs = const {},
   List<Override> overrides = const [],
+  bool launchScene = false,
 }) async {
   tester.view.physicalSize = size * 2;
   tester.view.devicePixelRatio = 2;
@@ -73,6 +75,7 @@ Future<TestApp> pumpApp(
       retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(preferences),
+        launchSceneEnabledProvider.overrideWithValue(launchScene),
         secureSessionStoreProvider.overrideWithValue(store),
         apiClientProvider.overrideWith((ref) {
           final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:8080'))..httpClientAdapter = fake;

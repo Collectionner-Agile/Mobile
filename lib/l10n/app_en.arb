@@ -573,5 +573,11 @@
   "archiveValue": "Declared value of the archive",
   "valueByCategory": "Value by category",
   "mostValuable": "Most valuable",
-  "uncategorized": "Uncategorised"
+  "uncategorized": "Uncategorised",
+  "skip": "Skip",
+  "launchTagline": "Your collection, on display",
+  "farewellTitle": "See you soon",
+  "farewellExit": "Your showcase will be waiting for you.",
+  "farewellSignedOut": "You signed out. Come back anytime.",
+  "pressBackAgain": "Press back again to exit"
 }

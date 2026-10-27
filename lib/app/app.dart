@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/launch/launch_scene.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'preferences.dart';
 import 'router/app_router.dart';
@@ -36,6 +37,7 @@ class CollectionnerApp extends ConsumerWidget {
         return const Locale('es');
       },
       routerConfig: router,
+      builder: (context, child) => LaunchGate(child: child ?? const SizedBox.shrink()),
     );
   }
 }

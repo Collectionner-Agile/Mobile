@@ -12,6 +12,7 @@ import '../../../core/utils/validators.dart';
 import '../../../core/widgets/password_field.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
+import '../../launch/launch_scene.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -20,8 +21,15 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final ok = await confirmDialog(context, title: l10n.signOut, body: l10n.signOutConfirm, confirmLabel: l10n.signOut);
     if (!ok) return;
+    final router = ref.read(routerProvider);
     await ref.read(sessionProvider.notifier).logout();
-    if (context.mounted) context.go(Routes.home);
+    if (!context.mounted) return;
+    await farewell(
+      context,
+      title: l10n.farewellTitle,
+      message: l10n.farewellSignedOut,
+      then: () => router.go(Routes.home),
+    );
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {

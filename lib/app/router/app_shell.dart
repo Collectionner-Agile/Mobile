@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/ui.dart';
 import '../../features/auth/application/session_controller.dart';
+import '../../features/launch/launch_scene.dart';
 import '../theme/tokens.dart';
 
 class NotFoundScreen extends StatelessWidget {
@@ -25,14 +28,44 @@ class NotFoundScreen extends StatelessWidget {
 
 /// Bottom navigation on phones, navigation rail on wide layouts (landscape,
 /// tablets, foldables). Re-tapping the active tab returns to its root.
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.shell});
   final StatefulNavigationShell shell;
 
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  DateTime? _lastBack;
+
+  StatefulNavigationShell get shell => widget.shell;
+
   void _select(int index) => shell.goBranch(index, initialLocation: index == shell.currentIndex);
 
+  /// Back at a tab's root: other tabs return to Home; on Home a first press
+  /// warns and a second one within two seconds plays the farewell and closes
+  /// the app.
+  void _onBack() {
+    if (shell.currentIndex != 0) {
+      _select(0);
+      return;
+    }
+    final now = DateTime.now();
+    final last = _lastBack;
+    if (last != null && now.difference(last) < const Duration(seconds: 2)) {
+      _lastBack = null;
+      ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
+      farewell(context, title: context.l10n.farewellTitle, message: context.l10n.farewellExit, exitApp: true);
+      return;
+    }
+    _lastBack = now;
+    HapticFeedback.selectionClick();
+    showToast(context, context.l10n.pressBackAgain, icon: AppIcons.doorOpen);
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     ref.listen(sessionExpiredNoticeProvider, (_, expired) {
       if (expired) {
@@ -49,56 +82,62 @@ class AppShell extends ConsumerWidget {
       (Icons.forum_outlined, Icons.forum, l10n.navCommunities),
     ];
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 720;
-        if (wide) {
-          return Scaffold(
-            body: Row(
-              children: [
-                SafeArea(
-                  right: false,
-                  // Landscape phones are short: let the rail scroll instead of
-                  // overflowing when labels are large.
-                  child: LayoutBuilder(
-                    builder: (context, rail) => SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: rail.maxHeight),
-                        child: IntrinsicHeight(
-                          child: NavigationRail(
-                            selectedIndex: shell.currentIndex,
-                            onDestinationSelected: _select,
-                            labelType: NavigationRailLabelType.all,
-                            groupAlignment: -0.85,
-                            destinations: [
-                              for (final (icon, selected, label) in destinations)
-                                NavigationRailDestination(
-                                  icon: Icon(icon),
-                                  selectedIcon: Icon(selected),
-                                  label: Text(label),
-                                ),
-                            ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onBack();
+      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= 720;
+          if (wide) {
+            return Scaffold(
+              body: Row(
+                children: [
+                  SafeArea(
+                    right: false,
+                    // Landscape phones are short: let the rail scroll instead of
+                    // overflowing when labels are large.
+                    child: LayoutBuilder(
+                      builder: (context, rail) => SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: rail.maxHeight),
+                          child: IntrinsicHeight(
+                            child: NavigationRail(
+                              selectedIndex: shell.currentIndex,
+                              onDestinationSelected: _select,
+                              labelType: NavigationRailLabelType.all,
+                              groupAlignment: -0.85,
+                              destinations: [
+                                for (final (icon, selected, label) in destinations)
+                                  NavigationRailDestination(
+                                    icon: Icon(icon),
+                                    selectedIcon: Icon(selected),
+                                    label: Text(label),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                VerticalDivider(width: 1, color: context.brand.line),
-                Expanded(child: shell),
-              ],
+                  VerticalDivider(width: 1, color: context.brand.line),
+                  Expanded(child: shell),
+                ],
+              ),
+            );
+          }
+          return Scaffold(
+            body: shell,
+            bottomNavigationBar: _FloatingNavBar(
+              index: shell.currentIndex,
+              onSelect: _select,
+              destinations: destinations,
             ),
           );
-        }
-        return Scaffold(
-          body: shell,
-          bottomNavigationBar: _FloatingNavBar(
-            index: shell.currentIndex,
-            onSelect: _select,
-            destinations: destinations,
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }

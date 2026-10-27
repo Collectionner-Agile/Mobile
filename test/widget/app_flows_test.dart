@@ -5,11 +5,13 @@ import 'package:collectionner/app/router/app_router.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/favorites/favorites.dart';
+import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
 import 'package:collectionner/features/search/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +19,33 @@ import '../support/fake_backend.dart';
 import '../support/harness.dart';
 
 void main() {
+  testWidgets('launch scene plays over the app once and then gets out of the way', (tester) async {
+    await pumpApp(tester, launchScene: true);
+    expect(find.byType(LaunchScene), findsOneWidget);
+    await settle(tester, 20);
+    expect(find.byType(LaunchScene), findsNothing);
+    expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
+  });
+
+  testWidgets('back twice on home plays the farewell and closes the app', (tester) async {
+    final calls = <String>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      calls.add(call.method);
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    await pumpApp(tester);
+    await tester.binding.handlePopRoute();
+    await settle(tester, 3);
+    expect(find.text('Presiona atrás otra vez para salir'), findsOneWidget);
+    expect(calls, isNot(contains('SystemNavigator.pop')));
+    await tester.binding.handlePopRoute();
+    await settle(tester, 8);
+    expect(find.text('Hasta pronto'), findsOneWidget);
+    await settle(tester, 14);
+    expect(calls, contains('SystemNavigator.pop'));
+  });
+
   testWidgets('home loads catalogue, auctions and communities from the API', (tester) async {
     await pumpApp(tester);
     expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);

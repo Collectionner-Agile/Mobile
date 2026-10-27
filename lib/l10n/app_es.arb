@@ -573,5 +573,11 @@
   "archiveValue": "Valor declarado del archivo",
   "valueByCategory": "Valor por categoría",
   "mostValuable": "Las más valiosas",
-  "uncategorized": "Sin categoría"
+  "uncategorized": "Sin categoría",
+  "skip": "Saltar",
+  "launchTagline": "Tu colección, en vitrina",
+  "farewellTitle": "Hasta pronto",
+  "farewellExit": "Tu vitrina te espera cuando vuelvas.",
+  "farewellSignedOut": "Cerraste sesión. Vuelve cuando quieras.",
+  "pressBackAgain": "Presiona atrás otra vez para salir"
 }
