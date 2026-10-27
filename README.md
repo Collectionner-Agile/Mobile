@@ -1,7 +1,7 @@
 # Collectionner — Flutter mobile app (Android / iOS)
 
 Native Flutter client for the Collectioneer Spring backend. No WebView: every screen is
-built with Flutter widgets. The Astro web app in `../` stays as the reference implementation.
+built with Flutter widgets. The Astro web app ([Collectionner-Agile/Frontend](https://github.com/Collectionner-Agile/Frontend)) stays as the reference implementation; the API is [Collectionner-Agile/Backend](https://github.com/Collectionner-Agile/Backend).
 
 ## Stack
 
@@ -46,7 +46,7 @@ lib/
 ## Run
 
 ```bash
-# 1. Backend with seeded data (from ../../backend)
+# 1. Backend with seeded data (Collectionner-Agile/Backend checkout)
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 # 2. Phone over USB, backend reachable as 127.0.0.1:8080 on the device
 adb reverse tcp:8080 tcp:8080
