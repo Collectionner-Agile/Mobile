@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
@@ -13,42 +14,175 @@ import '../../../core/widgets/password_field.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/session_controller.dart';
 
-/// Shared layout: title, intro, form and footer link; scrolls
-/// under the keyboard and caps width on large screens.
+/// Shared layout: a photographic header that fades into the page, then the
+/// title, intro and form. Scrolls under the keyboard and caps width on large
+/// screens; [header] is false for secondary screens (recovery).
 class _AuthPage extends StatelessWidget {
-  const _AuthPage({required this.title, required this.intro, required this.children});
+  const _AuthPage({required this.title, required this.intro, required this.children, this.header = true});
   final String title;
   final String intro;
   final List<Widget> children;
+  final bool header;
+
+  static const _image = 'assets/images/collectibles/records/vintage-yellow-chronograph.webp';
 
   @override
   Widget build(BuildContext context) {
+    final brand = context.brand;
+    final width = MediaQuery.sizeOf(context).width;
+    final heroHeight = (width * 0.78).clamp(220.0, 340.0);
     return Scaffold(
-      appBar: AppBar(),
+      extendBodyBehindAppBar: header,
+      appBar: AppBar(
+        backgroundColor: header ? Colors.transparent : null,
+        leading: Navigator.of(context).canPop()
+            ? Padding(
+                padding: const EdgeInsets.all(6),
+                child: BackButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: header ? brand.surface : null,
+                    foregroundColor: brand.ink,
+                  ),
+                ),
+              )
+            : null,
+      ),
       body: SafeArea(
-        top: false,
+        top: !header,
         child: ListView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.xxl),
+          padding: const EdgeInsets.only(bottom: Space.xxl),
           children: [
+            if (header)
+              SizedBox(
+                height: heroHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ExcludeSemantics(
+                      child: Image.asset(_image, fit: BoxFit.cover, cacheWidth: (width * 2).round()),
+                    ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.45, 1],
+                          colors: [brand.paper.withValues(alpha: 0), brand.paper],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ContentWidth(
               maxWidth: 480,
-              child: AutofillGroup(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(title, style: context.text.headlineMedium),
-                    const SizedBox(height: Space.xs),
-                    Text(intro, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
-                    const SizedBox(height: Space.xl),
-                    ...children,
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                child: AutofillGroup(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(title, style: context.text.headlineMedium),
+                      const SizedBox(height: Space.xs),
+                      Text(intro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
+                      const SizedBox(height: Space.xl),
+                      ...children,
+                    ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// "Continue with Google" plus the divider above the password form. Checks
+/// with the server first so an unconfigured provider is explained instead of
+/// opening a browser on a dead route.
+class _GoogleSignIn extends ConsumerStatefulWidget {
+  const _GoogleSignIn({required this.from});
+  final String? from;
+
+  @override
+  ConsumerState<_GoogleSignIn> createState() => _GoogleSignInState();
+}
+
+class _GoogleSignInState extends ConsumerState<_GoogleSignIn> {
+  bool _busy = false;
+
+  static const _logo =
+      '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">'
+      '<path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/>'
+      '<path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>'
+      '<path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>'
+      '<path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/>'
+      '</svg>';
+
+  Future<void> _start() async {
+    final l10n = context.l10n;
+    setState(() => _busy = true);
+    try {
+      final providers = await ref.read(oauthProvidersProvider.future);
+      if (!mounted) return;
+      if (!providers.contains('google')) {
+        ref.invalidate(oauthProvidersProvider);
+        showToast(context, l10n.googleUnavailable, error: true);
+        return;
+      }
+      await ref.read(sessionProvider.notifier).signInWithGoogle();
+      if (mounted) _leaveAuth(context, widget.from);
+    } on OAuthSignInException catch (error) {
+      if (mounted && !error.cancelled) showToast(context, l10n.googleFailed, error: true);
+    } catch (error) {
+      if (mounted) showToast(context, describeError(error, l10n), error: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final brand = context.brand;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: brand.surface,
+            minimumSize: const Size.fromHeight(52),
+            side: BorderSide(color: brand.line),
+          ),
+          onPressed: _busy ? null : _start,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_busy)
+                const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2.2))
+              else
+                SvgPicture.string(_logo, width: 20, height: 20, excludeFromSemantics: true),
+              const SizedBox(width: Space.sm),
+              Flexible(child: Text(l10n.continueWithGoogle, overflow: TextOverflow.ellipsis)),
+            ],
+          ),
+        ),
+        const SizedBox(height: Space.lg),
+        Row(
+          children: [
+            Expanded(child: Divider(color: brand.line)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+              child: Text(l10n.orWithEmail, style: context.text.bodySmall?.copyWith(color: brand.muted)),
+            ),
+            Expanded(child: Divider(color: brand.line)),
+          ],
+        ),
+        const SizedBox(height: Space.lg),
+      ],
     );
   }
 }
@@ -146,6 +280,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       title: l10n.loginTitle,
       intro: l10n.loginIntro,
       children: [
+        _GoogleSignIn(from: widget.from),
         Form(
           key: _form,
           child: Column(
@@ -260,6 +395,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       title: l10n.registerTitle,
       intro: l10n.registerIntro,
       children: [
+        _GoogleSignIn(from: widget.from),
         Form(
           key: _form,
           child: Column(
@@ -375,6 +511,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return _AuthPage(
+      header: false,
       title: l10n.forgotTitle,
       intro: l10n.forgotIntro,
       children: [
@@ -460,6 +597,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final l10n = context.l10n;
     final validators = Validators(l10n);
     return _AuthPage(
+      header: false,
       title: l10n.resetTitle,
       intro: l10n.forgotIntro,
       children: [

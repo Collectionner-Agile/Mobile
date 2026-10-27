@@ -41,6 +41,19 @@
                 <data android:scheme="collectionner" android:host="app"/>
             </intent-filter>
         </activity>
+        <!-- Receives collectionner://oauth/callback after Google sign-in in a
+             Custom Tab and hands the URL back to flutter_web_auth_2. -->
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true"
+            android:taskAffinity="">
+            <intent-filter android:label="flutter_web_auth_2">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="collectionner" android:host="oauth"/>
+            </intent-filter>
+        </activity>
         <!-- Crop screen used by image_cropper. -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

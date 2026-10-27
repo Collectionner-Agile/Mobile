@@ -7,6 +7,7 @@ import 'package:collectionner/features/auth/application/session_controller.dart'
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,6 +52,7 @@ Future<TestApp> pumpApp(
   Size size = const Size(412, 915),
   double textScale = 1,
   Map<String, Object> prefs = const {},
+  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = size * 2;
   tester.view.devicePixelRatio = 2;
@@ -81,6 +83,7 @@ Future<TestApp> pumpApp(
             onUnauthorized: () => ref.read(sessionProvider.notifier).expire(),
           );
         }),
+        ...overrides,
       ],
       child: const CollectionnerApp(),
     ),

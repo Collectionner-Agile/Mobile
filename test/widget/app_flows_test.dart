@@ -187,4 +187,79 @@ void main() {
       expect(find.text('Registrar esta pieza'), findsOneWidget);
     });
   });
+
+  group('Google sign-in', () {
+    FakeBackend googleBackend({bool enabled = true}) => Fixtures.standardBackend()
+      ..json('GET', '/api/v1/auth/oauth/providers', {'google': enabled, 'github': enabled})
+      ..json('POST', '/api/v1/auth/oauth/exchange', {
+        'token': fakeJwt(),
+        'userId': 1,
+        'username': 'collector_prime',
+        'email': 'diego@collectioneer.art',
+        'name': 'Diego Collector',
+      });
+
+    /// Answers like the backend redirect: echoes the flow id from the start URL.
+    WebAuthenticator browser({String? flow, String? error}) => (url) async {
+      final start = Uri.parse(url);
+      expect(start.path, '/api/v1/auth/oauth/start/google');
+      expect(start.queryParameters['client'], 'mobile');
+      final params = error != null
+          ? {'error': error}
+          : {'ticket': 'A' * 43, 'flow': flow ?? start.queryParameters['flow']!};
+      return Uri(scheme: 'collectionner', host: 'oauth', path: '/callback', queryParameters: params).toString();
+    };
+
+    testWidgets('exchanges the ticket and signs in', (tester) async {
+      final backend = googleBackend();
+      final app = await pumpApp(
+        tester,
+        backend: backend,
+        overrides: [webAuthenticatorProvider.overrideWithValue(browser())],
+      );
+      app.container.read(routerProvider).go(Routes.profile);
+      await settle(tester);
+      await tester.tap(find.text('Continuar con Google'));
+      await settle(tester);
+      expect(app.store.token, isNotNull);
+      expect(backend.requests.any((r) => r.path == '/api/v1/auth/oauth/exchange'), isTrue);
+      expect(find.text('Mi archivo'), findsOneWidget);
+    });
+
+    testWidgets('rejects a callback for another flow', (tester) async {
+      final backend = googleBackend();
+      final app = await pumpApp(
+        tester,
+        backend: backend,
+        overrides: [webAuthenticatorProvider.overrideWithValue(browser(flow: 'forged-flow'))],
+      );
+      app.container.read(routerProvider).go(Routes.login);
+      await settle(tester);
+      await tester.tap(find.text('Continuar con Google'));
+      await settle(tester);
+      expect(app.store.token, isNull);
+      expect(backend.requests.any((r) => r.path == '/api/v1/auth/oauth/exchange'), isFalse);
+      expect(find.text('No se pudo iniciar sesión con Google. Inténtalo de nuevo.'), findsOneWidget);
+    });
+
+    testWidgets('explains when the server has Google disabled', (tester) async {
+      var opened = false;
+      final app = await pumpApp(
+        tester,
+        backend: googleBackend(enabled: false),
+        overrides: [
+          webAuthenticatorProvider.overrideWithValue((url) async {
+            opened = true;
+            return '';
+          }),
+        ],
+      );
+      app.container.read(routerProvider).go(Routes.login);
+      await settle(tester);
+      await tester.tap(find.text('Continuar con Google'));
+      await settle(tester);
+      expect(opened, isFalse);
+      expect(find.text('El inicio con Google aún no está activado en el servidor.'), findsOneWidget);
+    });
+  });
 }

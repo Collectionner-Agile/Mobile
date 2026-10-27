@@ -26,23 +26,43 @@ class AuthRepository {
 
   Options get _anonymous => Options(extra: {'anonymous': true});
 
-  Future<AuthResult> login(String username, String password) => _api.post(
-    '$_v1/auth/login',
-    (data) => parseObject(
-      data,
-      (json) => AuthResult(
-        json.requireString('token'),
-        AppUser(
-          id: json.requireInt('userId'),
-          username: json.stringOrNull('username') ?? username,
-          name: json.stringOrNull('name') ?? '',
-          email: json.stringOrNull('email'),
-        ),
+  /// Parses the backend `LoginResponse` shared by password login and the
+  /// OAuth ticket exchange.
+  AuthResult _loginResult(Object? data, {String fallbackUsername = ''}) => parseObject(
+    data,
+    (json) => AuthResult(
+      json.requireString('token'),
+      AppUser(
+        id: json.requireInt('userId'),
+        username: json.stringOrNull('username') ?? fallbackUsername,
+        name: json.stringOrNull('name') ?? '',
+        email: json.stringOrNull('email'),
       ),
     ),
+  );
+
+  Future<AuthResult> login(String username, String password) => _api.post(
+    '$_v1/auth/login',
+    (data) => _loginResult(data, fallbackUsername: username),
     body: {'username': username, 'password': password},
     options: _anonymous,
   );
+
+  /// Which external providers the server can complete right now.
+  Future<Set<String>> oauthProviders() => _api.get(
+    '$_v1/auth/oauth/providers',
+    (data) => data is Map<String, dynamic>
+        ? {
+            for (final entry in data.entries)
+              if (entry.value == true) entry.key,
+          }
+        : const <String>{},
+    options: _anonymous,
+  );
+
+  /// Trades the single-use ticket from the OAuth callback for a session.
+  Future<AuthResult> exchangeOAuthTicket(String ticket) =>
+      _api.post('$_v1/auth/oauth/exchange', _loginResult, body: {'ticket': ticket}, options: _anonymous);
 
   Future<AuthResult> register({
     required String username,

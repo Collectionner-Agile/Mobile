@@ -85,7 +85,7 @@ class SettingsScreen extends ConsumerWidget {
                   groupValue: locale?.languageCode ?? 'system',
                   onChanged: (value) =>
                       ref.read(localeProvider.notifier).set(value == null || value == 'system' ? null : Locale(value)),
-                  child: Column(
+                  child: _Group(
                     children: [
                       RadioListTile<String>(value: 'system', title: Text(l10n.languageSystem)),
                       const RadioListTile<String>(value: 'es', title: Text('Español')),
@@ -95,30 +95,34 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 if (user != null) ...[
                   SectionHeader(title: l10n.account),
-                  ListTile(
-                    leading: const Icon(Icons.person_outline),
-                    title: Text(user.name),
-                    subtitle: Text(user.email ?? '@${user.username}'),
+                  _Group(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.person_outline),
+                        title: Text(user.name),
+                        subtitle: Text(user.email ?? '@${user.username}'),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.password),
+                        title: Text(l10n.changePassword),
+                        subtitle: user.hasLocalPassword ? null : Text(l10n.externalAccountPassword),
+                        enabled: user.hasLocalPassword,
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push(Routes.changePassword),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.logout),
+                        title: Text(l10n.signOut),
+                        onTap: () => _signOut(context, ref),
+                      ),
+                      if (user.hasLocalPassword)
+                        ListTile(
+                          leading: Icon(Icons.delete_forever_outlined, color: brand.danger),
+                          title: Text(l10n.deleteAccount, style: TextStyle(color: brand.danger)),
+                          onTap: () => _deleteAccount(context, ref),
+                        ),
+                    ],
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.password),
-                    title: Text(l10n.changePassword),
-                    subtitle: user.hasLocalPassword ? null : Text(l10n.externalAccountPassword),
-                    enabled: user.hasLocalPassword,
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.push(Routes.changePassword),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: Text(l10n.signOut),
-                    onTap: () => _signOut(context, ref),
-                  ),
-                  if (user.hasLocalPassword)
-                    ListTile(
-                      leading: Icon(Icons.delete_forever_outlined, color: brand.danger),
-                      title: Text(l10n.deleteAccount, style: TextStyle(color: brand.danger)),
-                      onTap: () => _deleteAccount(context, ref),
-                    ),
                 ] else ...[
                   SectionHeader(title: l10n.account),
                   Padding(
@@ -339,6 +343,41 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Grouped settings rows on one card, separated by hairlines.
+class _Group extends StatelessWidget {
+  const _Group({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: brand.surface,
+          borderRadius: BorderRadius.circular(Radii.md),
+          border: Border.all(color: brand.line),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(Radii.md - 1),
+          child: Material(
+            type: MaterialType.transparency,
+            child: Column(
+              children: [
+                for (final (index, child) in children.indexed) ...[
+                  if (index > 0) Divider(height: 1, indent: Space.md, endIndent: Space.md, color: brand.line),
+                  child,
+                ],
+              ],
+            ),
           ),
         ),
       ),

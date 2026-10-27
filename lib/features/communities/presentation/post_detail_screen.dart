@@ -67,17 +67,44 @@ class PostDetailScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(data.title, style: context.text.headlineSmall),
-                    const SizedBox(height: Space.xs),
-                    Text(
-                      [
-                        if (data.authorName != null) l10n.postBy(data.authorName!),
-                        if (data.createdAt != null) formatDateTime(data.createdAt!, context.languageCode),
-                      ].join(' · '),
-                      style: context.text.bodySmall?.copyWith(color: brand.muted),
+                    Text(data.title, style: context.text.headlineMedium),
+                    const SizedBox(height: Space.md),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: brand.ink,
+                          child: Text(
+                            (data.authorName ?? '?').isEmpty
+                                ? '?'
+                                : String.fromCharCode((data.authorName ?? '?').runes.first).toUpperCase(),
+                            style: Fonts.display(context.text.titleSmall).copyWith(color: brand.paper),
+                          ),
+                        ),
+                        const SizedBox(width: Space.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (data.authorName != null) Text(data.authorName!, style: context.text.titleSmall),
+                              if (data.createdAt != null)
+                                Text(
+                                  formatDateTime(data.createdAt!, context.languageCode),
+                                  style: context.text.bodySmall?.copyWith(color: brand.muted),
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (data.commentsCount > 0)
+                          InfoChip(label: '${data.commentsCount}', icon: Icons.chat_bubble_outline_rounded),
+                      ],
                     ),
                     const SizedBox(height: Space.lg),
-                    SelectableText(data.content, style: context.text.bodyLarge),
+                    Divider(height: 1, color: brand.line),
+                    const SizedBox(height: Space.lg),
+                    SelectableText(data.content, style: context.text.bodyLarge?.copyWith(height: 1.6)),
+                    const SizedBox(height: Space.lg),
+                    Divider(height: 1, color: brand.line),
                   ],
                 ),
               ),

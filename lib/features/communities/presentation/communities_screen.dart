@@ -99,11 +99,33 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen> {
                 ),
               ],
               AsyncValue(:final value?) => [
+                if (_term.isEmpty && value.any((c) => c.isJoined)) ...[
+                  SliverToBoxAdapter(child: SectionHeader(title: l10n.myCommunities)),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 132 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.6),
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                        itemCount: value.where((c) => c.isJoined).length,
+                        separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
+                        itemBuilder: (context, index) {
+                          final community = value.where((c) => c.isJoined).elementAt(index);
+                          return CommunityCoverCard(
+                            community: community,
+                            onTap: () => context.go(Routes.community(community.id)),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: SectionHeader(title: l10n.discoverCommunities)),
+                ],
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
                   sliver: SliverList.separated(
                     itemCount: value.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
+                    separatorBuilder: (_, _) => const SizedBox(height: Space.md),
                     itemBuilder: (context, index) => ContentWidth(
                       child: CommunityTile(
                         community: value[index],
@@ -125,7 +147,7 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen> {
                   sliver: SliverList.separated(
                     itemCount: 4,
                     separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-                    itemBuilder: (_, _) => const Skeleton(height: 104, radius: Radii.md),
+                    itemBuilder: (_, _) => const Skeleton(height: 220, radius: Radii.md),
                   ),
                 ),
               ],

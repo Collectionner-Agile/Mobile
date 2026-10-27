@@ -509,5 +509,18 @@
   "@relatedIn": {"placeholders": {"category": {"type": "String"}}},
   "piecesCount": "{count, plural, =1{1 pieza} other{{count} piezas}}",
   "@piecesCount": {"placeholders": {"count": {"type": "int"}}},
-  "openAuctionsStat": "Subastas abiertas"
+  "openAuctionsStat": "Subastas abiertas",
+  "continueWithGoogle": "Continuar con Google",
+  "orWithEmail": "o con tu cuenta",
+  "googleUnavailable": "El inicio con Google aún no está activado en el servidor.",
+  "googleFailed": "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+  "discoverCommunities": "Descubre comunidades",
+  "communityActivity": "Actividad",
+  "postKind": "Publicación",
+  "pieceKind": "Pieza",
+  "auctionKind": "Subasta",
+  "scanAiReady": "Reconocimiento con IA activo",
+  "scanAiOff": "Reconocimiento no disponible",
+  "scanFrameHint": "Encuadra la pieza completa dentro del marco.",
+  "scanGalleryShort": "Galería"
 }

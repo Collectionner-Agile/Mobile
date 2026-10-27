@@ -11,6 +11,7 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/account_button.dart';
+import '../../../core/widgets/glass.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../application/scan_controller.dart';
@@ -164,40 +165,39 @@ class _Intro extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.scanIntro, style: context.text.bodyLarge),
-              if (enabled.value == false) ...[
-                const SizedBox(height: Space.md),
-                _Banner(icon: Icons.cloud_off_outlined, text: l10n.scanUnavailable, color: brand.warning),
-              ],
-              const SizedBox(height: Space.lg),
-              Row(
-                children: [
-                  Expanded(
-                    child: _BigAction(
-                      icon: Icons.photo_camera_outlined,
-                      label: l10n.scanCamera,
-                      onTap: onCamera,
-                      primary: true,
-                    ),
-                  ),
-                  const SizedBox(width: Space.sm),
-                  Expanded(
-                    child: _BigAction(icon: Icons.photo_library_outlined, label: l10n.scanGallery, onTap: onGallery),
-                  ),
-                ],
-              ),
+              _Viewfinder(enabled: enabled.value, onCamera: onCamera, onGallery: onGallery),
+              const SizedBox(height: Space.md),
+              Text(l10n.scanIntro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
               const SizedBox(height: Space.xl),
-              Text(l10n.scanTipsTitle, style: context.text.titleMedium),
-              const SizedBox(height: Space.xs),
+              Text(l10n.scanTipsTitle, style: context.text.titleLarge),
+              const SizedBox(height: Space.sm),
               for (final (index, tip) in [l10n.scanTip1, l10n.scanTip2, l10n.scanTip3].indexed)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Space.xxs),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(width: 32, child: Kicker('0${index + 1}')),
-                      Expanded(child: Text(tip, style: context.text.bodyMedium)),
-                    ],
+                  padding: const EdgeInsets.only(bottom: Space.sm),
+                  child: Container(
+                    padding: const EdgeInsets.all(Space.md),
+                    decoration: BoxDecoration(
+                      color: brand.surface,
+                      borderRadius: BorderRadius.circular(Radii.md),
+                      border: Border.all(color: brand.line),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(color: brand.ink, shape: BoxShape.circle),
+                          child: Text(
+                            '${index + 1}',
+                            style: Fonts.figures(Fonts.display(context.text.labelLarge)).copyWith(color: brand.paper),
+                          ),
+                        ),
+                        const SizedBox(width: Space.sm),
+                        Expanded(child: Text(tip, style: context.text.bodyMedium)),
+                      ],
+                    ),
                   ),
                 ),
               const SizedBox(height: Space.lg),
@@ -210,48 +210,149 @@ class _Intro extends ConsumerWidget {
   }
 }
 
-class _BigAction extends StatelessWidget {
-  const _BigAction({required this.icon, required this.label, required this.onTap, this.primary = false});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool primary;
+/// Camera-style hero: a framed sample object with corner brackets, the
+/// service status and the two ways in (camera, gallery) on glass.
+class _Viewfinder extends StatelessWidget {
+  const _Viewfinder({required this.enabled, required this.onCamera, required this.onGallery});
+  final bool? enabled;
+  final VoidCallback onCamera;
+  final VoidCallback onGallery;
+
+  static const _sample = 'assets/images/collectibles/records/star-destroyer-model.webp';
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final brand = context.brand;
-    final background = primary ? brand.accent : brand.surfaceRaised;
-    final foreground = primary ? brand.onAccent : brand.ink;
-    return Material(
-      color: background,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Radii.md),
-        side: BorderSide(color: primary ? Colors.transparent : brand.line),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(Radii.md),
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 112),
-          child: Padding(
-            padding: const EdgeInsets.all(Space.md),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 32, color: primary ? brand.onAccent : brand.accent),
-                const SizedBox(height: Space.xs),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: context.text.labelLarge?.copyWith(color: foreground),
-                ),
-              ],
+    final ready = enabled == true;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Radii.lg),
+      child: AspectRatio(
+        aspectRatio: 4 / 5,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ExcludeSemantics(child: Image.asset(_sample, fit: BoxFit.cover, cacheWidth: 900)),
+            const ColoredBox(color: Color(0x73000000)),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(28, 64, 28, 150),
+              child: CustomPaint(painter: _BracketPainter()),
             ),
-          ),
+            Positioned(
+              top: Space.md,
+              left: Space.md,
+              child: GlassPanel(
+                radius: Radii.pill,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: ready ? const Color(0xFF4ADE80) : const Color(0xFFFBBF24),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      ready ? l10n.scanAiReady : l10n.scanAiOff,
+                      style: Fonts.label(context.text.labelMedium, weight: 660).copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              left: Space.md,
+              right: Space.md,
+              bottom: Space.md,
+              child: GlassPanel(
+                padding: const EdgeInsets.all(Space.sm),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.scanFrameHint,
+                      textAlign: TextAlign.center,
+                      style: context.text.bodyMedium?.copyWith(color: const Color(0xE6FFFFFF)),
+                    ),
+                    const SizedBox(height: Space.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: FilledButton.icon(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: BrandColors.light.ink,
+                              minimumSize: const Size.fromHeight(52),
+                              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                            ),
+                            onPressed: onCamera,
+                            icon: const Icon(Icons.photo_camera_outlined),
+                            label: Text(l10n.scanCamera, overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                        const SizedBox(width: Space.xs),
+                        Expanded(
+                          flex: 4,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              side: const BorderSide(color: Color(0x80FFFFFF)),
+                              minimumSize: const Size.fromHeight(52),
+                              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                            ),
+                            onPressed: onGallery,
+                            icon: const Icon(Icons.photo_library_outlined),
+                            label: Text(l10n.scanGalleryShort, overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (enabled == false)
+              Positioned(
+                top: 56,
+                left: Space.md,
+                right: Space.md,
+                child: _Banner(icon: Icons.cloud_off_outlined, text: l10n.scanUnavailable, color: brand.warning),
+              ),
+          ],
         ),
       ),
     );
   }
+}
+
+class _BracketPainter extends CustomPainter {
+  const _BracketPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    const arm = 28.0;
+    final w = size.width;
+    final h = size.height;
+    for (final (x, y, dx, dy) in [(0.0, 0.0, 1.0, 1.0), (w, 0.0, -1.0, 1.0), (0.0, h, 1.0, -1.0), (w, h, -1.0, -1.0)]) {
+      canvas
+        ..drawLine(Offset(x, y), Offset(x + arm * dx, y), paint)
+        ..drawLine(Offset(x, y), Offset(x, y + arm * dy), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _Banner extends StatelessWidget {

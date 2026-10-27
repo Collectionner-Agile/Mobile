@@ -509,5 +509,18 @@
   "@relatedIn": {"placeholders": {"category": {"type": "String"}}},
   "piecesCount": "{count, plural, =1{1 piece} other{{count} pieces}}",
   "@piecesCount": {"placeholders": {"count": {"type": "int"}}},
-  "openAuctionsStat": "Open auctions"
+  "openAuctionsStat": "Open auctions",
+  "continueWithGoogle": "Continue with Google",
+  "orWithEmail": "or with your account",
+  "googleUnavailable": "Google sign-in is not enabled on the server yet.",
+  "googleFailed": "Google sign-in failed. Please try again.",
+  "discoverCommunities": "Discover communities",
+  "communityActivity": "Activity",
+  "postKind": "Post",
+  "pieceKind": "Piece",
+  "auctionKind": "Auction",
+  "scanAiReady": "AI recognition on",
+  "scanAiOff": "Recognition unavailable",
+  "scanFrameHint": "Fit the whole object inside the frame.",
+  "scanGalleryShort": "Gallery"
 }
