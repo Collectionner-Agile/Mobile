@@ -3,14 +3,15 @@ import 'package:intl/intl.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../network/api_exception.dart';
 
-/// Collectioneer prices are in Peruvian soles (the web shows "S/ 1,200.00").
+/// Collectioneer prices are in Peruvian soles. The symbol always leads, as on
+/// the web ("S/ 1,200"); `NumberFormat.currency` with es_PE would print it
+/// after the number on some ICU data sets ("1.200 S/").
 String formatMoney(num amount, String languageCode) {
-  final format = NumberFormat.currency(
+  final number = NumberFormat.decimalPatternDigits(
     locale: languageCode == 'en' ? 'en_US' : 'es_PE',
-    symbol: 'S/ ',
     decimalDigits: amount % 1 == 0 ? 0 : 2,
   );
-  return format.format(amount);
+  return 'S/ ${number.format(amount)}';
 }
 
 String formatDate(DateTime date, String languageCode) =>

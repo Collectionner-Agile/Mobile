@@ -142,7 +142,10 @@ void main() {
     });
 
     test('money uses soles and remaining time is compact', () {
-      expect(formatMoney(1200, 'es'), contains('S/'));
+      expect(formatMoney(850, 'es'), 'S/ 850');
+      expect(formatMoney(1200, 'en'), 'S/ 1,200');
+      expect(formatMoney(1200.5, 'en'), 'S/ 1,200.50');
+      expect(formatMoney(3200, 'es'), startsWith('S/ 3'));
       expect(formatRemaining(const Duration(days: 2, hours: 3)), '2 d 3 h');
       expect(formatRemaining(const Duration(minutes: 5, seconds: 2)), '5 min 2 s');
       expect(formatRemaining(const Duration(seconds: -5)), '0 s');
