@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme/tokens.dart';
 import '../../../../core/media/artwork.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/collectible_image.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../core/widgets/slab.dart';
 import '../../../../core/widgets/ui.dart';
@@ -33,14 +34,17 @@ class AuctionCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: 112,
-                  child: Slab(
-                    imageUrl: artworkFor(name: auction.collectibleName ?? '', url: auction.collectibleImage),
-                    lot: auction.id,
-                    aspectRatio: 1,
-                    compact: true,
-                    cacheWidth: 224,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(Radii.md),
+                  child: SizedBox.square(
+                    dimension: 112,
+                    child: ColoredBox(
+                      color: brand.surfaceMuted,
+                      child: CollectibleImage(
+                        artworkFor(name: auction.collectibleName ?? '', url: auction.collectibleImage),
+                        cacheWidth: 224,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: Space.sm),
@@ -145,6 +149,69 @@ class Countdown extends ConsumerWidget {
   }
 }
 
+/// Remaining time as four boxes (days, hours, minutes, seconds) in tabular
+/// figures that tick every second.
+class CountdownBlocks extends ConsumerWidget {
+  const CountdownBlocks({super.key, required this.auction, this.onDark = false, this.compact = false});
+  final Auction auction;
+
+  /// Light-on-dark variant for use over photos or ink panels.
+  final bool onDark;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final now = ref.watch(clockProvider).value ?? DateTime.now();
+    final brand = context.brand;
+    final l10n = context.l10n;
+    final fg = onDark ? Colors.white : brand.ink;
+    final sub = onDark ? const Color(0xB3FFFFFF) : brand.muted;
+    if (!auction.isLive(now)) {
+      return Text(l10n.ended, style: Fonts.label(context.text.labelLarge).copyWith(color: sub));
+    }
+    final left = auction.deadline!.difference(now);
+    final parts = [
+      (left.inDays, l10n.unitDays),
+      (left.inHours % 24, l10n.unitHours),
+      (left.inMinutes % 60, l10n.unitMinutes),
+      (left.inSeconds % 60, l10n.unitSeconds),
+    ];
+    final number = Fonts.figures(
+      Fonts.display(compact ? context.text.titleMedium : context.text.titleLarge, weight: 760),
+    ).copyWith(color: fg, height: 1.1);
+    final unit = Fonts.label(context.text.labelSmall, weight: 560).copyWith(color: sub);
+    return Semantics(
+      label: l10n.endsIn(formatRemaining(left)),
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            for (final (index, (value, label)) in parts.indexed) ...[
+              if (index > 0) SizedBox(width: compact ? 6 : Space.xs),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: compact ? 6 : Space.xs),
+                  decoration: BoxDecoration(
+                    color: onDark ? const Color(0x1FFFFFFF) : brand.surface,
+                    borderRadius: BorderRadius.circular(Radii.sm),
+                    border: Border.all(color: onDark ? const Color(0x26FFFFFF) : brand.line),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(value.toString().padLeft(2, '0'), style: number, maxLines: 1),
+                      Text(label, style: unit, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AuctionCardSkeleton extends StatelessWidget {
   const AuctionCardSkeleton({super.key});
 
@@ -153,7 +220,7 @@ class AuctionCardSkeleton extends StatelessWidget {
     padding: EdgeInsets.all(Space.xs),
     child: Row(
       children: [
-        Skeleton(width: 112, height: 136, radius: Radii.md),
+        Skeleton(width: 112, height: 112, radius: Radii.md),
         SizedBox(width: Space.sm),
         Expanded(
           child: Column(

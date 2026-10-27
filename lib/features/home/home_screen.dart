@@ -7,17 +7,14 @@ import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
 import '../../core/widgets/account_button.dart';
 import '../../core/widgets/collectible_image.dart';
-import '../../core/widgets/pressable.dart';
-import '../../core/widgets/slab.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/application/auction_providers.dart';
-import '../auctions/domain/auction_models.dart';
-import '../auctions/presentation/widgets/auction_card.dart';
 import '../catalog/application/catalog_providers.dart';
 import '../catalog/domain/catalog_models.dart';
 import '../catalog/presentation/widgets/collectible_card.dart';
 import '../communities/application/community_providers.dart';
 import '../communities/presentation/widgets/community_tile.dart';
+import 'closing_coverflow.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -132,17 +129,9 @@ class HomeScreen extends ConsumerWidget {
                   final live = items.where((a) => a.isLive(now)).toList()
                     ..sort((a, b) => a.deadline!.compareTo(b.deadline!));
                   if (live.isEmpty) return EmptyState(message: l10n.auctionsEmpty, icon: Icons.gavel_outlined);
-                  final shown = live.take(6).toList();
-                  return SizedBox(
-                    height: _ClosingCard.width + 30 * textScale + 96 * textScale,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                      itemCount: shown.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: Space.md),
-                      itemBuilder: (context, index) =>
-                          _ClosingCard(auction: shown[index], onTap: () => context.go(Routes.auction(shown[index].id))),
-                    ),
+                  return ClosingCoverflow(
+                    auctions: live.take(6).toList(),
+                    onOpen: (auction) => context.go(Routes.auction(auction.id)),
                   );
                 },
               ),
@@ -283,65 +272,6 @@ class _CategoryChip extends StatelessWidget {
               ),
               const SizedBox(width: Space.xs),
               Text(category, style: Fonts.label(context.text.labelLarge, weight: 640)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Auction slab for the "closing soon" rail: the object, its current bid and
-/// the time left as a red bar.
-class _ClosingCard extends StatelessWidget {
-  const _ClosingCard({required this.auction, required this.onTap});
-  final Auction auction;
-  final VoidCallback onTap;
-
-  static const double width = 224;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final brand = context.brand;
-    final name = auction.collectibleName ?? l10n.lotNumber(auction.id);
-    return SizedBox(
-      width: width,
-      child: Pressable(
-        onTap: onTap,
-        semanticLabel: '$name, ${l10n.currentBid} ${context.money(auction.currentPrice)}',
-        child: ExcludeSemantics(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Slab(
-                imageUrl: artworkFor(name: name, url: auction.collectibleImage),
-                lot: auction.id,
-                aspectRatio: 1,
-                cacheWidth: 448,
-                overlay: LiveBadge(label: l10n.liveNow),
-              ),
-              const SizedBox(height: Space.xs),
-              Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: context.text.titleSmall),
-              const SizedBox(height: 2),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Flexible(
-                    child: Text(
-                      context.money(auction.currentPrice),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Fonts.figures(context.text.titleLarge),
-                    ),
-                  ),
-                  const SizedBox(width: Space.xs),
-                  Text(l10n.bidsCount(auction.bidCount), style: context.text.bodySmall?.copyWith(color: brand.muted)),
-                ],
-              ),
-              const SizedBox(height: Space.xs),
-              Countdown(auction: auction, showBar: true),
             ],
           ),
         ),

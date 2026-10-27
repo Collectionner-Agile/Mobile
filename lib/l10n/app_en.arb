@@ -498,5 +498,10 @@
   "closingSoon": "Closing soon",
   "recentlyCatalogued": "Recently catalogued",
   "scanBannerTitle": "Identify an object with the camera",
-  "scanBannerBody": "Check it against the catalogue and open auctions."
+  "scanBannerBody": "Check it against the catalogue and open auctions.",
+  "unitDays": "Days",
+  "unitHours": "Hours",
+  "unitMinutes": "Min",
+  "unitSeconds": "Sec",
+  "closesIn": "Closes in"
 }

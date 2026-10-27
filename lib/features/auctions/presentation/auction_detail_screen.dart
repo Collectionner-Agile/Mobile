@@ -119,10 +119,12 @@ class _AuctionBody extends ConsumerWidget {
           children: [
             Text(auction.collectibleName ?? '—', style: context.text.headlineSmall),
             const SizedBox(height: Space.xs),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Countdown(auction: auction),
-            ),
+            const SizedBox(height: Space.xs),
+            if (live) ...[
+              Text(l10n.closesIn, style: context.text.bodySmall?.copyWith(color: brand.muted)),
+              const SizedBox(height: Space.xxs),
+            ],
+            CountdownBlocks(auction: auction),
             const SizedBox(height: Space.md),
             Row(
               children: [

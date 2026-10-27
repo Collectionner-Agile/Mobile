@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/tokens.dart';
+import '../../../../core/widgets/collectible_image.dart';
 import '../../../../core/widgets/pressable.dart';
 import '../../../../core/widgets/slab.dart';
 import '../../../../core/widgets/ui.dart';
@@ -26,30 +27,50 @@ class CollectibleCard extends StatelessWidget {
         child: ExcludeSemantics(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              // In fixed-height slots (grid cells, rails) the slab takes the
-              // space the text leaves; elsewhere its image well is square.
-              final slab = HeroMode(
+              // In fixed-height slots (grid cells, rails) the photo takes the
+              // space the text leaves; elsewhere it is square.
+              final brand = context.brand;
+              final well = HeroMode(
                 enabled: hero,
-                child: Slab(
-                  imageUrl: item.artwork,
-                  lot: item.id,
-                  category: item.category,
-                  heroTag: 'collectible-${item.id}',
-                  aspectRatio: constraints.hasBoundedHeight ? null : 1,
-                  compact: (width ?? constraints.maxWidth) < 200,
-                  overlay: item.auctionId != null ? LiveBadge(label: context.l10n.inAuction) : null,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(Radii.md),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Hero(
+                        tag: 'collectible-${item.id}',
+                        child: ColoredBox(
+                          color: brand.surfaceMuted,
+                          child: CollectibleImage(item.artwork, cacheWidth: 360),
+                        ),
+                      ),
+                      if (item.auctionId != null)
+                        Positioned(
+                          left: Space.xs,
+                          top: Space.xs,
+                          child: LiveBadge(label: context.l10n.inAuction),
+                        ),
+                    ],
+                  ),
                 ),
               );
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (constraints.hasBoundedHeight) Expanded(child: slab) else slab,
+                  if (constraints.hasBoundedHeight) Expanded(child: well) else AspectRatio(aspectRatio: 1, child: well),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(2, Space.xs, 2, 0),
+                    padding: const EdgeInsets.fromLTRB(2, Space.sm, 2, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(item.name, style: context.text.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+                        if (item.category != null)
+                          Text(
+                            item.category!,
+                            style: context.text.bodySmall?.copyWith(color: brand.muted),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         const SizedBox(height: Space.xxs),
                         Row(
                           children: [
@@ -78,10 +99,9 @@ class CollectibleCard extends StatelessWidget {
   }
 }
 
-/// Height of the slab label plus the text block under the slab, for the
-/// current text scale.
+/// Height of the text block under the photo for the current text scale.
 double collectibleCardTextHeight(BuildContext context) =>
-    MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 3.0) * 104 + 8;
+    MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 3.0) * 92 + 14;
 
 class CollectibleCardSkeleton extends StatelessWidget {
   const CollectibleCardSkeleton({super.key});

@@ -498,5 +498,10 @@
   "closingSoon": "Cierran pronto",
   "recentlyCatalogued": "Recién catalogadas",
   "scanBannerTitle": "Identifica una pieza con la cámara",
-  "scanBannerBody": "Compárala con el catálogo y las subastas abiertas."
+  "scanBannerBody": "Compárala con el catálogo y las subastas abiertas.",
+  "unitDays": "Días",
+  "unitHours": "Horas",
+  "unitMinutes": "Min",
+  "unitSeconds": "Seg",
+  "closesIn": "Cierra en"
 }

@@ -9,6 +9,7 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/collectible_image.dart';
+import '../../../core/widgets/glass.dart';
 import '../../../core/widgets/slab.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auctions/application/auction_providers.dart';
@@ -47,6 +48,9 @@ class _DetailBody extends ConsumerStatefulWidget {
 class _DetailBodyState extends ConsumerState<_DetailBody> {
   final _page = PageController();
   int _index = 0;
+
+  /// True once the gallery has scrolled under the toolbar; shows the name there.
+  bool _collapsed = false;
   bool _uploading = false;
 
   @override
@@ -162,173 +166,227 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     final width = MediaQuery.sizeOf(context).width;
     final galleryHeight = (width * 0.92).clamp(260.0, 520.0);
 
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          pinned: true,
-          stretch: true,
-          expandedHeight: galleryHeight,
-          backgroundColor: brand.paper,
-          leading: Padding(
-            padding: const EdgeInsets.all(6),
-            child: BackButton(
-              style: IconButton.styleFrom(
-                backgroundColor: brand.surface,
-                foregroundColor: brand.ink,
-                side: BorderSide(color: brand.line),
+    return NotificationListener<ScrollUpdateNotification>(
+      onNotification: (notification) {
+        if (notification.depth == 0) {
+          final collapsed = notification.metrics.pixels > galleryHeight - kToolbarHeight - 24;
+          if (collapsed != _collapsed) setState(() => _collapsed = collapsed);
+        }
+        return false;
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            stretch: true,
+            expandedHeight: galleryHeight,
+            backgroundColor: brand.paper,
+            title: AnimatedSwitcher(
+              duration: Motion.of(context, Motion.fast),
+              child: _collapsed
+                  ? Text(item.name, key: const ValueKey('title'), maxLines: 1, overflow: TextOverflow.ellipsis)
+                  : const SizedBox.shrink(),
+            ),
+            leading: Padding(
+              padding: const EdgeInsets.all(6),
+              child: BackButton(
+                style: IconButton.styleFrom(
+                  backgroundColor: brand.surface,
+                  foregroundColor: brand.ink,
+                  side: BorderSide(color: brand.line),
+                ),
               ),
             ),
-          ),
-          actions: [
-            if (isOwner)
-              PopupMenuButton<String>(
-                onSelected: (value) => switch (value) {
-                  'photo' => _addPhoto(),
-                  'auction' => _startAuction(),
-                  'delete' => _delete(),
-                  _ => null,
-                },
-                itemBuilder: (_) => [
-                  PopupMenuItem(
-                    value: 'photo',
-                    child: ListTile(leading: const Icon(Icons.add_a_photo_outlined), title: Text(l10n.addPhoto)),
-                  ),
-                  if (!item.isLinkedToProcess && item.auctionId == null)
+            actions: [
+              if (isOwner)
+                PopupMenuButton<String>(
+                  onSelected: (value) => switch (value) {
+                    'photo' => _addPhoto(),
+                    'auction' => _startAuction(),
+                    'delete' => _delete(),
+                    _ => null,
+                  },
+                  itemBuilder: (_) => [
                     PopupMenuItem(
-                      value: 'auction',
-                      child: ListTile(leading: const Icon(Icons.gavel_outlined), title: Text(l10n.startAuction)),
+                      value: 'photo',
+                      child: ListTile(leading: const Icon(Icons.add_a_photo_outlined), title: Text(l10n.addPhoto)),
                     ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: ListTile(
-                      leading: Icon(Icons.delete_outline, color: brand.danger),
-                      title: Text(l10n.deleteItem),
+                    if (!item.isLinkedToProcess && item.auctionId == null)
+                      PopupMenuItem(
+                        value: 'auction',
+                        child: ListTile(leading: const Icon(Icons.gavel_outlined), title: Text(l10n.startAuction)),
+                      ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: ListTile(
+                        leading: Icon(Icons.delete_outline, color: brand.danger),
+                        title: Text(l10n.deleteItem),
+                      ),
                     ),
+                  ],
+                ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              stretchModes: const [StretchMode.zoomBackground],
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ColoredBox(color: brand.surfaceMuted),
+                  if (urls.isEmpty)
+                    Hero(
+                      tag: 'collectible-${item.id}',
+                      child: CollectibleImage(null, semanticLabel: item.name),
+                    )
+                  else
+                    PageView.builder(
+                      controller: _page,
+                      itemCount: urls.length,
+                      onPageChanged: (value) => setState(() => _index = value),
+                      itemBuilder: (context, index) {
+                        final image = GestureDetector(
+                          onTap: () => _openGallery(urls, index),
+                          child: CollectibleImage(
+                            urls[index],
+                            fit: BoxFit.cover,
+                            semanticLabel: item.name,
+                            cacheWidth: width,
+                          ),
+                        );
+                        return index == 0 ? Hero(tag: 'collectible-${item.id}', child: image) : image;
+                      },
+                    ),
+                  const IgnorePointer(
+                    child: DecoratedBox(decoration: BoxDecoration(gradient: BrandColors.imageScrim)),
                   ),
-                ],
-              ),
-          ],
-          flexibleSpace: FlexibleSpaceBar(
-            stretchModes: const [StretchMode.zoomBackground],
-            background: Stack(
-              fit: StackFit.expand,
-              children: [
-                ColoredBox(color: brand.surfaceMuted),
-                if (urls.isEmpty)
-                  Hero(
-                    tag: 'collectible-${item.id}',
-                    child: CollectibleImage(null, semanticLabel: item.name),
-                  )
-                else
-                  PageView.builder(
-                    controller: _page,
-                    itemCount: urls.length,
-                    onPageChanged: (value) => setState(() => _index = value),
-                    itemBuilder: (context, index) {
-                      final image = GestureDetector(
-                        onTap: () => _openGallery(urls, index),
-                        child: CollectibleImage(
-                          urls[index],
-                          fit: BoxFit.cover,
-                          semanticLabel: item.name,
-                          cacheWidth: width,
-                        ),
-                      );
-                      return index == 0 ? Hero(tag: 'collectible-${item.id}', child: image) : image;
-                    },
-                  ),
-                if (urls.length > 1)
+                  // Name and category on frosted glass, price in a pill, page dots.
                   Positioned(
+                    left: Space.md,
                     right: Space.md,
                     bottom: Space.md,
-                    child: InfoChip(
-                      label: l10n.photoCount(_index + 1, urls.length),
-                      icon: Icons.photo_library_outlined,
-                    ),
-                  ),
-                if (_uploading) const Positioned(left: 0, right: 0, bottom: 0, child: LinearProgressIndicator()),
-              ],
-            ),
-          ),
-        ),
-        // The slab label continues under the photo: lot number and category.
-        SliverToBoxAdapter(
-          child: SlabLabel(lot: item.id, category: item.category),
-        ),
-        SliverToBoxAdapter(
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: brand.paper),
-            child: ContentWidth(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (item.auctionId != null || isOwner) ...[
-                      Wrap(
-                        spacing: Space.xs,
-                        runSpacing: Space.xs,
-                        children: [
-                          if (item.auctionId != null) LiveBadge(label: l10n.inAuction),
-                          if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
-                        ],
-                      ),
-                      const SizedBox(height: Space.sm),
-                    ],
-                    Text(item.name, style: context.text.headlineMedium),
-                    const SizedBox(height: Space.md),
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: Space.md,
-                      runSpacing: Space.xs,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(context.money(item.value), style: Fonts.figures(context.text.displaySmall)),
-                        if (item.reviewCount > 0)
-                          Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: Space.xs,
+                        GlassPanel(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              RatingStars(rating: item.rating),
-                              Text(l10n.reviewsCount(item.reviewCount), style: context.text.bodySmall),
+                              Semantics(
+                                header: true,
+                                child: Text(
+                                  item.name,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.text.headlineSmall?.copyWith(color: Colors.white),
+                                ),
+                              ),
+                              if (item.category != null) ...[
+                                const SizedBox(height: Space.xxs),
+                                Text(
+                                  item.category!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.text.bodyMedium?.copyWith(color: const Color(0xCCFFFFFF)),
+                                ),
+                              ],
                             ],
                           ),
+                        ),
+                        const SizedBox(height: Space.sm),
+                        Row(
+                          children: [
+                            Flexible(child: PricePill(label: context.money(item.value))),
+                            const Spacer(),
+                            if (urls.length > 1)
+                              Semantics(
+                                label: l10n.photoCount(_index + 1, urls.length),
+                                child: ExcludeSemantics(
+                                  child: PageDots(count: urls.length, index: _index),
+                                ),
+                              ),
+                          ],
+                        ),
                       ],
                     ),
-                    const SizedBox(height: Space.xxs),
-                    Text('${l10n.declaredValue}. ${l10n.declaredValueNote}', style: context.text.bodySmall),
-                    if (item.auctionId != null) ...[
+                  ),
+                  if (_uploading) const Positioned(left: 0, right: 0, bottom: 0, child: LinearProgressIndicator()),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: brand.paper),
+              child: ContentWidth(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (item.auctionId != null || isOwner) ...[
+                        Wrap(
+                          spacing: Space.xs,
+                          runSpacing: Space.xs,
+                          children: [
+                            if (item.auctionId != null) LiveBadge(label: l10n.inAuction),
+                            if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
+                          ],
+                        ),
+                        const SizedBox(height: Space.sm),
+                      ],
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: Space.md,
+                        runSpacing: Space.xs,
+                        children: [
+                          if (item.reviewCount > 0)
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: Space.xs,
+                              children: [
+                                RatingStars(rating: item.rating),
+                                Text(l10n.reviewsCount(item.reviewCount), style: context.text.bodySmall),
+                              ],
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: Space.xxs),
+                      Text('${l10n.declaredValue}. ${l10n.declaredValueNote}', style: context.text.bodySmall),
+                      if (item.auctionId != null) ...[
+                        const SizedBox(height: Space.lg),
+                        _AuctionBanner(auctionId: item.auctionId!),
+                      ],
                       const SizedBox(height: Space.lg),
-                      _AuctionBanner(auctionId: item.auctionId!),
+                      _Particulars(
+                        rows: [
+                          if (item.eraYear != null) (l10n.year, '${item.eraYear}'),
+                          if (item.ownerName != null) (l10n.owner, item.ownerName!),
+                          if (item.category != null) (l10n.category, item.category!),
+                          if (item.reviewCount > 0) (l10n.reviews, l10n.reviewsCount(item.reviewCount)),
+                        ],
+                      ),
+                      const SizedBox(height: Space.xl),
+                      Text(l10n.aboutObject, style: context.text.titleLarge),
+                      const SizedBox(height: Space.xs),
+                      Text(item.description, style: context.text.bodyLarge?.copyWith(color: brand.muted)),
                     ],
-                    const SizedBox(height: Space.lg),
-                    _Particulars(
-                      rows: [
-                        if (item.eraYear != null) (l10n.year, '${item.eraYear}'),
-                        if (item.ownerName != null) (l10n.owner, item.ownerName!),
-                        if (item.category != null) (l10n.category, item.category!),
-                        if (item.reviewCount > 0) (l10n.reviews, l10n.reviewsCount(item.reviewCount)),
-                      ],
-                    ),
-                    const SizedBox(height: Space.xl),
-                    Text(l10n.aboutObject, style: context.text.titleLarge),
-                    const SizedBox(height: Space.xs),
-                    Text(item.description, style: context.text.bodyLarge?.copyWith(color: brand.muted)),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: ContentWidth(
-            child: ReviewsSection(collectibleId: item.id, ownerId: item.ownerId),
+          SliverToBoxAdapter(
+            child: ContentWidth(
+              child: ReviewsSection(collectibleId: item.id, ownerId: item.ownerId),
+            ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: ContentWidth(child: CommentsSection.collectible(collectibleId: item.id)),
-        ),
-        SliverToBoxAdapter(child: SizedBox(height: Space.xxl + MediaQuery.paddingOf(context).bottom)),
-      ],
+          SliverToBoxAdapter(
+            child: ContentWidth(child: CommentsSection.collectible(collectibleId: item.id)),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: Space.xxl + MediaQuery.paddingOf(context).bottom)),
+        ],
+      ),
     );
   }
 }
