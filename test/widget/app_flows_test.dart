@@ -24,7 +24,7 @@ void main() {
     expect(find.byType(LaunchScene), findsOneWidget);
     await settle(tester, 20);
     expect(find.byType(LaunchScene), findsNothing);
-    expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
+    expect(find.text('¿Qué coleccionamos hoy?'), findsOneWidget);
   });
 
   testWidgets('back twice on home plays the farewell and closes the app', (tester) async {
@@ -48,9 +48,9 @@ void main() {
 
   testWidgets('home loads catalogue, auctions and communities from the API', (tester) async {
     await pumpApp(tester);
-    expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
+    expect(find.text('¿Qué coleccionamos hoy?'), findsOneWidget);
     // Closing auctions and the latest entries sit below the intro; lists build lazily.
-    await tester.scrollUntilVisible(find.text('Recién catalogadas'), 300, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(find.text('Recién llegadas'), 300, scrollable: find.byType(Scrollable).first);
     await settle(tester, 3);
     expect(find.text('Lego Millennium Falcon 75192'), findsWidgets);
     await tester.scrollUntilVisible(
@@ -309,7 +309,7 @@ void main() {
     await settle(tester, 6);
     await tester.tap(find.text('Empezar'));
     await settle(tester);
-    expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
+    expect(find.text('¿Qué coleccionamos hoy?'), findsOneWidget);
     expect(app.container.read(onboardedProvider), isTrue);
   });
 

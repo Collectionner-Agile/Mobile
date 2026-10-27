@@ -1,3 +1,4 @@
+import '../../../core/media/artwork.dart';
 import '../../../core/utils/json.dart';
 
 class Bid {
@@ -50,6 +51,9 @@ class Auction {
   final DateTime? createdAt;
   final bool isOpen;
   final List<Bid> bids;
+
+  /// Image for the lot: the piece's photo, else its curated artwork.
+  String get artwork => artworkFor(name: collectibleName ?? '', url: collectibleImage);
 
   /// Highest amount on record, or the starting price before any bid.
   double get currentPrice => currentHighestBid ?? startingPrice;

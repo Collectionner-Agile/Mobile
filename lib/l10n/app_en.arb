@@ -39,15 +39,15 @@
   "errorUnknown": "Something went wrong. Please try again.",
   "sessionExpired": "Your session expired. Please sign in again.",
   "homeKicker": "COLLECTIONNER / OPEN COLLECTION",
-  "homeTitle": "Objects with history. Records with care.",
-  "homeIntro": "A living archive of objects, provenance and communities for people who collect with intention.",
+  "homeTitle": "What are we collecting today?",
+  "homeIntro": "Discover pieces, bid live and identify objects with your camera.",
   "homeScanKicker": "VISUAL RECOGNITION",
   "homeScanTitle": "Got an object in front of you?",
   "homeScanBody": "Photograph it and check it against the catalogue and open auctions.",
   "homeScanCta": "Scan an object",
   "homeLatest": "Recent entries",
   "homeLiveAuctions": "Open auctions",
-  "homeCommunities": "Study communities",
+  "homeCommunities": "Communities",
   "homeGreeting": "Hello, {name}",
   "@homeGreeting": {
     "placeholders": {
@@ -484,7 +484,7 @@
     }
   },
   "openAuctionTag": "Open auction",
-  "homeCategories": "Browse by category",
+  "homeCategories": "Categories",
   "homeExplore": "Explore catalogue",
   "lotRef": "No. {number}",
   "@lotRef": {
@@ -494,9 +494,9 @@
       }
     }
   },
-  "liveNow": "Live",
+  "liveNow": "Live now",
   "closingSoon": "Closing soon",
-  "recentlyCatalogued": "Recently catalogued",
+  "recentlyCatalogued": "Just arrived",
   "scanBannerTitle": "Identify an object with the camera",
   "scanBannerBody": "Check it against the catalogue and open auctions.",
   "unitDays": "Days",
@@ -584,5 +584,12 @@
   "exploreSubtitle": "Pieces and communities to discover",
   "explorePieces": "Pieces",
   "profileGuestTitle": "Your collector space",
-  "profileGuestBody": "Sign in to keep your pieces, bid and follow auctions."
+  "profileGuestBody": "Sign in to keep your pieces, bid and follow auctions.",
+  "greetingMorning": "Good morning",
+  "greetingAfternoon": "Good afternoon",
+  "greetingEvening": "Good evening",
+  "liveNowNote": "Swipe through each auction",
+  "liveLabel": "Live",
+  "quickPublish": "Publish",
+  "quickCategories": "Categories"
 }

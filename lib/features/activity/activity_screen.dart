@@ -9,8 +9,8 @@ import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/application/auction_providers.dart';
+import '../auctions/application/bid_events.dart';
 import '../auth/application/session_controller.dart';
-import '../home/home_extras.dart';
 
 enum _Scope { all, myBids, myAuctions }
 

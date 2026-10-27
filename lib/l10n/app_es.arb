@@ -39,15 +39,15 @@
   "errorUnknown": "Algo salió mal. Inténtalo de nuevo.",
   "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo.",
   "homeKicker": "COLLECTIONNER / COLECCIÓN ABIERTA",
-  "homeTitle": "Objetos con historia. Registro con criterio.",
-  "homeIntro": "Un archivo vivo de piezas, procedencias y comunidades para quienes coleccionan con intención.",
+  "homeTitle": "¿Qué coleccionamos hoy?",
+  "homeIntro": "Descubre piezas, puja en vivo e identifica objetos con la cámara.",
   "homeScanKicker": "RECONOCIMIENTO VISUAL",
   "homeScanTitle": "¿Tienes una pieza delante?",
   "homeScanBody": "Fotografíala y compruébala contra el catálogo y las subastas abiertas.",
   "homeScanCta": "Escanear pieza",
   "homeLatest": "Últimos ingresos",
   "homeLiveAuctions": "Subastas abiertas",
-  "homeCommunities": "Comunidades de estudio",
+  "homeCommunities": "Comunidades",
   "homeGreeting": "Hola, {name}",
   "@homeGreeting": {
     "placeholders": {
@@ -484,7 +484,7 @@
     }
   },
   "openAuctionTag": "Subasta abierta",
-  "homeCategories": "Explora por categoría",
+  "homeCategories": "Categorías",
   "homeExplore": "Explorar catálogo",
   "lotRef": "N.º {number}",
   "@lotRef": {
@@ -494,9 +494,9 @@
       }
     }
   },
-  "liveNow": "En vivo",
+  "liveNow": "En vivo ahora",
   "closingSoon": "Cierran pronto",
-  "recentlyCatalogued": "Recién catalogadas",
+  "recentlyCatalogued": "Recién llegadas",
   "scanBannerTitle": "Identifica una pieza con la cámara",
   "scanBannerBody": "Compárala con el catálogo y las subastas abiertas.",
   "unitDays": "Días",
@@ -584,5 +584,12 @@
   "exploreSubtitle": "Piezas y comunidades para descubrir",
   "explorePieces": "Piezas",
   "profileGuestTitle": "Tu espacio de coleccionista",
-  "profileGuestBody": "Inicia sesión para guardar tus piezas, pujar y seguir subastas."
+  "profileGuestBody": "Inicia sesión para guardar tus piezas, pujar y seguir subastas.",
+  "greetingMorning": "Buenos días",
+  "greetingAfternoon": "Buenas tardes",
+  "greetingEvening": "Buenas noches",
+  "liveNowNote": "Desliza para ver cada subasta",
+  "liveLabel": "En vivo",
+  "quickPublish": "Publicar",
+  "quickCategories": "Categorías"
 }
