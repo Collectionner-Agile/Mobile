@@ -553,5 +553,13 @@
   "hoursAgo": "{n} h ago",
   "@hoursAgo": {"placeholders": {"n": {"type": "int"}}},
   "daysAgo": "{n} d ago",
-  "@daysAgo": {"placeholders": {"n": {"type": "int"}}}
+  "@daysAgo": {"placeholders": {"n": {"type": "int"}}},
+  "activityTitle": "Activity",
+  "myBids": "My bids",
+  "myAuctions": "My auctions",
+  "bidsLabel": "Bids",
+  "amountBid": "Amount bid",
+  "activityEmpty": "No bids in this filter yet.",
+  "activityNote": "Bids appear as each auction records them, newest first.",
+  "you": "You"
 }

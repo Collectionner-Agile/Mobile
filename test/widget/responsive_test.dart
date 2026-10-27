@@ -18,6 +18,7 @@ void main() {
   const routes = [
     Routes.onboarding,
     Routes.favorites,
+    Routes.activity,
     Routes.home,
     Routes.catalog,
     Routes.auctions,

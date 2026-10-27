@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/activity/activity_screen.dart';
 import '../../features/auctions/presentation/auction_detail_screen.dart';
 import '../../features/auctions/presentation/auctions_screen.dart';
 import '../../features/auth/application/session_controller.dart';
@@ -27,6 +28,7 @@ abstract final class Routes {
   static const home = '/home';
   static const onboarding = '/onboarding';
   static const favorites = '/favorites';
+  static const activity = '/activity';
   static const catalog = '/catalog';
   static const scan = '/scan';
   static const scanResult = '/scan/result';
@@ -88,6 +90,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', redirect: (_, _) => Routes.home),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.onboarding, builder: (_, _) => const OnboardingScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.favorites, builder: (_, _) => const FavoritesScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.activity, builder: (_, _) => const ActivityScreen()),
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),

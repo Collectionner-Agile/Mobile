@@ -212,7 +212,13 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
             if (bids.isNotEmpty) ...[
-              SliverToBoxAdapter(child: SectionHeader(title: l10n.recentActivity)),
+              SliverToBoxAdapter(
+                child: SectionHeader(
+                  title: l10n.recentActivity,
+                  actionLabel: l10n.seeAll,
+                  onAction: () => context.push(Routes.activity),
+                ),
+              ),
               SliverToBoxAdapter(
                 child: ContentWidth(
                   maxWidth: 900,

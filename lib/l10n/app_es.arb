@@ -553,5 +553,13 @@
   "hoursAgo": "hace {n} h",
   "@hoursAgo": {"placeholders": {"n": {"type": "int"}}},
   "daysAgo": "hace {n} d",
-  "@daysAgo": {"placeholders": {"n": {"type": "int"}}}
+  "@daysAgo": {"placeholders": {"n": {"type": "int"}}},
+  "activityTitle": "Actividad",
+  "myBids": "Mis pujas",
+  "myAuctions": "Mis subastas",
+  "bidsLabel": "Pujas",
+  "amountBid": "Monto pujado",
+  "activityEmpty": "No hay pujas en este filtro todavía.",
+  "activityNote": "Las pujas se muestran tal como las registra cada subasta, de la más reciente a la más antigua.",
+  "you": "Tú"
 }
