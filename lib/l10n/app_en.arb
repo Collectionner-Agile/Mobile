@@ -561,5 +561,11 @@
   "amountBid": "Amount bid",
   "activityEmpty": "No bids in this filter yet.",
   "activityNote": "Bids appear as each auction records them, newest first.",
-  "you": "You"
+  "you": "You",
+  "searchEverything": "Search pieces, auctions or communities",
+  "clear": "Clear",
+  "recentSearches": "Recent searches",
+  "browseCategories": "Browse categories",
+  "searchNoResults": "Nothing matches “{term}”.",
+  "@searchNoResults": {"placeholders": {"term": {"type": "String"}}}
 }

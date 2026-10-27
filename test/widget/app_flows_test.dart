@@ -8,6 +8,7 @@ import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
+import 'package:collectionner/features/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -295,5 +296,17 @@ void main() {
     expect(find.byType(CollectibleCard), findsOneWidget);
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getStringList('pref.favorites'), hasLength(1));
+  });
+
+  testWidgets('global search finds pieces and remembers the term', (tester) async {
+    final app = await pumpApp(tester);
+    unawaited(app.container.read(routerProvider).push(Routes.search));
+    await settle(tester);
+    await tester.enterText(find.byType(TextField).first, 'omega');
+    await settle(tester, 6);
+    expect(find.text('Reloj Omega Seamaster 1968'), findsOneWidget);
+    await tester.tap(find.text('Reloj Omega Seamaster 1968'));
+    await settle(tester);
+    expect(app.container.read(recentSearchesProvider), ['omega']);
   });
 }

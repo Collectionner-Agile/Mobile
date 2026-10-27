@@ -561,5 +561,11 @@
   "amountBid": "Monto pujado",
   "activityEmpty": "No hay pujas en este filtro todavía.",
   "activityNote": "Las pujas se muestran tal como las registra cada subasta, de la más reciente a la más antigua.",
-  "you": "Tú"
+  "you": "Tú",
+  "searchEverything": "Buscar piezas, subastas o comunidades",
+  "clear": "Borrar",
+  "recentSearches": "Búsquedas recientes",
+  "browseCategories": "Explorar categorías",
+  "searchNoResults": "Nada coincide con «{term}».",
+  "@searchNoResults": {"placeholders": {"term": {"type": "String"}}}
 }

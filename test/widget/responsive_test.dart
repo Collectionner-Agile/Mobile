@@ -19,6 +19,7 @@ void main() {
     Routes.onboarding,
     Routes.favorites,
     Routes.activity,
+    Routes.search,
     Routes.home,
     Routes.catalog,
     Routes.auctions,

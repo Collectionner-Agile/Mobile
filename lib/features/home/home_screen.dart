@@ -333,7 +333,7 @@ class _Intro extends ConsumerWidget {
           ),
           child: InkWell(
             customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.sm)),
-            onTap: () => context.go(Routes.catalog),
+            onTap: () => context.push(Routes.search),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 14),
               child: Row(
