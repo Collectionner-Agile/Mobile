@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../app/router/app_router.dart';
+import '../../app/theme/tokens.dart';
+import '../../features/auth/application/session_controller.dart';
+import 'ui.dart';
+
+/// App-bar entry to the profile (signed in) or to sign-in (guest).
+class AccountButton extends ConsumerWidget {
+  const AccountButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final l10n = context.l10n;
+    if (user == null) {
+      return IconButton(
+        tooltip: l10n.signIn,
+        icon: const Icon(Icons.account_circle_outlined),
+        onPressed: () => context.push(Routes.login),
+      );
+    }
+    final brand = context.brand;
+    return IconButton(
+      tooltip: l10n.profile,
+      onPressed: () => context.push(Routes.profile),
+      icon: CircleAvatar(
+        radius: 16,
+        backgroundColor: brand.ink,
+        child: Text(user.initial, style: context.text.labelLarge?.copyWith(color: brand.paper)),
+      ),
+    );
+  }
+}
+
+class SettingsButton extends StatelessWidget {
+  const SettingsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: context.l10n.settings,
+    icon: const Icon(Icons.tune),
+    onPressed: () => context.push(Routes.settings),
+  );
+}
