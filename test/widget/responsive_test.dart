@@ -16,6 +16,7 @@ void main() {
     'landscape 915x412': Size(915, 412),
   };
   const routes = [
+    Routes.onboarding,
     Routes.home,
     Routes.catalog,
     Routes.auctions,

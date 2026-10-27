@@ -25,6 +25,21 @@ class ThemeModeController extends Notifier<ThemeMode> {
   }
 }
 
+/// Whether the first-run introduction has been seen.
+final onboardedProvider = NotifierProvider<OnboardingController, bool>(OnboardingController.new);
+
+class OnboardingController extends Notifier<bool> {
+  static const _key = 'pref.onboarded';
+
+  @override
+  bool build() => ref.read(sharedPreferencesProvider).getBool(_key) ?? false;
+
+  Future<void> complete() async {
+    state = true;
+    await ref.read(sharedPreferencesProvider).setBool(_key, true);
+  }
+}
+
 const supportedLanguageCodes = ['es', 'en'];
 
 /// `null` means "follow the device language".

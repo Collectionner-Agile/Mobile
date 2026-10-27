@@ -525,5 +525,15 @@
   "scanGalleryShort": "Gallery",
   "demoBadge": "Demo",
   "demoServerLabel": "Demo mode: sample data stored on the phone. Changes are not sent to any server.",
-  "demoLoginHint": "Demo mode: any username and password open the sample account."
+  "demoLoginHint": "Demo mode: any username and password open the sample account.",
+  "onboardingTitle1": "Your archive of objects with a story",
+  "onboardingBody1": "Catalogue each piece with photos, year, provenance and declared value.",
+  "onboardingTitle2": "Auctions you can watch live",
+  "onboardingBody2": "Bids with a visible closing time, public history and a second-by-second countdown.",
+  "onboardingTitle3": "Identify and share",
+  "onboardingBody3": "Recognise pieces with the camera and join communities of specialists.",
+  "onboardingSkip": "Skip",
+  "onboardingNext": "Next",
+  "onboardingStart": "Get started",
+  "replayIntro": "Replay the introduction"
 }

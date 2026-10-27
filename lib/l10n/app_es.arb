@@ -525,5 +525,15 @@
   "scanGalleryShort": "Galería",
   "demoBadge": "Demo",
   "demoServerLabel": "Modo demostración: datos de ejemplo guardados en el teléfono. Los cambios no se envían a ningún servidor.",
-  "demoLoginHint": "Modo demostración: cualquier usuario y contraseña abren la cuenta de ejemplo."
+  "demoLoginHint": "Modo demostración: cualquier usuario y contraseña abren la cuenta de ejemplo.",
+  "onboardingTitle1": "Tu archivo de piezas con historia",
+  "onboardingBody1": "Cataloga cada objeto con fotos, año, procedencia y valor declarado.",
+  "onboardingTitle2": "Subastas que se ven en vivo",
+  "onboardingBody2": "Pujas con hora de cierre a la vista, historial publicado y contador al segundo.",
+  "onboardingTitle3": "Identifica y comparte",
+  "onboardingBody3": "Reconoce piezas con la cámara y únete a comunidades de especialistas.",
+  "onboardingSkip": "Saltar",
+  "onboardingNext": "Siguiente",
+  "onboardingStart": "Empezar",
+  "replayIntro": "Ver la introducción"
 }

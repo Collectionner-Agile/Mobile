@@ -14,14 +14,17 @@ import '../../features/communities/presentation/community_detail_screen.dart';
 import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
 import '../../features/home/home_screen.dart';
+import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
 import '../../features/profile/presentation/settings_screen.dart';
 import '../../features/recognition/presentation/scan_result_screen.dart';
 import '../../features/recognition/presentation/scan_screen.dart';
+import '../preferences.dart';
 import 'app_shell.dart';
 
 abstract final class Routes {
   static const home = '/home';
+  static const onboarding = '/onboarding';
   static const catalog = '/catalog';
   static const scan = '/scan';
   static const scanResult = '/scan/result';
@@ -62,7 +65,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   final router = GoRouter(
     navigatorKey: _rootKey,
-    initialLocation: Routes.home,
+    initialLocation: ref.read(onboardedProvider) ? Routes.home : Routes.onboarding,
     refreshListenable: refresh,
     restorationScopeId: 'router',
     redirect: (context, state) {
@@ -81,6 +84,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(path: '/', redirect: (_, _) => Routes.home),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.onboarding, builder: (_, _) => const OnboardingScreen()),
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),

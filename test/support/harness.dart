@@ -61,7 +61,7 @@ Future<TestApp> pumpApp(
   addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
   // The test binding reports en_US; most assertions use the primary (Spanish) copy.
-  SharedPreferences.setMockInitialValues({'pref.locale': 'es', ...prefs});
+  SharedPreferences.setMockInitialValues({'pref.locale': 'es', 'pref.onboarded': true, ...prefs});
   final preferences = await SharedPreferences.getInstance();
   final fake = backend ?? Fixtures.standardBackend();
   final store = signedIn ? MemorySessionStore(fakeJwt(), Fixtures.user()) : MemorySessionStore();

@@ -1,3 +1,4 @@
+import 'package:collectionner/app/preferences.dart';
 import 'package:collectionner/app/router/app_router.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
@@ -261,5 +262,19 @@ void main() {
       expect(opened, isFalse);
       expect(find.text('El inicio con Google aún no está activado en el servidor.'), findsOneWidget);
     });
+  });
+
+  testWidgets('first launch shows the introduction once', (tester) async {
+    final app = await pumpApp(tester, prefs: {'pref.onboarded': false});
+    expect(find.text('Tu archivo de piezas con historia'), findsOneWidget);
+    await tester.tap(find.text('Siguiente'));
+    await settle(tester, 6);
+    expect(find.text('Subastas que se ven en vivo'), findsOneWidget);
+    await tester.tap(find.text('Siguiente'));
+    await settle(tester, 6);
+    await tester.tap(find.text('Empezar'));
+    await settle(tester);
+    expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
+    expect(app.container.read(onboardedProvider), isTrue);
   });
 }

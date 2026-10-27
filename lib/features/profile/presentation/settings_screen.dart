@@ -135,6 +135,17 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ],
                 SectionHeader(title: l10n.about),
+                _Group(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.auto_stories_outlined),
+                      title: Text(l10n.replayIntro),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.go(Routes.onboarding),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: Space.md),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
                   child: Column(
