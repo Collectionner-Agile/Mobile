@@ -111,8 +111,6 @@ class _SignInPrompt extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Kicker(l10n.scanKicker),
-              const SizedBox(height: Space.xs),
               Text(l10n.scanSignInTitle, style: context.text.headlineSmall),
               const SizedBox(height: Space.xs),
               Text(l10n.scanSignInBody, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
@@ -166,8 +164,6 @@ class _Intro extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Kicker(l10n.scanKicker),
-              const SizedBox(height: Space.xs),
               Text(l10n.scanIntro, style: context.text.bodyLarge),
               if (enabled.value == false) ...[
                 const SizedBox(height: Space.md),
@@ -527,7 +523,7 @@ class _ScanningOverlayState extends State<_ScanningOverlay> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFF4C152);
+    const accent = Colors.white;
     return ExcludeSemantics(
       child: RepaintBoundary(
         child: ColoredBox(
@@ -536,13 +532,7 @@ class _ScanningOverlayState extends State<_ScanningOverlay> with SingleTickerPro
             animation: _controller,
             builder: (context, _) => Align(
               alignment: Alignment(0, -1 + 2 * Curves.easeInOut.transform(_controller.value)),
-              child: Container(
-                height: 3,
-                decoration: BoxDecoration(
-                  color: accent,
-                  boxShadow: [BoxShadow(color: accent.withValues(alpha: 0.6), blurRadius: 16, spreadRadius: 2)],
-                ),
-              ),
+              child: Container(height: 3, decoration: const BoxDecoration(color: accent)),
             ),
           ),
         ),

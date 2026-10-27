@@ -67,8 +67,6 @@ class PostDetailScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Kicker(l10n.filterPosts.toUpperCase()),
-                    const SizedBox(height: Space.xxs),
                     Text(data.title, style: context.text.headlineSmall),
                     const SizedBox(height: Space.xs),
                     Text(

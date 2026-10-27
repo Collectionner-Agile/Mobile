@@ -117,8 +117,6 @@ class _AuctionBody extends ConsumerWidget {
         final info = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Kicker(l10n.auctionsKicker),
-            const SizedBox(height: Space.xxs),
             Text(auction.collectibleName ?? '—', style: context.text.headlineSmall),
             const SizedBox(height: Space.xs),
             Align(

@@ -9,6 +9,7 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/collectible_image.dart';
+import '../../../core/widgets/slab.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auctions/application/auction_providers.dart';
 import '../../auctions/presentation/create_auction_sheet.dart';
@@ -172,8 +173,9 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
             padding: const EdgeInsets.all(6),
             child: BackButton(
               style: IconButton.styleFrom(
-                backgroundColor: brand.surface.withValues(alpha: 0.9),
+                backgroundColor: brand.surface,
                 foregroundColor: brand.ink,
+                side: BorderSide(color: brand.line),
               ),
             ),
           ),
@@ -238,49 +240,41 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                 if (urls.length > 1)
                   Positioned(
                     right: Space.md,
-                    bottom: Space.xxxl,
+                    bottom: Space.md,
                     child: InfoChip(
                       label: l10n.photoCount(_index + 1, urls.length),
                       icon: Icons.photo_library_outlined,
                     ),
                   ),
-                // Rounded lip so the content reads as a sheet over the photo.
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: -1,
-                  child: Container(
-                    height: Radii.lg,
-                    decoration: BoxDecoration(
-                      color: brand.paper,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.lg)),
-                    ),
-                  ),
-                ),
                 if (_uploading) const Positioned(left: 0, right: 0, bottom: 0, child: LinearProgressIndicator()),
               ],
             ),
           ),
+        ),
+        // The slab label continues under the photo: lot number and category.
+        SliverToBoxAdapter(
+          child: SlabLabel(lot: item.id, category: item.category),
         ),
         SliverToBoxAdapter(
           child: DecoratedBox(
             decoration: BoxDecoration(color: brand.paper),
             child: ContentWidth(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, 0),
+                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Wrap(
-                      spacing: Space.xs,
-                      runSpacing: Space.xs,
-                      children: [
-                        if (item.category != null) InfoChip(label: item.category!, color: brand.accent),
-                        if (item.auctionId != null) GoldBadge(label: l10n.inAuction),
-                        if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
-                      ],
-                    ),
-                    const SizedBox(height: Space.sm),
+                    if (item.auctionId != null || isOwner) ...[
+                      Wrap(
+                        spacing: Space.xs,
+                        runSpacing: Space.xs,
+                        children: [
+                          if (item.auctionId != null) LiveBadge(label: l10n.inAuction),
+                          if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
+                        ],
+                      ),
+                      const SizedBox(height: Space.sm),
+                    ],
                     Text(item.name, style: context.text.headlineMedium),
                     const SizedBox(height: Space.md),
                     Wrap(
@@ -288,7 +282,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                       spacing: Space.md,
                       runSpacing: Space.xs,
                       children: [
-                        Text(context.money(item.value), style: context.text.displaySmall?.copyWith(fontSize: 30)),
+                        Text(context.money(item.value), style: Fonts.figures(context.text.displaySmall)),
                         if (item.reviewCount > 0)
                           Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
@@ -307,28 +301,13 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                       _AuctionBanner(auctionId: item.auctionId!),
                     ],
                     const SizedBox(height: Space.lg),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final tileWidth = (constraints.maxWidth - Space.sm) / 2;
-                        final tiles = [
-                          if (item.eraYear != null) (Icons.event_outlined, l10n.year, '${item.eraYear}'),
-                          if (item.ownerName != null) (Icons.person_outline, l10n.owner, item.ownerName!),
-                          if (item.category != null) (Icons.category_outlined, l10n.category, item.category!),
-                          if (item.reviewCount > 0)
-                            (Icons.reviews_outlined, l10n.reviews, l10n.reviewsCount(item.reviewCount)),
-                        ];
-                        return Wrap(
-                          spacing: Space.sm,
-                          runSpacing: Space.sm,
-                          children: [
-                            for (final (icon, label, value) in tiles)
-                              SizedBox(
-                                width: tileWidth,
-                                child: _InfoTile(icon: icon, label: label, value: value),
-                              ),
-                          ],
-                        );
-                      },
+                    _Particulars(
+                      rows: [
+                        if (item.eraYear != null) (l10n.year, '${item.eraYear}'),
+                        if (item.ownerName != null) (l10n.owner, item.ownerName!),
+                        if (item.category != null) (l10n.category, item.category!),
+                        if (item.reviewCount > 0) (l10n.reviews, l10n.reviewsCount(item.reviewCount)),
+                      ],
                     ),
                     const SizedBox(height: Space.xl),
                     Text(l10n.aboutObject, style: context.text.titleLarge),
@@ -361,24 +340,27 @@ class _AuctionBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
+    final fg = heroForeground(context);
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return HeroPanel(
       padding: const EdgeInsets.all(Space.md),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(color: brand.gold, shape: BoxShape.circle),
-            child: Icon(Icons.gavel_rounded, color: brand.onGold),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LiveBadge(label: context.l10n.liveNow),
+                const SizedBox(height: Space.xs),
+                Text(context.l10n.inAuction, style: context.text.titleMedium?.copyWith(color: fg)),
+              ],
+            ),
           ),
           const SizedBox(width: Space.sm),
-          Expanded(
-            child: Text(context.l10n.inAuction, style: context.text.titleMedium?.copyWith(color: Colors.white)),
-          ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF0E1640),
+              backgroundColor: dark ? brand.ink : brand.paper,
+              foregroundColor: dark ? brand.paper : brand.ink,
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: Space.md),
             ),
@@ -391,37 +373,41 @@ class _AuctionBanner extends StatelessWidget {
   }
 }
 
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({required this.icon, required this.label, required this.value});
-  final IconData icon;
-  final String label;
-  final String value;
+/// Catalogue particulars as label/value rows between hairlines.
+class _Particulars extends StatelessWidget {
+  const _Particulars({required this.rows});
+  final List<(String, String)> rows;
 
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    return Container(
-      padding: const EdgeInsets.all(Space.sm),
-      decoration: BoxDecoration(
-        color: brand.surfaceRaised,
-        borderRadius: BorderRadius.circular(Radii.sm),
-        border: Border.all(color: brand.line),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: brand.accent),
-          const SizedBox(width: Space.xs),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(value, style: context.text.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
-              ],
+    return Column(
+      children: [
+        for (final (label, value) in rows)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: brand.line)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(label, style: Fonts.label(context.text.bodyMedium).copyWith(color: brand.muted)),
+                  ),
+                  const SizedBox(width: Space.sm),
+                  Expanded(
+                    flex: 3,
+                    child: Text(value, textAlign: TextAlign.end, style: Fonts.figures(context.text.titleSmall)),
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
+        if (rows.isNotEmpty) Divider(height: 1, color: brand.line),
+      ],
     );
   }
 }

@@ -13,11 +13,10 @@ import '../../../core/widgets/password_field.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/session_controller.dart';
 
-/// Shared layout: brand kicker, title, intro, form and footer link; scrolls
+/// Shared layout: title, intro, form and footer link; scrolls
 /// under the keyboard and caps width on large screens.
 class _AuthPage extends StatelessWidget {
-  const _AuthPage({required this.kicker, required this.title, required this.intro, required this.children});
-  final String kicker;
+  const _AuthPage({required this.title, required this.intro, required this.children});
   final String title;
   final String intro;
   final List<Widget> children;
@@ -38,8 +37,6 @@ class _AuthPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Kicker(kicker),
-                    const SizedBox(height: Space.xs),
                     Text(title, style: context.text.headlineMedium),
                     const SizedBox(height: Space.xs),
                     Text(intro, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
@@ -146,7 +143,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = context.l10n;
     final validators = Validators(l10n);
     return _AuthPage(
-      kicker: l10n.loginKicker,
       title: l10n.loginTitle,
       intro: l10n.loginIntro,
       children: [
@@ -261,7 +257,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final l10n = context.l10n;
     final validators = Validators(l10n);
     return _AuthPage(
-      kicker: l10n.registerKicker,
       title: l10n.registerTitle,
       intro: l10n.registerIntro,
       children: [
@@ -380,7 +375,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return _AuthPage(
-      kicker: l10n.loginKicker,
       title: l10n.forgotTitle,
       intro: l10n.forgotIntro,
       children: [
@@ -466,7 +460,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final l10n = context.l10n;
     final validators = Validators(l10n);
     return _AuthPage(
-      kicker: l10n.loginKicker,
       title: l10n.resetTitle,
       intro: l10n.forgotIntro,
       children: [

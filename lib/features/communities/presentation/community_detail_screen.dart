@@ -271,7 +271,7 @@ class _FeedCard extends StatelessWidget {
                       children: [
                         Icon(icon, size: 14, color: brand.accentStrong),
                         const SizedBox(width: 4),
-                        Flexible(child: Kicker(label.toUpperCase())),
+                        Flexible(child: Kicker(label)),
                       ],
                     ),
                     const SizedBox(height: 2),

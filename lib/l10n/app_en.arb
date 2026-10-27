@@ -265,7 +265,7 @@
   "cancelAuctionConfirm": "Only auctions without bids can be withdrawn. Withdraw it?",
   "auctionCancelled": "Auction withdrawn.",
   "auctioneer": "Auctioneer",
-  "lotNumber": "LOT {id}",
+  "lotNumber": "Lot {id}",
   "@lotNumber": {
     "placeholders": {
       "id": {
@@ -485,5 +485,18 @@
   },
   "openAuctionTag": "Open auction",
   "homeCategories": "Browse by category",
-  "homeExplore": "Explore catalogue"
+  "homeExplore": "Explore catalogue",
+  "lotRef": "No. {number}",
+  "@lotRef": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "liveNow": "Live",
+  "closingSoon": "Closing soon",
+  "recentlyCatalogued": "Recently catalogued",
+  "scanBannerTitle": "Identify an object with the camera",
+  "scanBannerBody": "Check it against the catalogue and open auctions."
 }

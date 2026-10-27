@@ -75,12 +75,9 @@ class CommunityAvatar extends StatelessWidget {
         child: community.imageUrl != null
             ? CollectibleImage(community.imageUrl, cacheWidth: size)
             : DecoratedBox(
-                decoration: const BoxDecoration(gradient: BrandColors.heroGradient),
+                decoration: BoxDecoration(color: brand.ink),
                 child: Center(
-                  child: Text(
-                    initial,
-                    style: context.text.titleLarge?.copyWith(color: brand.gold, fontWeight: FontWeight.w800),
-                  ),
+                  child: Text(initial, style: Fonts.display(context.text.titleLarge).copyWith(color: brand.paper)),
                 ),
               ),
       ),

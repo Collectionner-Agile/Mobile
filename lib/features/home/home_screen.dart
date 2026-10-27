@@ -8,12 +8,13 @@ import '../../core/media/artwork.dart';
 import '../../core/widgets/account_button.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/pressable.dart';
+import '../../core/widgets/slab.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/application/auction_providers.dart';
 import '../auctions/domain/auction_models.dart';
 import '../auctions/presentation/widgets/auction_card.dart';
-import '../auth/application/session_controller.dart';
 import '../catalog/application/catalog_providers.dart';
+import '../catalog/domain/catalog_models.dart';
 import '../catalog/presentation/widgets/collectible_card.dart';
 import '../communities/application/community_providers.dart';
 import '../communities/presentation/widgets/community_tile.dart';
@@ -45,6 +46,8 @@ class HomeScreen extends ConsumerWidget {
     final communities = ref.watch(communitiesProvider);
     final categories = ref.watch(catalogCategoriesProvider);
 
+    final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.2);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => _refresh(ref),
@@ -59,14 +62,20 @@ class HomeScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(Radii.xs),
                     child: Image.asset(
                       'assets/branding/site-icon-512.png',
-                      width: 30,
-                      height: 30,
-                      cacheWidth: 90,
+                      width: 28,
+                      height: 28,
+                      cacheWidth: 84,
                       semanticLabel: l10n.appName,
                     ),
                   ),
                   const SizedBox(width: Space.sm),
-                  Flexible(child: Text(l10n.appName, overflow: TextOverflow.ellipsis)),
+                  Flexible(
+                    child: Text(
+                      l10n.appName,
+                      overflow: TextOverflow.ellipsis,
+                      style: Fonts.display(context.text.titleLarge, weight: 800),
+                    ),
+                  ),
                 ],
               ),
               actions: const [
@@ -78,33 +87,34 @@ class HomeScreen extends ConsumerWidget {
             const SliverToBoxAdapter(
               child: ContentWidth(
                 maxWidth: 900,
-                child: Padding(padding: EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, 0), child: _Hero()),
+                child: Padding(padding: EdgeInsets.fromLTRB(Space.gutter, Space.md, Space.gutter, 0), child: _Intro()),
               ),
             ),
-            if (categories.isNotEmpty) ...[
-              SliverToBoxAdapter(child: SectionHeader(title: l10n.homeCategories)),
+            if (categories.isNotEmpty)
               SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 72 + 12 + 44 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.2),
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                    itemCount: categories.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
-                    itemBuilder: (context, index) => _CategoryTile(
-                      category: categories[index],
-                      onTap: () {
-                        ref.read(catalogFilterProvider.notifier).category(categories[index]);
-                        context.go(Routes.catalog);
-                      },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: Space.md),
+                  child: SizedBox(
+                    height: 40 * textScale,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                      itemCount: categories.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: Space.xs),
+                      itemBuilder: (context, index) => _CategoryChip(
+                        category: categories[index],
+                        onTap: () {
+                          ref.read(catalogFilterProvider.notifier).category(categories[index]);
+                          context.go(Routes.catalog);
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-            ],
             SliverToBoxAdapter(
               child: SectionHeader(
-                title: l10n.homeLiveAuctions,
+                title: l10n.closingSoon,
                 actionLabel: l10n.seeAll,
                 onAction: () => context.go(Routes.auctions),
               ),
@@ -115,22 +125,23 @@ class HomeScreen extends ConsumerWidget {
                 onRetry: () => ref.invalidate(auctionsProvider),
                 loading: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: Space.gutter),
-                  child: Skeleton(height: 220, radius: Radii.md),
+                  child: Skeleton(height: 300, radius: Radii.md),
                 ),
                 data: (items) {
-                  final live = items.where((a) => a.isLive(DateTime.now())).take(6).toList();
+                  final now = DateTime.now();
+                  final live = items.where((a) => a.isLive(now)).toList()
+                    ..sort((a, b) => a.deadline!.compareTo(b.deadline!));
                   if (live.isEmpty) return EmptyState(message: l10n.auctionsEmpty, icon: Icons.gavel_outlined);
+                  final shown = live.take(6).toList();
                   return SizedBox(
-                    height: 236 + 40 * (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0.0, 1.5),
+                    height: _ClosingCard.width + 30 * textScale + 96 * textScale,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                      itemCount: live.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
-                      itemBuilder: (context, index) => _LiveAuctionCard(
-                        auction: live[index],
-                        onTap: () => context.go(Routes.auction(live[index].id)),
-                      ),
+                      itemCount: shown.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: Space.md),
+                      itemBuilder: (context, index) =>
+                          _ClosingCard(auction: shown[index], onTap: () => context.go(Routes.auction(shown[index].id))),
                     ),
                   );
                 },
@@ -138,42 +149,18 @@ class HomeScreen extends ConsumerWidget {
             ),
             SliverToBoxAdapter(
               child: SectionHeader(
-                title: l10n.homeLatest,
+                title: l10n.recentlyCatalogued,
                 actionLabel: l10n.seeAll,
                 onAction: () => context.go(Routes.catalog),
               ),
             ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 176 + collectibleCardTextHeight(context),
-                child: AsyncSwitch(
-                  value: collectibles,
-                  onRetry: () => ref.invalidate(collectiblesProvider),
-                  loading: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                    itemCount: 3,
-                    separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
-                    itemBuilder: (_, _) => const SizedBox(width: 176, child: CollectibleCardSkeleton()),
-                  ),
-                  data: (items) {
-                    if (items.isEmpty) return EmptyState(message: l10n.catalogEmpty);
-                    final latest = [...items]
-                      ..sort((a, b) => (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
-                    final shown = latest.take(10).toList();
-                    return ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.xs),
-                      clipBehavior: Clip.none,
-                      itemCount: shown.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
-                      itemBuilder: (context, index) => CollectibleCard(
-                        width: 176,
-                        item: shown[index],
-                        onTap: () => context.go(Routes.collectible(shown[index].id)),
-                      ),
-                    );
-                  },
+            _LatestGrid(collectibles: collectibles, onRetry: () => ref.invalidate(collectiblesProvider)),
+            const SliverToBoxAdapter(
+              child: ContentWidth(
+                maxWidth: 900,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(Space.gutter, Space.xl, Space.gutter, 0),
+                  child: _ScanBanner(),
                 ),
               ),
             ),
@@ -218,127 +205,100 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _Hero extends ConsumerWidget {
-  const _Hero();
+/// Headline and a search field that opens the catalogue.
+class _Intro extends StatelessWidget {
+  const _Intro();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final brand = context.brand;
-    final user = ref.watch(currentUserProvider);
-    const white = Colors.white;
-    return HeroPanel(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Kicker(user == null ? l10n.homeScanKicker : l10n.homeGreeting(user.name).toUpperCase(), color: brand.gold),
-          const SizedBox(height: Space.xs),
-          Text(l10n.homeTitle, style: context.text.headlineMedium?.copyWith(color: white)),
-          const SizedBox(height: Space.xs),
-          Text(l10n.homeIntro, style: context.text.bodyMedium?.copyWith(color: white.withValues(alpha: 0.78))),
-          const SizedBox(height: Space.lg),
-          Material(
-            color: white.withValues(alpha: 0.12),
-            shape: const StadiumBorder(side: BorderSide(color: Color(0x33FFFFFF))),
-            child: InkWell(
-              customBorder: const StadiumBorder(),
-              onTap: () => context.go(Routes.catalog),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 14),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search_rounded, color: white, size: 22),
-                    const SizedBox(width: Space.sm),
-                    Expanded(
-                      child: Text(
-                        l10n.catalogSearchHint,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.text.bodyMedium?.copyWith(color: white.withValues(alpha: 0.85)),
-                      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(l10n.homeTitle, style: context.text.headlineMedium),
+        const SizedBox(height: Space.xs),
+        Text(l10n.homeIntro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
+        const SizedBox(height: Space.md),
+        Material(
+          color: brand.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.sm),
+            side: BorderSide(color: brand.line),
+          ),
+          child: InkWell(
+            customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.sm)),
+            onTap: () => context.go(Routes.catalog),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(Icons.search_rounded, color: brand.muted, size: 22),
+                  const SizedBox(width: Space.sm),
+                  Expanded(
+                    child: Text(
+                      l10n.catalogSearchHint,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.text.bodyMedium?.copyWith(color: brand.muted),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          const SizedBox(height: Space.sm),
-          Wrap(
-            spacing: Space.sm,
-            runSpacing: Space.sm,
-            children: [
-              FilledButton.icon(
-                style: FilledButton.styleFrom(backgroundColor: brand.gold, foregroundColor: brand.onGold),
-                onPressed: () => context.go(Routes.scan),
-                icon: const Icon(Icons.center_focus_strong_rounded, size: 20),
-                label: Text(l10n.homeScanCta),
-              ),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: white,
-                  side: const BorderSide(color: Color(0x66FFFFFF), width: 1.4),
-                ),
-                onPressed: () => context.go(Routes.catalog),
-                child: Text(l10n.homeExplore),
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.category, required this.onTap});
+class _CategoryChip extends StatelessWidget {
+  const _CategoryChip({required this.category, required this.onTap});
   final String category;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    return SizedBox(
-      width: 84,
-      child: Pressable(
+    return Material(
+      color: brand.surface,
+      shape: StadiumBorder(side: BorderSide(color: brand.line)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onTap,
-        semanticLabel: category,
-        borderRadius: Radii.md,
-        child: Column(
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: brand.surfaceMuted,
-                border: Border.all(color: brand.gold.withValues(alpha: 0.7), width: 2),
-                boxShadow: brand.cardShadow,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 4, Space.md, 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipOval(
+                child: SizedBox.square(
+                  dimension: 30,
+                  child: ColoredBox(
+                    color: brand.surfaceMuted,
+                    child: ExcludeSemantics(child: CollectibleImage(categoryArtwork(category), cacheWidth: 30)),
+                  ),
+                ),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: ExcludeSemantics(child: CollectibleImage(categoryArtwork(category), cacheWidth: 72)),
-            ),
-            const SizedBox(height: Space.xs),
-            Flexible(
-              child: Text(
-                category,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: context.text.labelMedium,
-              ),
-            ),
-          ],
+              const SizedBox(width: Space.xs),
+              Text(category, style: Fonts.label(context.text.labelLarge, weight: 640)),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Large image card with a scrim, used in the home carousel.
-class _LiveAuctionCard extends StatelessWidget {
-  const _LiveAuctionCard({required this.auction, required this.onTap});
+/// Auction slab for the "closing soon" rail: the object, its current bid and
+/// the time left as a red bar.
+class _ClosingCard extends StatelessWidget {
+  const _ClosingCard({required this.auction, required this.onTap});
   final Auction auction;
   final VoidCallback onTap;
+
+  static const double width = 224;
 
   @override
   Widget build(BuildContext context) {
@@ -346,65 +306,124 @@ class _LiveAuctionCard extends StatelessWidget {
     final brand = context.brand;
     final name = auction.collectibleName ?? l10n.lotNumber(auction.id);
     return SizedBox(
-      width: 264,
+      width: width,
       child: Pressable(
         onTap: onTap,
         semanticLabel: '$name, ${l10n.currentBid} ${context.money(auction.currentPrice)}',
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(Radii.md),
-          child: ExcludeSemantics(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ColoredBox(
-                  color: brand.surfaceMuted,
-                  child: CollectibleImage(artworkFor(name: name, url: auction.collectibleImage), cacheWidth: 264),
-                ),
-                const DecoratedBox(decoration: BoxDecoration(gradient: BrandColors.imageScrim)),
-                Positioned(
-                  left: Space.sm,
-                  top: Space.sm,
-                  child: Countdown(auction: auction),
-                ),
-                Positioned(
-                  left: Space.md,
-                  right: Space.md,
-                  bottom: Space.md,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.text.titleMedium?.copyWith(color: Colors.white),
-                      ),
-                      const SizedBox(height: Space.xxs),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              context.money(auction.currentPrice),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: context.text.titleLarge?.copyWith(color: brand.gold, fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                          const SizedBox(width: Space.xs),
-                          Text(
-                            l10n.bidsCount(auction.bidCount),
-                            style: context.text.bodySmall?.copyWith(color: Colors.white70),
-                          ),
-                        ],
-                      ),
-                    ],
+        child: ExcludeSemantics(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Slab(
+                imageUrl: artworkFor(name: name, url: auction.collectibleImage),
+                lot: auction.id,
+                aspectRatio: 1,
+                cacheWidth: 448,
+                overlay: LiveBadge(label: l10n.liveNow),
+              ),
+              const SizedBox(height: Space.xs),
+              Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: context.text.titleSmall),
+              const SizedBox(height: 2),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Flexible(
+                    child: Text(
+                      context.money(auction.currentPrice),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Fonts.figures(context.text.titleLarge),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: Space.xs),
+                  Text(l10n.bidsCount(auction.bidCount), style: context.text.bodySmall?.copyWith(color: brand.muted)),
+                ],
+              ),
+              const SizedBox(height: Space.xs),
+              Countdown(auction: auction, showBar: true),
+            ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Two-column grid (more on wide screens) of the newest catalogue entries.
+class _LatestGrid extends StatelessWidget {
+  const _LatestGrid({required this.collectibles, required this.onRetry});
+  final AsyncValue<List<Collectible>> collectibles;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!collectibles.hasValue) {
+      return SliverToBoxAdapter(
+        child: collectibles.hasError
+            ? ErrorState(error: collectibles.error!, onRetry: onRetry)
+            : const Padding(
+                padding: EdgeInsets.symmetric(horizontal: Space.gutter),
+                child: Skeleton(height: 260, radius: Radii.md),
+              ),
+      );
+    }
+    final items = collectibles.requireValue;
+    if (items.isEmpty) return SliverToBoxAdapter(child: EmptyState(message: context.l10n.catalogEmpty));
+    final latest = [...items]..sort((a, b) => (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+      sliver: SliverLayoutBuilder(
+        builder: (context, constraints) {
+          final columns = gridColumnsFor(constraints.crossAxisExtent);
+          final shown = latest.take(columns * 2).toList();
+          final cellWidth = (constraints.crossAxisExtent - Space.md * (columns - 1)) / columns;
+          return SliverGrid.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              crossAxisSpacing: Space.md,
+              mainAxisSpacing: Space.lg,
+              mainAxisExtent: cellWidth + collectibleCardTextHeight(context),
+            ),
+            itemCount: shown.length,
+            itemBuilder: (context, index) =>
+                CollectibleCard(item: shown[index], onTap: () => context.go(Routes.collectible(shown[index].id))),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// The one ink moment on the home screen: identify a piece with the camera.
+class _ScanBanner extends StatelessWidget {
+  const _ScanBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final brand = context.brand;
+    final fg = heroForeground(context);
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return HeroPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.center_focus_strong_rounded, color: fg, size: 28),
+          const SizedBox(height: Space.sm),
+          Text(l10n.scanBannerTitle, style: context.text.titleLarge?.copyWith(color: fg)),
+          const SizedBox(height: Space.xxs),
+          Text(l10n.scanBannerBody, style: context.text.bodyMedium?.copyWith(color: fg.withValues(alpha: 0.72))),
+          const SizedBox(height: Space.md),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: dark ? brand.ink : brand.paper,
+              foregroundColor: dark ? brand.paper : brand.ink,
+            ),
+            onPressed: () => context.go(Routes.scan),
+            child: Text(l10n.homeScanCta),
+          ),
+        ],
       ),
     );
   }

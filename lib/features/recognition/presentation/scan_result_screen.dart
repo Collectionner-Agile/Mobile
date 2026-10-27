@@ -85,8 +85,6 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Kicker(l10n.resultKicker),
-                  const SizedBox(height: Space.xs),
                   Text(
                     result.detected ? (result.productName ?? l10n.notDetected) : l10n.notDetected,
                     style: context.text.headlineSmall,

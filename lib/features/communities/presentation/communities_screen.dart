@@ -83,8 +83,6 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Kicker(l10n.communitiesKicker),
-                    const SizedBox(height: Space.xxs),
                     Text(l10n.communitiesIntro, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
                   ],
                 ),

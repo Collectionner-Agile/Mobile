@@ -13,8 +13,8 @@ void main() {
   testWidgets('home loads catalogue, auctions and communities from the API', (tester) async {
     await pumpApp(tester);
     expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
-    // Live auctions and latest entries sit below the hero; lists build lazily.
-    await tester.scrollUntilVisible(find.text('Últimos ingresos'), 300, scrollable: find.byType(Scrollable).first);
+    // Closing auctions and the latest entries sit below the intro; lists build lazily.
+    await tester.scrollUntilVisible(find.text('Recién catalogadas'), 300, scrollable: find.byType(Scrollable).first);
     await settle(tester, 3);
     expect(find.text('Lego Millennium Falcon 75192'), findsWidgets);
     await tester.scrollUntilVisible(
@@ -29,7 +29,7 @@ void main() {
     await pumpApp(tester);
     await tester.tap(find.text('Catálogo').last);
     await settle(tester);
-    expect(find.text('4 piezas'.toUpperCase()), findsOneWidget);
+    expect(find.text('4 piezas'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).first, 'omega');
     await settle(tester, 6);

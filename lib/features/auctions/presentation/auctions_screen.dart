@@ -46,16 +46,17 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, Space.sm),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Kicker(l10n.auctionsKicker),
-                      const SizedBox(height: Space.xxs),
                       Text(l10n.auctionsIntro, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
                       const SizedBox(height: Space.xs),
-                      FilterChip(
-                        label: Text(l10n.auctionsShowClosed),
-                        selected: _showClosed,
-                        onSelected: (value) => setState(() => _showClosed = value),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: FilterChip(
+                          label: Text(l10n.auctionsShowClosed),
+                          selected: _showClosed,
+                          onSelected: (value) => setState(() => _showClosed = value),
+                        ),
                       ),
                     ],
                   ),

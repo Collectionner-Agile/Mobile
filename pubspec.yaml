@@ -51,15 +51,12 @@ flutter:
     - assets/images/placeholders/
     - assets/images/editorial/
 
-  # Google Fonts (SIL Open Font License, see assets/fonts/*-OFL.txt), bundled so
-  # nothing is downloaded at runtime. Variable fonts: FontWeight drives `wght`.
+  # Google Fonts Archivo (SIL Open Font License, assets/fonts/Archivo-OFL.txt),
+  # bundled so nothing is downloaded at runtime. Variable: weight and width axes.
   fonts:
-    - family: Sora
+    - family: Archivo
       fonts:
-        - asset: assets/fonts/Sora-Variable.ttf
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Variable.ttf
+        - asset: assets/fonts/Archivo-Variable.ttf
 
 # Icon and splash use the official mark the web ships as logo and favicon
 # (public/assets/icons/site-icon-512.png). Padded copies live in tool/branding

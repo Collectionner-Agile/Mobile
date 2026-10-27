@@ -55,8 +55,6 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Kicker(l10n.profileKicker),
-                    const SizedBox(height: Space.sm),
                     Row(
                       children: [
                         CircleAvatar(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// "Midnight & Gold": navy and gold from the Collectionner mark (the album
-/// with the star), with a modern indigo for actions. Semantic names, so every
-/// component follows light/dark automatically.
+/// "Slab": the visual language of a graded collectible. A cool grey ground
+/// like a case on a desk, black ink for structure and actions, and one
+/// lacquer red reserved for what is live (auctions, bids, countdowns).
 @immutable
 class BrandColors extends ThemeExtension<BrandColors> {
   const BrandColors({
@@ -16,6 +16,8 @@ class BrandColors extends ThemeExtension<BrandColors> {
     required this.accent,
     required this.accentStrong,
     required this.onAccent,
+    required this.live,
+    required this.onLive,
     required this.gold,
     required this.onGold,
     required this.success,
@@ -26,27 +28,31 @@ class BrandColors extends ThemeExtension<BrandColors> {
     required this.shadow,
   });
 
-  /// Page background.
+  /// Page ground.
   final Color paper;
 
-  /// Bars and sheets.
+  /// Bars, sheets and slab labels.
   final Color surface;
 
-  /// Cards and inputs.
+  /// Inputs and raised panels.
   final Color surfaceRaised;
 
-  /// Quiet fills: chips, image wells, segmented controls.
+  /// Image wells (the inside of the slab).
   final Color surfaceMuted;
   final Color ink;
   final Color muted;
   final Color line;
 
-  /// Primary action colour (indigo).
+  /// Primary actions and selection: ink, so the red stays meaningful.
   final Color accent;
   final Color accentStrong;
   final Color onAccent;
 
-  /// Brand gold: ratings, auction highlights, premium badges.
+  /// Lacquer red: live auctions, bids, countdowns. Nothing else.
+  final Color live;
+  final Color onLive;
+
+  /// Ratings.
   final Color gold;
   final Color onGold;
   final Color success;
@@ -57,64 +63,60 @@ class BrandColors extends ThemeExtension<BrandColors> {
   final Color shadow;
 
   static const light = BrandColors(
-    paper: Color(0xFFF5F6FA),
+    paper: Color(0xFFF1F2F4),
     surface: Color(0xFFFFFFFF),
     surfaceRaised: Color(0xFFFFFFFF),
-    surfaceMuted: Color(0xFFEDEFF6),
-    ink: Color(0xFF0D1330),
-    muted: Color(0xFF5E6680),
-    line: Color(0xFFE2E5EE),
-    accent: Color(0xFF4353E0),
-    accentStrong: Color(0xFF2F3DBF),
+    surfaceMuted: Color(0xFFE4E6EA),
+    ink: Color(0xFF0F1012),
+    muted: Color(0xFF5B616B),
+    line: Color(0xFFD5D8DE),
+    accent: Color(0xFF0F1012),
+    accentStrong: Color(0xFF000000),
     onAccent: Color(0xFFFFFFFF),
-    gold: Color(0xFFE3A32B),
-    onGold: Color(0xFF2A1A00),
+    live: Color(0xFFD42A3A),
+    onLive: Color(0xFFFFFFFF),
+    gold: Color(0xFFB7791F),
+    onGold: Color(0xFF241500),
     success: Color(0xFF15803D),
     warning: Color(0xFFB45309),
-    danger: Color(0xFFDC2626),
-    info: Color(0xFF2563EB),
-    skeleton: Color(0xFFE6E9F2),
-    shadow: Color(0x1A0D1330),
+    danger: Color(0xFFC81E1E),
+    info: Color(0xFF1D4ED8),
+    skeleton: Color(0xFFE2E4E8),
+    shadow: Color(0x140F1012),
   );
 
   static const dark = BrandColors(
-    paper: Color(0xFF090C18),
-    surface: Color(0xFF0F1426),
-    surfaceRaised: Color(0xFF151B31),
-    surfaceMuted: Color(0xFF1C2340),
-    ink: Color(0xFFEEF0FA),
-    muted: Color(0xFF9BA3BF),
-    line: Color(0xFF252D49),
-    accent: Color(0xFF8C99FF),
-    accentStrong: Color(0xFFAAB4FF),
-    onAccent: Color(0xFF0A0D1A),
-    gold: Color(0xFFF4C152),
-    onGold: Color(0xFF2A1A00),
+    paper: Color(0xFF0E0F11),
+    surface: Color(0xFF17181B),
+    surfaceRaised: Color(0xFF1C1E22),
+    surfaceMuted: Color(0xFF23262B),
+    ink: Color(0xFFF2F3F5),
+    muted: Color(0xFF9AA0AA),
+    line: Color(0xFF2E3137),
+    accent: Color(0xFFF2F3F5),
+    accentStrong: Color(0xFFFFFFFF),
+    onAccent: Color(0xFF0E0F11),
+    live: Color(0xFFFF5263),
+    onLive: Color(0xFF1A0004),
+    gold: Color(0xFFF2C14E),
+    onGold: Color(0xFF241500),
     success: Color(0xFF4ADE80),
     warning: Color(0xFFFBBF24),
-    danger: Color(0xFFF87171),
-    info: Color(0xFF60A5FA),
-    skeleton: Color(0xFF1D2440),
+    danger: Color(0xFFFF6B6B),
+    info: Color(0xFF7CA8FF),
+    skeleton: Color(0xFF24272C),
     shadow: Color(0x66000000),
-  );
-
-  /// Deep navy → indigo used for hero panels in both themes.
-  static const heroGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFF0E1640), Color(0xFF26338F), Color(0xFF4353E0)],
-    stops: [0, 0.6, 1],
   );
 
   /// Bottom scrim that keeps text legible over photos.
   static const imageScrim = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0x00000000), Color(0x99060914)],
+    colors: [Color(0x00000000), Color(0xA6000000)],
   );
 
   List<BoxShadow> get cardShadow => [
-    BoxShadow(color: shadow, blurRadius: 24, offset: const Offset(0, 8), spreadRadius: -6),
+    BoxShadow(color: shadow, blurRadius: 18, offset: const Offset(0, 6), spreadRadius: -4),
   ];
 
   @override
@@ -135,6 +137,8 @@ class BrandColors extends ThemeExtension<BrandColors> {
       accent: mix(accent, other.accent),
       accentStrong: mix(accentStrong, other.accentStrong),
       onAccent: mix(onAccent, other.onAccent),
+      live: mix(live, other.live),
+      onLive: mix(onLive, other.onLive),
       gold: mix(gold, other.gold),
       onGold: mix(onGold, other.onGold),
       success: mix(success, other.success),
@@ -162,10 +166,10 @@ abstract final class Space {
 }
 
 abstract final class Radii {
-  static const double xs = 6;
-  static const double sm = 12;
-  static const double md = 18;
-  static const double lg = 26;
+  static const double xs = 4;
+  static const double sm = 10;
+  static const double md = 14;
+  static const double lg = 22;
   static const double pill = 999;
 }
 
@@ -173,7 +177,7 @@ abstract final class Motion {
   static const Duration fast = Duration(milliseconds: 160);
   static const Duration base = Duration(milliseconds: 240);
   static const Duration slow = Duration(milliseconds: 320);
-  static const Curve enter = Cubic(0.2, 0.75, 0.25, 1);
+  static const Curve enter = Cubic(0.16, 1, 0.3, 1);
   static const Curve exit = Cubic(0.4, 0, 1, 1);
   static const Curve standard = Cubic(0.2, 0.6, 0.2, 1);
 
@@ -182,9 +186,27 @@ abstract final class Motion {
       MediaQuery.maybeDisableAnimationsOf(context) ?? false ? Duration.zero : duration;
 }
 
+/// Archivo is the only family; its width axis carries the hierarchy:
+/// expanded for titles, normal for reading, condensed for slab labels.
 abstract final class Fonts {
-  static const display = 'Sora';
-  static const body = 'Inter';
+  static const family = 'Archivo';
+
+  static List<FontVariation> axes({required double width, required double weight}) => [
+    FontVariation('wdth', width),
+    FontVariation('wght', weight),
+  ];
+
+  /// Expanded display voice.
+  static TextStyle display(TextStyle? base, {double weight = 760}) =>
+      (base ?? const TextStyle()).copyWith(fontVariations: axes(width: 118, weight: weight));
+
+  /// Condensed label voice used on slab labels and lot numbers.
+  static TextStyle label(TextStyle? base, {double weight = 620}) =>
+      (base ?? const TextStyle()).copyWith(fontVariations: axes(width: 76, weight: weight), letterSpacing: 0.2);
+
+  /// Figures that do not jump while a countdown or bid changes.
+  static TextStyle figures(TextStyle? base) =>
+      (base ?? const TextStyle()).copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 }
 
 extension BrandContext on BuildContext {

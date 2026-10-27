@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  for (final (family, file) in [('Sora', 'Sora-Variable.ttf'), ('Inter', 'Inter-Variable.ttf')]) {
+  for (final (family, file) in [('Archivo', 'Archivo-Variable.ttf')]) {
     test('$family variable font honours FontWeight', () async {
       final bytes = File('assets/fonts/$file').readAsBytesSync();
       final loader = FontLoader('${family}Probe')..addFont(Future.value(ByteData.sublistView(bytes)));

@@ -185,12 +185,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     return [
       SliverPadding(
         padding: const EdgeInsets.fromLTRB(Space.gutter, Space.md, Space.gutter, Space.xs),
-        sliver: SliverToBoxAdapter(
-          child: Semantics(
-            liveRegion: true,
-            child: Kicker(l10n.resultsCount(items.length).toUpperCase(), color: context.brand.muted),
-          ),
-        ),
+        sliver: SliverToBoxAdapter(child: Semantics(liveRegion: true, child: Kicker(l10n.resultsCount(items.length)))),
       ),
       SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
