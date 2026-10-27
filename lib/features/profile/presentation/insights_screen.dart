@@ -200,21 +200,24 @@ class _CategoryBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(Radii.pill),
                 child: SizedBox(
                   height: 10,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(child: ColoredBox(color: brand.surfaceMuted)),
-                      TweenAnimationBuilder<double>(
-                        tween: Tween(begin: reduce ? share : 0, end: share),
-                        duration: Duration(milliseconds: 900 + index * 120),
-                        curve: Motion.enter,
-                        builder: (context, factor, _) => FractionallySizedBox(
+                  width: double.infinity,
+                  child: ColoredBox(
+                    color: brand.surfaceMuted,
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: reduce ? share : 0, end: share),
+                      duration: Duration(milliseconds: 900 + index * 120),
+                      curve: Motion.enter,
+                      builder: (context, factor, _) => Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: FractionallySizedBox(
                           widthFactor: factor.clamp(0, 1),
+                          heightFactor: 1,
                           child: DecoratedBox(
                             decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(Radii.pill)),
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
