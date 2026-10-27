@@ -92,21 +92,133 @@ class AppShell extends ConsumerWidget {
         }
         return Scaffold(
           body: shell,
-          bottomNavigationBar: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: context.brand.line)),
-            ),
-            child: NavigationBar(
-              selectedIndex: shell.currentIndex,
-              onDestinationSelected: _select,
-              destinations: [
-                for (final (icon, selected, label) in destinations)
-                  NavigationDestination(icon: Icon(icon), selectedIcon: Icon(selected), label: label, tooltip: label),
-              ],
-            ),
+          bottomNavigationBar: _FloatingNavBar(
+            index: shell.currentIndex,
+            onSelect: _select,
+            destinations: destinations,
           ),
         );
       },
+    );
+  }
+}
+
+/// Floating pill bar: the active tab expands into an ink capsule with its
+/// label, the others stay as icons.
+class _FloatingNavBar extends StatelessWidget {
+  const _FloatingNavBar({required this.index, required this.onSelect, required this.destinations});
+  final int index;
+  final ValueChanged<int> onSelect;
+  final List<(IconData, IconData, String)> destinations;
+
+  static const double _iconSlot = 52;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    final bottom = MediaQuery.paddingOf(context).bottom;
+    return ColoredBox(
+      color: brand.paper,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(Space.sm, Space.xs, Space.sm, Space.sm + bottom),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: brand.surface,
+            borderRadius: BorderRadius.circular(Radii.pill),
+            border: Border.all(color: brand.line),
+            boxShadow: brand.cardShadow,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final active = (constraints.maxWidth - _iconSlot * (destinations.length - 1)).clamp(
+                  _iconSlot,
+                  double.infinity,
+                );
+                return Row(
+                  children: [
+                    for (final (i, (icon, selected, label)) in destinations.indexed)
+                      _NavItem(
+                        width: i == index ? active : _iconSlot,
+                        selected: i == index,
+                        icon: i == index ? selected : icon,
+                        label: label,
+                        onTap: () => onSelect(i),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.width,
+    required this.selected,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+  final double width;
+  final bool selected;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    final fg = selected ? brand.onAccent : brand.muted;
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: false,
+        child: AnimatedContainer(
+          duration: Motion.of(context, Motion.base),
+          curve: Motion.enter,
+          width: width,
+          height: 52,
+          decoration: BoxDecoration(
+            color: selected ? brand.accent : Colors.transparent,
+            borderRadius: BorderRadius.circular(Radii.pill),
+          ),
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              customBorder: const StadiumBorder(),
+              onTap: onTap,
+              child: ClipRect(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(icon, color: fg, size: 24),
+                    if (selected) ...[
+                      const SizedBox(width: Space.xs),
+                      Flexible(
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: Fonts.label(context.text.labelLarge, weight: 680).copyWith(color: fg),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

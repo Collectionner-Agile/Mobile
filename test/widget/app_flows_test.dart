@@ -27,7 +27,7 @@ void main() {
 
   testWidgets('bottom navigation switches tabs and catalogue search filters results', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.text('Catálogo').last);
+    await tester.tap(find.byTooltip('Catálogo'));
     await settle(tester);
     expect(find.text('4 piezas'), findsOneWidget);
 
@@ -47,7 +47,7 @@ void main() {
   testWidgets('API failure shows an error state and retry recovers', (tester) async {
     final backend = Fixtures.standardBackend()..json('GET', '/api/v1/collectibles', {'detail': 'boom'}, status: 500);
     await pumpApp(tester, backend: backend);
-    await tester.tap(find.text('Catálogo').last);
+    await tester.tap(find.byTooltip('Catálogo'));
     await settle(tester);
     expect(find.text('Ocurrió un error en el servidor. Inténtalo más tarde.'), findsOneWidget);
 
@@ -137,7 +137,7 @@ void main() {
 
   testWidgets('scan tab asks guests to sign in instead of uploading', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.text('Escanear').last);
+    await tester.tap(find.byTooltip('Escanear'));
     await settle(tester);
     expect(find.text('Inicia sesión para escanear'), findsOneWidget);
   });

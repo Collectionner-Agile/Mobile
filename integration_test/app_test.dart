@@ -5,6 +5,7 @@
 //
 // Credentials are the development seed account documented in backend/README.md.
 import 'package:collectionner/app/router/app_router.dart';
+import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/main.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,8 +41,8 @@ void main() {
 
     // Catalogue comes from the API (dev seed has six collectibles).
     router.go(Routes.catalog);
-    await waitFor(tester, find.byType(Card));
-    await tester.tap(find.byType(Card).first);
+    await waitFor(tester, find.byType(CollectibleCard));
+    await tester.tap(find.byType(CollectibleCard).first);
     await pumpFor(tester);
 
     // Auctions and communities.

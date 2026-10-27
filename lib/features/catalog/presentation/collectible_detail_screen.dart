@@ -17,6 +17,7 @@ import '../../auctions/presentation/create_auction_sheet.dart';
 import '../../auth/application/session_controller.dart';
 import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
+import 'widgets/collectible_card.dart';
 import 'widgets/social_sections.dart';
 
 class CollectibleDetailScreen extends ConsumerWidget {
@@ -376,6 +377,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
               ),
             ),
           ),
+          if (item.category != null) SliverToBoxAdapter(child: _Related(item: item)),
           SliverToBoxAdapter(
             child: ContentWidth(
               child: ReviewsSection(collectibleId: item.id, ownerId: item.ownerId),
@@ -543,6 +545,42 @@ class _FullscreenGalleryState extends State<_FullscreenGallery> {
           child: Center(child: CollectibleImage(widget.urls[index], fit: BoxFit.contain)),
         ),
       ),
+    );
+  }
+}
+
+/// Other pieces of the same category, from the loaded catalogue.
+class _Related extends ConsumerWidget {
+  const _Related({required this.item});
+  final Collectible item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final related = (ref.watch(collectiblesProvider).value ?? const <Collectible>[])
+        .where((other) => other.category == item.category && other.id != item.id)
+        .take(8)
+        .toList();
+    if (related.isEmpty) return const SizedBox.shrink();
+    const width = 168.0;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionHeader(title: context.l10n.relatedIn(item.category!)),
+        SizedBox(
+          height: width + collectibleCardTextHeight(context),
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+            itemCount: related.length,
+            separatorBuilder: (_, _) => const SizedBox(width: Space.md),
+            itemBuilder: (context, index) => CollectibleCard(
+              width: width,
+              item: related[index],
+              onTap: () => context.push(Routes.collectible(related[index].id)),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -110,6 +110,19 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             SliverToBoxAdapter(
+              child: ContentWidth(
+                maxWidth: 900,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(Space.gutter, Space.md, Space.gutter, 0),
+                  child: _StatsStrip(
+                    pieces: collectibles.value?.length,
+                    openAuctions: auctions.value?.where((a) => a.isLive(DateTime.now())).length,
+                    communities: communities.value?.length,
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
               child: SectionHeader(
                 title: l10n.closingSoon,
                 actionLabel: l10n.seeAll,
@@ -136,6 +149,28 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
             ),
+            if (categories.isNotEmpty) ...[
+              SliverToBoxAdapter(child: SectionHeader(title: l10n.homeCategories)),
+              SliverToBoxAdapter(
+                child: ContentWidth(
+                  maxWidth: 900,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                    child: _CategoryBento(
+                      categories: categories,
+                      counts: {
+                        for (final category in categories)
+                          category: collectibles.value?.where((item) => item.category == category).length ?? 0,
+                      },
+                      onOpen: (category) {
+                        ref.read(catalogFilterProvider.notifier).category(category);
+                        context.go(Routes.catalog);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
             SliverToBoxAdapter(
               child: SectionHeader(
                 title: l10n.recentlyCatalogued,
@@ -354,6 +389,183 @@ class _ScanBanner extends StatelessWidget {
             child: Text(l10n.homeScanCta),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Live figures from the loaded data: catalogued pieces, open auctions and
+/// communities. Shows a dash until each source has loaded.
+class _StatsStrip extends StatelessWidget {
+  const _StatsStrip({required this.pieces, required this.openAuctions, required this.communities});
+  final int? pieces;
+  final int? openAuctions;
+  final int? communities;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final brand = context.brand;
+    final stats = [
+      (pieces, l10n.statPieces),
+      (openAuctions, l10n.openAuctionsStat),
+      (communities, l10n.navCommunities),
+    ];
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: brand.surface,
+        borderRadius: BorderRadius.circular(Radii.md),
+        border: Border.all(color: brand.line),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            for (final (index, (value, label)) in stats.indexed) ...[
+              if (index > 0) VerticalDivider(width: 1, color: brand.line, indent: Space.sm, endIndent: Space.sm),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Space.sm, horizontal: Space.xs),
+                  child: Column(
+                    children: [
+                      Text(
+                        value == null ? '—' : '$value',
+                        style: Fonts.figures(Fonts.display(context.text.headlineSmall, weight: 780)),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        label,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: Fonts.label(context.text.labelMedium).copyWith(color: brand.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Bento of category tiles: one tall tile beside two short ones, repeated,
+/// with a full-width tile for any leftover category.
+class _CategoryBento extends StatelessWidget {
+  const _CategoryBento({required this.categories, required this.counts, required this.onOpen});
+  final List<String> categories;
+  final Map<String, int> counts;
+  final ValueChanged<String> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final unit = 116 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.6);
+    const gap = Space.sm;
+    Widget tile(String category, double height) => SizedBox(
+      height: height,
+      child: _CategoryTile(category: category, count: counts[category] ?? 0, onTap: () => onOpen(category)),
+    );
+
+    final rows = <Widget>[];
+    var i = 0;
+    while (i < categories.length) {
+      final left = categories.length - i;
+      if (left >= 3) {
+        rows.add(
+          Row(
+            children: [
+              Expanded(child: tile(categories[i], unit * 2 + gap)),
+              const SizedBox(width: gap),
+              Expanded(
+                child: Column(
+                  children: [
+                    tile(categories[i + 1], unit),
+                    const SizedBox(height: gap),
+                    tile(categories[i + 2], unit),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+        i += 3;
+      } else if (left == 2) {
+        rows.add(
+          Row(
+            children: [
+              Expanded(child: tile(categories[i], unit)),
+              const SizedBox(width: gap),
+              Expanded(child: tile(categories[i + 1], unit)),
+            ],
+          ),
+        );
+        i += 2;
+      } else {
+        rows.add(tile(categories[i], unit));
+        i += 1;
+      }
+    }
+    return Column(
+      children: [
+        for (final (index, row) in rows.indexed) ...[if (index > 0) const SizedBox(height: gap), row],
+      ],
+    );
+  }
+}
+
+class _CategoryTile extends StatelessWidget {
+  const _CategoryTile({required this.category, required this.count, required this.onTap});
+  final String category;
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Semantics(
+      button: true,
+      label: '$category, ${context.l10n.piecesCount(count)}',
+      child: ExcludeSemantics(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(Radii.md),
+          child: Material(
+            color: brand.surfaceMuted,
+            child: InkWell(
+              onTap: onTap,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CollectibleImage(categoryArtwork(category), fit: BoxFit.cover, cacheWidth: 420),
+                  const DecoratedBox(decoration: BoxDecoration(gradient: BrandColors.imageScrim)),
+                  Positioned(
+                    left: Space.sm,
+                    right: Space.sm,
+                    bottom: Space.sm,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          category,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Fonts.display(context.text.titleSmall, weight: 760).copyWith(color: Colors.white),
+                        ),
+                        Text(
+                          context.l10n.piecesCount(count),
+                          maxLines: 1,
+                          style: context.text.bodySmall?.copyWith(color: const Color(0xCCFFFFFF)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

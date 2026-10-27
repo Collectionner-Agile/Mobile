@@ -503,5 +503,11 @@
   "unitHours": "Horas",
   "unitMinutes": "Min",
   "unitSeconds": "Seg",
-  "closesIn": "Cierra en"
+  "closesIn": "Cierra en",
+  "statPieces": "Piezas",
+  "relatedIn": "Más en {category}",
+  "@relatedIn": {"placeholders": {"category": {"type": "String"}}},
+  "piecesCount": "{count, plural, =1{1 pieza} other{{count} piezas}}",
+  "@piecesCount": {"placeholders": {"count": {"type": "int"}}},
+  "openAuctionsStat": "Subastas abiertas"
 }

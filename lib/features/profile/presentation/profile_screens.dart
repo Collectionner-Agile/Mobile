@@ -8,9 +8,13 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/collectible_image.dart';
+import '../../../core/widgets/glass.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
+import '../../auth/domain/user.dart';
 import '../../catalog/application/catalog_providers.dart';
+import '../../catalog/domain/catalog_models.dart';
+import '../../catalog/presentation/widgets/collectible_card.dart';
 import '../../communities/application/community_providers.dart';
 import '../../communities/presentation/widgets/community_tile.dart';
 
@@ -20,7 +24,6 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final brand = context.brand;
     final user = ref.watch(currentUserProvider);
     if (user == null) return const Scaffold(body: SizedBox.shrink());
     final items = ref
@@ -51,76 +54,8 @@ class ProfileScreen extends ConsumerWidget {
           children: [
             ContentWidth(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 32,
-                          backgroundColor: brand.ink,
-                          child: user.avatarUrl != null
-                              ? ClipOval(
-                                  child: SizedBox.expand(child: CollectibleImage(user.avatarUrl, cacheWidth: 64)),
-                                )
-                              : Text(user.initial, style: context.text.headlineSmall?.copyWith(color: brand.paper)),
-                        ),
-                        const SizedBox(width: Space.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(user.name, style: context.text.titleLarge),
-                              Text('@${user.username}', style: context.text.bodyMedium?.copyWith(color: brand.muted)),
-                              if (user.memberSince != null)
-                                Text(
-                                  l10n.memberSince(formatDate(user.memberSince!, context.languageCode)),
-                                  style: context.text.bodySmall?.copyWith(color: brand.muted),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (user.bio != null) ...[
-                      const SizedBox(height: Space.md),
-                      Text(user.bio!, style: context.text.bodyMedium),
-                    ],
-                    if (user.location != null) ...[
-                      const SizedBox(height: Space.xs),
-                      Row(
-                        children: [
-                          Icon(Icons.place_outlined, size: 16, color: brand.muted),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(user.location!, style: context.text.bodySmall?.copyWith(color: brand.muted)),
-                          ),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: Space.md),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () => context.push(Routes.editProfile),
-                            icon: const Icon(Icons.edit_outlined),
-                            label: Text(l10n.editProfile),
-                          ),
-                        ),
-                        const SizedBox(width: Space.sm),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: () => context.push(Routes.publishCollectible),
-                            icon: const Icon(Icons.add),
-                            label: Text(l10n.publishItem, overflow: TextOverflow.ellipsis),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, 0),
+                child: _ProfileHero(user: user, items: items.value, communities: communities.value?.length),
               ),
             ),
             ContentWidth(child: SectionHeader(title: l10n.myArchive)),
@@ -136,27 +71,27 @@ class ProfileScreen extends ConsumerWidget {
                           actionLabel: l10n.publishItem,
                           onAction: () => context.push(Routes.publishCollectible),
                         )
-                      : Column(
-                          children: [
-                            for (final item in list)
-                              ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(Radii.sm),
-                                  child: SizedBox(
-                                    width: 56,
-                                    height: 56,
-                                    child: CollectibleImage(item.artwork, cacheWidth: 56),
-                                  ),
-                                ),
-                                title: Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis),
-                                subtitle: Text(
-                                  [item.category, context.money(item.value)].whereType<String>().join(' · '),
-                                ),
-                                trailing: const Icon(Icons.chevron_right),
-                                onTap: () => context.go(Routes.collectible(item.id)),
+                      : LayoutBuilder(
+                          builder: (context, constraints) {
+                            final columns = gridColumnsFor(constraints.maxWidth);
+                            final cell = (constraints.maxWidth - Space.md * (columns - 1)) / columns;
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.zero,
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: columns,
+                                crossAxisSpacing: Space.md,
+                                mainAxisSpacing: Space.lg,
+                                mainAxisExtent: cell + collectibleCardTextHeight(context),
                               ),
-                          ],
+                              itemCount: list.length,
+                              itemBuilder: (context, index) => CollectibleCard(
+                                item: list[index],
+                                onTap: () => context.go(Routes.collectible(list[index].id)),
+                              ),
+                            );
+                          },
                         ),
                 ),
               ),
@@ -298,4 +233,176 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ),
     );
   }
+}
+
+/// Cover card: the member's most valuable piece as backdrop, identity on the
+/// photo and real archive figures underneath.
+class _ProfileHero extends StatelessWidget {
+  const _ProfileHero({required this.user, required this.items, required this.communities});
+  final AppUser user;
+  final List<Collectible>? items;
+  final int? communities;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final brand = context.brand;
+    final pieces = items;
+    final cover = pieces == null || pieces.isEmpty
+        ? null
+        : (pieces.toList()..sort((a, b) => b.value.compareTo(a.value))).first.artwork;
+    final total = pieces?.fold<double>(0, (sum, item) => sum + item.value);
+    const white = Colors.white;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Radii.lg),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: cover == null
+                ? ColoredBox(color: BrandColors.dark.surface)
+                : ExcludeSemantics(child: CollectibleImage(cover, fit: BoxFit.cover, cacheWidth: 720)),
+          ),
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x33000000), Color(0xE6000000)],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(Space.md, cover == null ? Space.lg : 120, Space.md, Space.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: brand.paper,
+                        border: Border.all(color: white, width: 2),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: user.avatarUrl != null
+                          ? CollectibleImage(user.avatarUrl, cacheWidth: 60)
+                          : Center(
+                              child: Text(
+                                user.initial,
+                                style: Fonts.display(context.text.headlineSmall).copyWith(color: brand.ink),
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: Space.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.text.headlineSmall?.copyWith(color: white),
+                          ),
+                          Text(
+                            '@${user.username}',
+                            style: context.text.bodyMedium?.copyWith(color: const Color(0xCCFFFFFF)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (user.bio != null) ...[
+                  const SizedBox(height: Space.sm),
+                  Text(user.bio!, style: context.text.bodyMedium?.copyWith(color: const Color(0xE6FFFFFF))),
+                ],
+                if (user.location != null || user.memberSince != null) ...[
+                  const SizedBox(height: Space.xs),
+                  Text(
+                    [
+                      if (user.location != null) user.location!,
+                      if (user.memberSince != null)
+                        l10n.memberSince(formatDate(user.memberSince!, context.languageCode)),
+                    ].join(' · '),
+                    style: context.text.bodySmall?.copyWith(color: const Color(0xB3FFFFFF)),
+                  ),
+                ],
+                const SizedBox(height: Space.md),
+                GlassPanel(
+                  padding: const EdgeInsets.symmetric(vertical: Space.sm, horizontal: Space.xs),
+                  child: Row(
+                    children: [
+                      _Stat(value: pieces == null ? '—' : '${pieces.length}', label: l10n.statPieces),
+                      _Stat(value: total == null ? '—' : context.money(total), label: l10n.declaredValue),
+                      _Stat(value: communities == null ? '—' : '$communities', label: l10n.navCommunities),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: Space.md),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(backgroundColor: white, foregroundColor: BrandColors.light.ink),
+                        onPressed: () => context.push(Routes.publishCollectible),
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.publishItem, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ),
+                    ),
+                    const SizedBox(width: Space.sm),
+                    IconButton.outlined(
+                      tooltip: l10n.editProfile,
+                      style: IconButton.styleFrom(
+                        foregroundColor: white,
+                        side: const BorderSide(color: Color(0x80FFFFFF)),
+                        minimumSize: const Size(52, 52),
+                      ),
+                      onPressed: () => context.push(Routes.editProfile),
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            maxLines: 1,
+            style: Fonts.figures(Fonts.display(context.text.titleMedium, weight: 760)).copyWith(color: Colors.white),
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: Fonts.label(context.text.labelSmall, weight: 560).copyWith(color: const Color(0xB3FFFFFF)),
+        ),
+      ],
+    ),
+  );
 }

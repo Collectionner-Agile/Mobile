@@ -503,5 +503,11 @@
   "unitHours": "Hours",
   "unitMinutes": "Min",
   "unitSeconds": "Sec",
-  "closesIn": "Closes in"
+  "closesIn": "Closes in",
+  "statPieces": "Pieces",
+  "relatedIn": "More in {category}",
+  "@relatedIn": {"placeholders": {"category": {"type": "String"}}},
+  "piecesCount": "{count, plural, =1{1 piece} other{{count} pieces}}",
+  "@piecesCount": {"placeholders": {"count": {"type": "int"}}},
+  "openAuctionsStat": "Open auctions"
 }
