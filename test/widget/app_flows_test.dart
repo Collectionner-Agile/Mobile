@@ -309,4 +309,19 @@ void main() {
     await settle(tester);
     expect(app.container.read(recentSearchesProvider), ['omega']);
   });
+
+  testWidgets('collection insights total and split the member pieces', (tester) async {
+    final backend = Fixtures.standardBackend()
+      ..json('GET', '/api/v1/collectibles', [
+        Fixtures.collectible(ownerId: 1),
+        Fixtures.collectible(id: 2, name: 'Charizard Holo Base Set', category: 'TCG & Cartas', value: 2310, ownerId: 1),
+        Fixtures.collectible(id: 3, name: 'Reloj Omega Seamaster 1968', category: 'Relojería Vintage', value: 640),
+      ]);
+    final app = await pumpApp(tester, backend: backend, signedIn: true);
+    app.container.read(routerProvider).go(Routes.insights);
+    await settle(tester, 14);
+    expect(find.text('S/ 3.730'), findsOneWidget, reason: 'only the member pieces count');
+    expect(find.text('62 %'), findsOneWidget);
+    expect(find.text('Reloj Omega Seamaster 1968'), findsNothing);
+  });
 }

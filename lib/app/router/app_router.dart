@@ -17,6 +17,7 @@ import '../../features/communities/presentation/post_detail_screen.dart';
 import '../../features/favorites/favorites_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
+import '../../features/profile/presentation/insights_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
 import '../../features/profile/presentation/settings_screen.dart';
 import '../../features/recognition/presentation/scan_result_screen.dart';
@@ -31,6 +32,7 @@ abstract final class Routes {
   static const favorites = '/favorites';
   static const activity = '/activity';
   static const search = '/search';
+  static const insights = '/profile/insights';
   static const catalog = '/catalog';
   static const scan = '/scan';
   static const scanResult = '/scan/result';
@@ -136,6 +138,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.resetPassword, builder: (_, _) => const ResetPasswordScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.profile, builder: (_, _) => const ProfileScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.editProfile, builder: (_, _) => const EditProfileScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.insights, builder: (_, _) => const InsightsScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.settings, builder: (_, _) => const SettingsScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,

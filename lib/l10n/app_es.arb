@@ -567,5 +567,11 @@
   "recentSearches": "Búsquedas recientes",
   "browseCategories": "Explorar categorías",
   "searchNoResults": "Nada coincide con «{term}».",
-  "@searchNoResults": {"placeholders": {"term": {"type": "String"}}}
+  "@searchNoResults": {"placeholders": {"term": {"type": "String"}}},
+  "insightsTitle": "Estadísticas de colección",
+  "insightsSubtitle": "Valor, categorías y piezas destacadas",
+  "archiveValue": "Valor declarado del archivo",
+  "valueByCategory": "Valor por categoría",
+  "mostValuable": "Las más valiosas",
+  "uncategorized": "Sin categoría"
 }

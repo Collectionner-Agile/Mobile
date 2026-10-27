@@ -567,5 +567,11 @@
   "recentSearches": "Recent searches",
   "browseCategories": "Browse categories",
   "searchNoResults": "Nothing matches “{term}”.",
-  "@searchNoResults": {"placeholders": {"term": {"type": "String"}}}
+  "@searchNoResults": {"placeholders": {"term": {"type": "String"}}},
+  "insightsTitle": "Collection insights",
+  "insightsSubtitle": "Value, categories and top pieces",
+  "archiveValue": "Declared value of the archive",
+  "valueByCategory": "Value by category",
+  "mostValuable": "Most valuable",
+  "uncategorized": "Uncategorised"
 }

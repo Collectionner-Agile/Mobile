@@ -20,6 +20,7 @@ void main() {
     Routes.favorites,
     Routes.activity,
     Routes.search,
+    Routes.insights,
     Routes.home,
     Routes.catalog,
     Routes.auctions,

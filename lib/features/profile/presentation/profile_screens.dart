@@ -25,6 +25,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final brand = context.brand;
     final user = ref.watch(currentUserProvider);
     if (user == null) return const Scaffold(body: SizedBox.shrink());
     final items = ref
@@ -57,6 +58,28 @@ class ProfileScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, 0),
                 child: _ProfileHero(user: user, items: items.value, communities: communities.value?.length),
+              ),
+            ),
+            ContentWidth(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.sm, Space.gutter, 0),
+                child: TapScale(
+                  child: Material(
+                    color: brand.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Radii.md),
+                      side: BorderSide(color: brand.line),
+                    ),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md)),
+                      leading: Icon(Icons.insights_rounded, color: brand.ink),
+                      title: Text(l10n.insightsTitle),
+                      subtitle: Text(l10n.insightsSubtitle),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push(Routes.insights),
+                    ),
+                  ),
+                ),
               ),
             ),
             ContentWidth(child: SectionHeader(title: l10n.myArchive)),
