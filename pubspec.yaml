@@ -51,6 +51,7 @@ flutter:
     - assets/images/lab/
     - assets/images/placeholders/
     - assets/images/editorial/
+    - assets/demo/
 
   # Google Fonts Archivo (SIL Open Font License, assets/fonts/Archivo-OFL.txt),
   # bundled so nothing is downloaded at runtime. Variable: weight and width axes.

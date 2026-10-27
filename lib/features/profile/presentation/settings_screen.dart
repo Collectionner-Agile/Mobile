@@ -144,7 +144,7 @@ class SettingsScreen extends ConsumerWidget {
                       const SizedBox(height: Space.sm),
                       Text(l10n.versionLabel('1.0.0'), style: context.text.bodySmall?.copyWith(color: brand.muted)),
                       Text(
-                        l10n.serverLabel(AppConfig.apiBaseUrl),
+                        AppConfig.demoMode ? l10n.demoServerLabel : l10n.serverLabel(AppConfig.apiBaseUrl),
                         style: context.text.bodySmall?.copyWith(color: brand.muted),
                       ),
                     ],

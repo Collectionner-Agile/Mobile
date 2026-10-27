@@ -522,5 +522,8 @@
   "scanAiReady": "AI recognition on",
   "scanAiOff": "Recognition unavailable",
   "scanFrameHint": "Fit the whole object inside the frame.",
-  "scanGalleryShort": "Gallery"
+  "scanGalleryShort": "Gallery",
+  "demoBadge": "Demo",
+  "demoServerLabel": "Demo mode: sample data stored on the phone. Changes are not sent to any server.",
+  "demoLoginHint": "Demo mode: any username and password open the sample account."
 }

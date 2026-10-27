@@ -522,5 +522,8 @@
   "scanAiReady": "Reconocimiento con IA activo",
   "scanAiOff": "Reconocimiento no disponible",
   "scanFrameHint": "Encuadra la pieza completa dentro del marco.",
-  "scanGalleryShort": "Galería"
+  "scanGalleryShort": "Galería",
+  "demoBadge": "Demo",
+  "demoServerLabel": "Modo demostración: datos de ejemplo guardados en el teléfono. Los cambios no se envían a ningún servidor.",
+  "demoLoginHint": "Modo demostración: cualquier usuario y contraseña abren la cuenta de ejemplo."
 }

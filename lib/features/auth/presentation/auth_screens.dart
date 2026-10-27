@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/config/app_config.dart';
 import '../../../app/providers.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
@@ -280,6 +281,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       title: l10n.loginTitle,
       intro: l10n.loginIntro,
       children: [
+        if (AppConfig.demoMode) ...[
+          InfoChip(label: l10n.demoLoginHint, icon: Icons.science_outlined, color: context.brand.gold),
+          const SizedBox(height: Space.md),
+        ],
         _GoogleSignIn(from: widget.from),
         Form(
           key: _form,

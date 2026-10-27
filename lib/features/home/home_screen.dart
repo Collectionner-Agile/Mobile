@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/config/app_config.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
@@ -73,6 +74,7 @@ class HomeScreen extends ConsumerWidget {
                       style: Fonts.display(context.text.titleLarge, weight: 800),
                     ),
                   ),
+                  if (AppConfig.demoMode) ...[const SizedBox(width: Space.xs), const _DemoBadge()],
                 ],
               ),
               actions: const [
@@ -565,6 +567,31 @@ class _CategoryTile extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Marks demo builds so sample data is never mistaken for the live service.
+class _DemoBadge extends StatelessWidget {
+  const _DemoBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Tooltip(
+      message: context.l10n.demoServerLabel,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: brand.gold.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(Radii.pill),
+          border: Border.all(color: brand.gold.withValues(alpha: 0.6)),
+        ),
+        child: Text(
+          context.l10n.demoBadge,
+          style: Fonts.label(context.text.labelMedium, weight: 700).copyWith(color: brand.gold),
         ),
       ),
     );

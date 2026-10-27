@@ -10,6 +10,10 @@ abstract final class AppConfig {
     defaultValue: 'http://127.0.0.1:8080',
   );
 
+  /// Build with `--dart-define=DEMO_MODE=true` to run on the bundled sample
+  /// data (no server). The app labels itself as a demo while this is on.
+  static const bool demoMode = bool.fromEnvironment('DEMO_MODE');
+
   static const Duration connectTimeout = Duration(seconds: 10);
   static const Duration receiveTimeout = Duration(seconds: 20);
 

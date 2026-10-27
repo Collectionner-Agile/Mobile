@@ -1,0 +1,545 @@
+{
+ "me": {
+  "id": 1,
+  "username": "collector_prime",
+  "email": "diego@collectioneer.art",
+  "name": "Diego Soto",
+  "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+  "bio": "Coleccionista de consolas retro japonesas y figuras de ciencia ficción.",
+  "location": "Lima, Perú",
+  "memberSince": "2024-10-28T01:08:07.721716Z",
+  "hasLocalPassword": true
+ },
+ "collectibles": [
+  {
+   "id": 1,
+   "name": "The Legend of Zelda: Ocarina of Time (N64 CIB Gold Cartridge)",
+   "ownerId": 1,
+   "ownerName": "collector_prime",
+   "value": 850.0,
+   "description": "Edición coleccionista con caja original completa, manual ilustrado y folleto de precauciones intacto. Cartucho dorado v1.0 con cánticos originales sin censura. Estado de conservación excepcional para conservadores exigentes.",
+   "isLinkedToProcess": true,
+   "auctionId": 1,
+   "saleId": null,
+   "exchangeId": null,
+   "rating": 4.9,
+   "reviewCount": 18,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "category": "Videojuegos Retro",
+   "eraYear": 1998,
+   "conditionEstimated": 9.4,
+   "completeness": [],
+   "media": [
+    {
+     "id": 1,
+     "uploaderId": 1,
+     "mediaName": "front.jpg",
+     "mediaURL": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=85",
+     "createdAt": "2026-10-28T01:08:07.721716Z"
+    }
+   ],
+   "primaryImageUrl": "/assets/collectibles/games/retro-console.svg"
+  },
+  {
+   "id": 2,
+   "name": "LEGO Star Wars UCS Imperial Star Destroyer 75252",
+   "ownerId": 2,
+   "ownerName": "galaxy_builder",
+   "value": 3200.0,
+   "description": "Set definitivo Ultimate Collector Series de 4784 piezas. Incluye minifiguras exclusivas, placa informativa de exhibición y base reforzada. Sellado de fábrica en su caja de despacho original.",
+   "isLinkedToProcess": true,
+   "auctionId": 2,
+   "saleId": null,
+   "exchangeId": null,
+   "rating": 5.0,
+   "reviewCount": 9,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "category": "Lego & Sets",
+   "eraYear": 2019,
+   "conditionEstimated": 9.8,
+   "completeness": [],
+   "media": [
+    {
+     "id": 2,
+     "uploaderId": 2,
+     "mediaName": "lego_box.jpg",
+     "mediaURL": "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=1200&q=85",
+     "createdAt": "2026-10-28T01:08:07.721716Z"
+    }
+   ],
+   "primaryImageUrl": "/assets/collectibles/figures/collector-figure.svg"
+  },
+  {
+   "id": 3,
+   "name": "Charizard Base Set 1st Edition Shadowless (PSA 8.5 NM-MT+)",
+   "ownerId": 3,
+   "ownerName": "poke_vault",
+   "value": 6500.0,
+   "description": "Santo grial del coleccionismo Pokémon. Holograma sin arañazos, centrado 55/45 casi perfecto y esquinas prístinas. Certificado y encapsulado herméticamente por PSA.",
+   "isLinkedToProcess": false,
+   "auctionId": null,
+   "saleId": null,
+   "exchangeId": null,
+   "rating": 4.8,
+   "reviewCount": 31,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "category": "TCG & Cartas",
+   "eraYear": 1999,
+   "conditionEstimated": 8.5,
+   "completeness": [],
+   "media": [
+    {
+     "id": 3,
+     "uploaderId": 3,
+     "mediaName": "charizard_slab.jpg",
+     "mediaURL": "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?auto=format&fit=crop&w=1200&q=85",
+     "createdAt": "2026-10-28T01:08:07.721716Z"
+    }
+   ],
+   "primaryImageUrl": "/assets/collectibles/cards/pokemon-card.svg"
+  },
+  {
+   "id": 4,
+   "name": "Seiko 6139-6002 \"Pogue\" Chronograph Automatic 1974",
+   "ownerId": 4,
+   "ownerName": "horology_master",
+   "value": 2900.0,
+   "description": "Primer cronógrafo automático en el espacio. Esfera amarilla original sin decoloración, bisel Pepsi pepita intacto y movimiento 6139B recientemente revisado con amplitud de 240°.",
+   "isLinkedToProcess": false,
+   "auctionId": null,
+   "saleId": null,
+   "exchangeId": null,
+   "rating": 4.9,
+   "reviewCount": 14,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "category": "Relojería Vintage",
+   "eraYear": 1974,
+   "conditionEstimated": 8.9,
+   "completeness": [],
+   "media": [],
+   "primaryImageUrl": "/assets/collectibles/watches/mechanical-watch.svg"
+  },
+  {
+   "id": 5,
+   "name": "Super Mario 64 (N64 Japan First Print CIB)",
+   "ownerId": 1,
+   "ownerName": "collector_prime",
+   "value": 480.0,
+   "description": "Edición japonesa original lanzada junto al Nintendo 64 en 1996. Arte de portada icónico exclusivo japonés. Manual a todo color con ilustraciones de Shigeru Miyamoto.",
+   "isLinkedToProcess": false,
+   "auctionId": null,
+   "saleId": null,
+   "exchangeId": null,
+   "rating": 4.7,
+   "reviewCount": 8,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "category": "Videojuegos Retro",
+   "eraYear": 1996,
+   "conditionEstimated": 9.1,
+   "completeness": [],
+   "media": [],
+   "primaryImageUrl": "/assets/collectibles/games/retro-console.svg"
+  },
+  {
+   "id": 6,
+   "name": "Game Boy Color Pokémon Special Pikachu Edition CIB",
+   "ownerId": 5,
+   "ownerName": "retro_hunter",
+   "value": 1250.0,
+   "description": "Consola portátil temática en caja original. Pantalla sin rayones ni pixeles muertos, número de serie coincidente en consola y certificado de garantía.",
+   "isLinkedToProcess": true,
+   "auctionId": 3,
+   "saleId": null,
+   "exchangeId": null,
+   "rating": 4.9,
+   "reviewCount": 22,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "category": "Videojuegos Retro",
+   "eraYear": 1999,
+   "conditionEstimated": 9.3,
+   "completeness": [],
+   "media": [],
+   "primaryImageUrl": "/assets/collectibles/games/retro-console.svg"
+  }
+ ],
+ "reviews": {
+  "1": [
+   {
+    "id": 1,
+    "userId": 5,
+    "userName": "retro_hunter",
+    "collectibleId": 1,
+    "content": "Pieza legendaria en un estado inmejorable. Vendedor totalmente recomendado.",
+    "rating": 5,
+    "createdAt": "2026-10-18T01:08:07.721716Z",
+    "updatedAt": "2026-10-18T01:08:07.721716Z"
+   }
+  ],
+  "2": [],
+  "3": [],
+  "4": [],
+  "5": [],
+  "6": []
+ },
+ "comments": {
+  "1": [],
+  "2": [],
+  "3": [],
+  "4": [],
+  "5": [],
+  "6": []
+ },
+ "auctions": [
+  {
+   "id": 1,
+   "communityId": 1,
+   "auctioneerId": 1,
+   "auctioneerName": "collector_prime",
+   "collectibleId": 1,
+   "collectibleName": "The Legend of Zelda: Ocarina of Time (N64 CIB Gold Cartridge)",
+   "collectibleImage": "/assets/collectibles/games/retro-console.svg",
+   "startingPrice": 500.0,
+   "currentHighestBid": 750.0,
+   "bidCount": 3,
+   "deadline": "2026-11-04T01:08:07.721716Z",
+   "isOpen": true,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "bids": [
+    {
+     "id": 3,
+     "auctionId": 1,
+     "amount": 750.0,
+     "bidderId": 3,
+     "bidderName": "poke_vault",
+     "createdAt": "2026-10-28T00:53:07.721716Z"
+    },
+    {
+     "id": 2,
+     "auctionId": 1,
+     "amount": 650.0,
+     "bidderId": 2,
+     "bidderName": "galaxy_builder",
+     "createdAt": "2026-10-28T00:08:07.721716Z"
+    },
+    {
+     "id": 1,
+     "auctionId": 1,
+     "amount": 550.0,
+     "bidderId": 5,
+     "bidderName": "retro_hunter",
+     "createdAt": "2026-10-27T23:08:07.721716Z"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "communityId": 2,
+   "auctioneerId": 2,
+   "auctioneerName": "galaxy_builder",
+   "collectibleId": 2,
+   "collectibleName": "LEGO Star Wars UCS Imperial Star Destroyer 75252",
+   "collectibleImage": "/assets/collectibles/figures/collector-figure.svg",
+   "startingPrice": 2500.0,
+   "currentHighestBid": 3100.0,
+   "bidCount": 2,
+   "deadline": "2026-10-31T01:08:07.721716Z",
+   "isOpen": true,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "bids": [
+    {
+     "id": 5,
+     "auctionId": 2,
+     "amount": 3100.0,
+     "bidderId": 4,
+     "bidderName": "horology_master",
+     "createdAt": "2026-10-28T00:23:07.721716Z"
+    },
+    {
+     "id": 4,
+     "auctionId": 2,
+     "amount": 2800.0,
+     "bidderId": 1,
+     "bidderName": "collector_prime",
+     "createdAt": "2026-10-27T20:08:07.721716Z"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "communityId": 1,
+   "auctioneerId": 5,
+   "auctioneerName": "retro_hunter",
+   "collectibleId": 6,
+   "collectibleName": "Game Boy Color Pokémon Special Pikachu Edition CIB",
+   "collectibleImage": "/assets/collectibles/games/retro-console.svg",
+   "startingPrice": 800.0,
+   "currentHighestBid": 1150.0,
+   "bidCount": 3,
+   "deadline": "2026-11-02T01:08:07.721716Z",
+   "isOpen": true,
+   "createdAt": "2026-10-28T01:08:07.721716Z",
+   "updatedAt": "2026-10-28T01:08:07.721716Z",
+   "bids": []
+  }
+ ],
+ "communities": [
+  {
+   "id": 1,
+   "name": "Retro Gaming Perú",
+   "description": "Comunidad dedicada a la preservación, intercambio y tasación de consolas y cartuchos clásicos (NES, SNES, N64, Sega).",
+   "imageUrl": "/assets/collectibles/games/retro-console.svg",
+   "memberCount": 1420,
+   "postCount": 384,
+   "isJoined": true
+  },
+  {
+   "id": 2,
+   "name": "Lego & Sci-Fi Collectors",
+   "description": "Espacio para entusiastas de sets vintage de Star Wars, Space Classic y figuras UCS de colección.",
+   "imageUrl": "/assets/collectibles/figures/collector-figure.svg",
+   "memberCount": 890,
+   "postCount": 195,
+   "isJoined": true
+  },
+  {
+   "id": 3,
+   "name": "TCG Grail Keepers",
+   "description": "Cartas graduadas PSA/BGS de Pokémon, Magic: The Gathering y Yu-Gi-Oh! de primera edición.",
+   "imageUrl": "/assets/collectibles/cards/pokemon-card.svg",
+   "memberCount": 2310,
+   "postCount": 612,
+   "isJoined": false
+  },
+  {
+   "id": 4,
+   "name": "Vintage Horology & Relojes Mecánicos",
+   "description": "Piezas mecánicas de época, cronógrafos de los 60s y 70s, restauración y trazabilidad histórica.",
+   "imageUrl": "/assets/collectibles/watches/mechanical-watch.svg",
+   "memberCount": 640,
+   "postCount": 120,
+   "isJoined": false
+  }
+ ],
+ "feeds": {
+  "1": [
+   {
+    "id": 1,
+    "title": "The Legend of Zelda: Ocarina of Time (N64 CIB Gold Cartridge)",
+    "description": "Edición coleccionista con caja original completa, manual ilustrado y folleto de precauciones intacto. Cartucho dorado v1.0 con cánticos originales sin censura. Estado de conservación excepcional para conservadores exigentes.",
+    "createdAt": "2026-10-28T01:08:07.721716Z",
+    "username": "collector_prime",
+    "userId": 1,
+    "communityId": 1,
+    "communityName": "Retro Gaming Perú",
+    "itemType": "auction",
+    "imageUrl": "/assets/collectibles/games/retro-console.svg",
+    "value": 850.0,
+    "rating": 4.9
+   },
+   {
+    "id": 5,
+    "title": "Super Mario 64 (N64 Japan First Print CIB)",
+    "description": "Edición japonesa original lanzada junto al Nintendo 64 en 1996. Arte de portada icónico exclusivo japonés. Manual a todo color con ilustraciones de Shigeru Miyamoto.",
+    "createdAt": "2026-10-28T01:08:07.721716Z",
+    "username": "collector_prime",
+    "userId": 1,
+    "communityId": 1,
+    "communityName": "Retro Gaming Perú",
+    "itemType": "collectible",
+    "imageUrl": "/assets/collectibles/games/retro-console.svg",
+    "value": 480.0,
+    "rating": 4.7
+   },
+   {
+    "id": 6,
+    "title": "Game Boy Color Pokémon Special Pikachu Edition CIB",
+    "description": "Consola portátil temática en caja original. Pantalla sin rayones ni pixeles muertos, número de serie coincidente en consola y certificado de garantía.",
+    "createdAt": "2026-10-28T01:08:07.721716Z",
+    "username": "retro_hunter",
+    "userId": 5,
+    "communityId": 1,
+    "communityName": "Retro Gaming Perú",
+    "itemType": "auction",
+    "imageUrl": "/assets/collectibles/games/retro-console.svg",
+    "value": 1250.0,
+    "rating": 4.9
+   },
+   {
+    "id": 1,
+    "title": "Guía de autenticación de cartuchos N64: Cómo detectar reproducciones",
+    "description": "Comparto los puntos clave para verificar un cartucho original: peso en báscula de precisión, textura del plástico del molde frontal, color de la placa PCB interna...",
+    "createdAt": "2026-10-26T01:08:07.721716Z",
+    "username": "collector_prime",
+    "userId": 1,
+    "communityId": 1,
+    "communityName": "Retro Gaming Perú",
+    "itemType": "post",
+    "imageUrl": null,
+    "value": null,
+    "rating": null
+   }
+  ],
+  "2": [
+   {
+    "id": 2,
+    "title": "LEGO Star Wars UCS Imperial Star Destroyer 75252",
+    "description": "Set definitivo Ultimate Collector Series de 4784 piezas. Incluye minifiguras exclusivas, placa informativa de exhibición y base reforzada. Sellado de fábrica en su caja de despacho original.",
+    "createdAt": "2026-10-28T01:08:07.721716Z",
+    "username": "galaxy_builder",
+    "userId": 2,
+    "communityId": 2,
+    "communityName": "Lego & Sci-Fi Collectors",
+    "itemType": "auction",
+    "imageUrl": "/assets/collectibles/figures/collector-figure.svg",
+    "value": 3200.0,
+    "rating": 5.0
+   },
+   {
+    "id": 2,
+    "title": "Construcción finalizada: UCS Imperial Star Destroyer 75252",
+    "description": "Tras más de 18 horas de armado distribuido en 4 fines de semana, finalmente la nave insignia imperial está exhibida. El soporte interno de Technic es una obra maestra de ingeniería.",
+    "createdAt": "2026-10-27T01:08:07.721716Z",
+    "username": "galaxy_builder",
+    "userId": 2,
+    "communityId": 2,
+    "communityName": "Lego & Sci-Fi Collectors",
+    "itemType": "post",
+    "imageUrl": null,
+    "value": null,
+    "rating": null
+   }
+  ],
+  "3": [
+   {
+    "id": 3,
+    "title": "Charizard Base Set 1st Edition Shadowless (PSA 8.5 NM-MT+)",
+    "description": "Santo grial del coleccionismo Pokémon. Holograma sin arañazos, centrado 55/45 casi perfecto y esquinas prístinas. Certificado y encapsulado herméticamente por PSA.",
+    "createdAt": "2026-10-28T01:08:07.721716Z",
+    "username": "poke_vault",
+    "userId": 3,
+    "communityId": 3,
+    "communityName": "TCG Grail Keepers",
+    "itemType": "collectible",
+    "imageUrl": "/assets/collectibles/cards/pokemon-card.svg",
+    "value": 6500.0,
+    "rating": 4.8
+   }
+  ],
+  "4": [
+   {
+    "id": 4,
+    "title": "Seiko 6139-6002 \"Pogue\" Chronograph Automatic 1974",
+    "description": "Primer cronógrafo automático en el espacio. Esfera amarilla original sin decoloración, bisel Pepsi pepita intacto y movimiento 6139B recientemente revisado con amplitud de 240°.",
+    "createdAt": "2026-10-28T01:08:07.721716Z",
+    "username": "horology_master",
+    "userId": 4,
+    "communityId": 4,
+    "communityName": "Vintage Horology & Relojes Mecánicos",
+    "itemType": "collectible",
+    "imageUrl": "/assets/collectibles/watches/mechanical-watch.svg",
+    "value": 2900.0,
+    "rating": 4.9
+   }
+  ]
+ },
+ "posts": {
+  "1": {
+   "id": 1,
+   "title": "Guía de autenticación de cartuchos N64: Cómo detectar reproducciones",
+   "content": "Comparto los puntos clave para verificar un cartucho original: peso en báscula de precisión, textura del plástico del molde frontal, color de la placa PCB interna...",
+   "authorId": 1,
+   "authorName": "collector_prime",
+   "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+   "communityId": 1,
+   "createdAt": "2026-10-26T01:08:07.721716Z",
+   "updatedAt": "2026-10-26T01:08:07.721716Z",
+   "likesCount": 45,
+   "commentsCount": 12
+  },
+  "2": {
+   "id": 2,
+   "title": "Construcción finalizada: UCS Imperial Star Destroyer 75252",
+   "content": "Tras más de 18 horas de armado distribuido en 4 fines de semana, finalmente la nave insignia imperial está exhibida. El soporte interno de Technic es una obra maestra de ingeniería.",
+   "authorId": 2,
+   "authorName": "galaxy_builder",
+   "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+   "communityId": 2,
+   "createdAt": "2026-10-27T01:08:07.721716Z",
+   "updatedAt": "2026-10-27T01:08:07.721716Z",
+   "likesCount": 82,
+   "commentsCount": 19
+  }
+ },
+ "postComments": {
+  "1": [
+   {
+    "id": 1,
+    "authorId": 5,
+    "authorName": "retro_hunter",
+    "body": "Excelente aporte Diego. El detalle del pinout en la placa es infalible para no ser engañado.",
+    "profileURI": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
+    "createdAt": "2026-10-27T01:08:07.721716Z"
+   }
+  ],
+  "2": []
+ },
+ "users": {
+  "1": {
+   "id": 1,
+   "username": "collector_prime",
+   "name": "Diego Soto",
+   "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+   "bio": "Coleccionista de consolas retro japonesas y figuras de ciencia ficción.",
+   "location": "Lima, Perú",
+   "memberSince": "2024-10-28T01:08:07.721716Z"
+  },
+  "2": {
+   "id": 2,
+   "username": "galaxy_builder",
+   "name": "Galaxy Builder",
+   "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+   "bio": "Entusiasta de sets vintage de Star Wars y Lego UCS.",
+   "location": "Arequipa, Perú",
+   "memberSince": "2025-10-28T01:08:07.721716Z"
+  },
+  "3": {
+   "id": 3,
+   "username": "poke_vault",
+   "name": "Poke Vault",
+   "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+   "bio": "Cartas graduadas PSA/BGS de Pokémon y Magic.",
+   "location": "Cusco, Perú",
+   "memberSince": "2026-05-01T01:08:07.721716Z"
+  },
+  "4": {
+   "id": 4,
+   "username": "horology_master",
+   "name": "Horology Master",
+   "avatarUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
+   "bio": "Piezas mecánicas de época y cronógrafos clásicos.",
+   "location": "Trujillo, Perú",
+   "memberSince": "2026-07-30T01:08:07.721716Z"
+  },
+  "5": {
+   "id": 5,
+   "username": "retro_hunter",
+   "name": "Retro Hunter",
+   "avatarUrl": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
+   "bio": "Cazador de cartuchos y portátiles Game Boy.",
+   "location": "Lima, Perú",
+   "memberSince": "2026-03-02T01:08:07.721716Z"
+  }
+ },
+ "myCommunities": [
+  1,
+  2
+ ]
+}
