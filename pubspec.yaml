@@ -62,6 +62,11 @@ flutter:
     - family: Fraunces
       fonts:
         - asset: assets/fonts/Fraunces-Variable.ttf
+    # Lucide icons (ISC, assets/fonts/Lucide-LICENSE.txt) subset to the glyphs
+    # the app uses; regenerate with `dart run tool/build_icons.dart`.
+    - family: AppIcons
+      fonts:
+        - asset: assets/fonts/AppIcons.ttf
 
 # Icon and splash use the official mark the web ships as logo and favicon
 # (public/assets/icons/site-icon-512.png). Padded copies live in tool/branding
