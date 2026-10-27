@@ -539,5 +539,19 @@
   "favoritesTitle": "Favourites",
   "favoritesEmpty": "No saved pieces yet. Tap the heart on any piece to keep it here.",
   "addFavorite": "Save to favourites",
-  "removeFavorite": "Remove from favourites"
+  "removeFavorite": "Remove from favourites",
+  "featuredPiece": "Featured piece",
+  "viewPiece": "View piece",
+  "liveBids": "Live bids",
+  "bidOn": "bid on",
+  "recentActivity": "Recent activity",
+  "bidActivity": "{name} bid {amount}",
+  "@bidActivity": {"placeholders": {"name": {"type": "String"}, "amount": {"type": "String"}}},
+  "justNow": "just now",
+  "minutesAgo": "{n} min ago",
+  "@minutesAgo": {"placeholders": {"n": {"type": "int"}}},
+  "hoursAgo": "{n} h ago",
+  "@hoursAgo": {"placeholders": {"n": {"type": "int"}}},
+  "daysAgo": "{n} d ago",
+  "@daysAgo": {"placeholders": {"n": {"type": "int"}}}
 }

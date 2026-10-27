@@ -539,5 +539,19 @@
   "favoritesTitle": "Favoritos",
   "favoritesEmpty": "Aún no guardaste piezas. Toca el corazón de cualquier pieza para tenerla aquí.",
   "addFavorite": "Guardar en favoritos",
-  "removeFavorite": "Quitar de favoritos"
+  "removeFavorite": "Quitar de favoritos",
+  "featuredPiece": "Pieza destacada",
+  "viewPiece": "Ver pieza",
+  "liveBids": "Pujas en vivo",
+  "bidOn": "pujó en",
+  "recentActivity": "Actividad reciente",
+  "bidActivity": "{name} pujó {amount}",
+  "@bidActivity": {"placeholders": {"name": {"type": "String"}, "amount": {"type": "String"}}},
+  "justNow": "ahora",
+  "minutesAgo": "hace {n} min",
+  "@minutesAgo": {"placeholders": {"n": {"type": "int"}}},
+  "hoursAgo": "hace {n} h",
+  "@hoursAgo": {"placeholders": {"n": {"type": "int"}}},
+  "daysAgo": "hace {n} d",
+  "@daysAgo": {"placeholders": {"n": {"type": "int"}}}
 }

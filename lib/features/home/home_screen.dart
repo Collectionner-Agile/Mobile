@@ -18,6 +18,7 @@ import '../catalog/presentation/widgets/collectible_card.dart';
 import '../communities/application/community_providers.dart';
 import '../communities/presentation/widgets/community_tile.dart';
 import 'closing_coverflow.dart';
+import 'home_extras.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -47,6 +48,9 @@ class HomeScreen extends ConsumerWidget {
     final categories = ref.watch(catalogCategoriesProvider);
 
     final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.2);
+    final bids = recentBids(auctions.value ?? const []);
+    final pieces = collectibles.value ?? const [];
+    final featured = pieces.isEmpty ? null : (pieces.toList()..sort((a, b) => b.value.compareTo(a.value))).first;
 
     return Scaffold(
       body: RefreshIndicator(
@@ -131,6 +135,16 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            if (bids.isNotEmpty)
+              SliverToBoxAdapter(
+                child: ContentWidth(
+                  maxWidth: 900,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(Space.gutter, Space.md, Space.gutter, 0),
+                    child: BidTicker(events: bids),
+                  ),
+                ),
+              ),
             SliverToBoxAdapter(
               child: SectionHeader(
                 title: l10n.closingSoon,
@@ -158,6 +172,23 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
             ),
+            if (featured != null) ...[
+              SliverToBoxAdapter(child: SectionHeader(title: l10n.featuredPiece)),
+              SliverToBoxAdapter(
+                child: ContentWidth(
+                  maxWidth: 900,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                    child: Reveal(
+                      child: FeaturedSpotlight(
+                        item: featured,
+                        onTap: () => context.go(Routes.collectible(featured.id)),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
             if (categories.isNotEmpty) ...[
               SliverToBoxAdapter(child: SectionHeader(title: l10n.homeCategories)),
               SliverToBoxAdapter(
@@ -175,6 +206,21 @@ class HomeScreen extends ConsumerWidget {
                         ref.read(catalogFilterProvider.notifier).category(category);
                         context.go(Routes.catalog);
                       },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            if (bids.isNotEmpty) ...[
+              SliverToBoxAdapter(child: SectionHeader(title: l10n.recentActivity)),
+              SliverToBoxAdapter(
+                child: ContentWidth(
+                  maxWidth: 900,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                    child: RecentActivity(
+                      events: bids.take(4).toList(),
+                      onOpen: (auction) => context.go(Routes.auction(auction.id)),
                     ),
                   ),
                 ),
