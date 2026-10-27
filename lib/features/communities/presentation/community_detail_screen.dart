@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
+import '../../../core/media/artwork.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/pressable.dart';
@@ -149,11 +150,7 @@ class _CommunityDetailScreenState extends ConsumerState<CommunityDetailScreen> {
                               () => setState(() => _query = value.trim()),
                             );
                           },
-                          decoration: InputDecoration(
-                            isDense: true,
-                            hintText: l10n.searchInCommunity,
-                            prefixIcon: const Icon(Icons.search),
-                          ),
+                          decoration: searchDecoration(context, l10n.searchInCommunity),
                         ),
                         const SizedBox(height: Space.xs),
                         SingleChildScrollView(
@@ -253,10 +250,16 @@ class _FeedCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (item.imageUrl != null) ...[
+              if (item.imageUrl != null ||
+                  item.type == FeedItemType.collectible ||
+                  item.type == FeedItemType.auction) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(Radii.sm),
-                  child: SizedBox(width: 72, height: 72, child: CollectibleImage(item.imageUrl, cacheWidth: 72)),
+                  child: SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: CollectibleImage(artworkFor(name: item.title, url: item.imageUrl), cacheWidth: 72),
+                  ),
                 ),
                 const SizedBox(width: Space.sm),
               ],
@@ -266,7 +269,7 @@ class _FeedCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(icon, size: 14, color: brand.rustStrong),
+                        Icon(icon, size: 14, color: brand.accentStrong),
                         const SizedBox(width: 4),
                         Flexible(child: Kicker(label.toUpperCase())),
                       ],

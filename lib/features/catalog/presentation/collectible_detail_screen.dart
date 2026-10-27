@@ -168,6 +168,15 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
           stretch: true,
           expandedHeight: galleryHeight,
           backgroundColor: brand.paper,
+          leading: Padding(
+            padding: const EdgeInsets.all(6),
+            child: BackButton(
+              style: IconButton.styleFrom(
+                backgroundColor: brand.surface.withValues(alpha: 0.9),
+                foregroundColor: brand.ink,
+              ),
+            ),
+          ),
           actions: [
             if (isOwner)
               PopupMenuButton<String>(
@@ -202,7 +211,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
             background: Stack(
               fit: StackFit.expand,
               children: [
-                ColoredBox(color: brand.surface),
+                ColoredBox(color: brand.surfaceMuted),
                 if (urls.isEmpty)
                   Hero(
                     tag: 'collectible-${item.id}',
@@ -218,7 +227,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                         onTap: () => _openGallery(urls, index),
                         child: CollectibleImage(
                           urls[index],
-                          fit: BoxFit.contain,
+                          fit: BoxFit.cover,
                           semanticLabel: item.name,
                           cacheWidth: width,
                         ),
@@ -229,80 +238,104 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                 if (urls.length > 1)
                   Positioned(
                     right: Space.md,
-                    bottom: Space.md,
+                    bottom: Space.xxxl,
                     child: InfoChip(
                       label: l10n.photoCount(_index + 1, urls.length),
                       icon: Icons.photo_library_outlined,
                     ),
                   ),
+                // Rounded lip so the content reads as a sheet over the photo.
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: -1,
+                  child: Container(
+                    height: Radii.lg,
+                    decoration: BoxDecoration(
+                      color: brand.paper,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.lg)),
+                    ),
+                  ),
+                ),
                 if (_uploading) const Positioned(left: 0, right: 0, bottom: 0, child: LinearProgressIndicator()),
               ],
             ),
           ),
         ),
         SliverToBoxAdapter(
-          child: ContentWidth(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      if (item.category != null)
-                        Expanded(child: Kicker(item.category!.toUpperCase()))
-                      else
-                        const Spacer(),
-                      if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
-                    ],
-                  ),
-                  const SizedBox(height: Space.xs),
-                  Text(item.name, style: context.text.headlineSmall),
-                  const SizedBox(height: Space.sm),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: Space.sm,
-                    runSpacing: Space.xs,
-                    children: [
-                      Text(
-                        context.money(item.value),
-                        style: context.text.titleLarge?.copyWith(color: brand.rustStrong),
-                      ),
-                      if (item.reviewCount > 0)
-                        Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: Space.xxs,
-                          children: [
-                            RatingStars(rating: item.rating),
-                            const SizedBox(width: Space.xxs),
-                            Text(
-                              l10n.reviewsCount(item.reviewCount),
-                              style: context.text.bodySmall?.copyWith(color: brand.muted),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: Space.xxs),
-                  Text(
-                    '${l10n.declaredValue}. ${l10n.declaredValueNote}',
-                    style: context.text.bodySmall?.copyWith(color: brand.muted),
-                  ),
-                  if (item.auctionId != null) ...[
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: brand.paper),
+            child: ContentWidth(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: Space.xs,
+                      runSpacing: Space.xs,
+                      children: [
+                        if (item.category != null) InfoChip(label: item.category!, color: brand.accent),
+                        if (item.auctionId != null) GoldBadge(label: l10n.inAuction),
+                        if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
+                      ],
+                    ),
+                    const SizedBox(height: Space.sm),
+                    Text(item.name, style: context.text.headlineMedium),
                     const SizedBox(height: Space.md),
-                    _AuctionBanner(auctionId: item.auctionId!),
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: Space.md,
+                      runSpacing: Space.xs,
+                      children: [
+                        Text(context.money(item.value), style: context.text.displaySmall?.copyWith(fontSize: 30)),
+                        if (item.reviewCount > 0)
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: Space.xs,
+                            children: [
+                              RatingStars(rating: item.rating),
+                              Text(l10n.reviewsCount(item.reviewCount), style: context.text.bodySmall),
+                            ],
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: Space.xxs),
+                    Text('${l10n.declaredValue}. ${l10n.declaredValueNote}', style: context.text.bodySmall),
+                    if (item.auctionId != null) ...[
+                      const SizedBox(height: Space.lg),
+                      _AuctionBanner(auctionId: item.auctionId!),
+                    ],
+                    const SizedBox(height: Space.lg),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final tileWidth = (constraints.maxWidth - Space.sm) / 2;
+                        final tiles = [
+                          if (item.eraYear != null) (Icons.event_outlined, l10n.year, '${item.eraYear}'),
+                          if (item.ownerName != null) (Icons.person_outline, l10n.owner, item.ownerName!),
+                          if (item.category != null) (Icons.category_outlined, l10n.category, item.category!),
+                          if (item.reviewCount > 0)
+                            (Icons.reviews_outlined, l10n.reviews, l10n.reviewsCount(item.reviewCount)),
+                        ];
+                        return Wrap(
+                          spacing: Space.sm,
+                          runSpacing: Space.sm,
+                          children: [
+                            for (final (icon, label, value) in tiles)
+                              SizedBox(
+                                width: tileWidth,
+                                child: _InfoTile(icon: icon, label: label, value: value),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: Space.xl),
+                    Text(l10n.aboutObject, style: context.text.titleLarge),
+                    const SizedBox(height: Space.xs),
+                    Text(item.description, style: context.text.bodyLarge?.copyWith(color: brand.muted)),
                   ],
-                  const SizedBox(height: Space.xl),
-                  Text(l10n.aboutObject, style: context.text.titleMedium),
-                  const SizedBox(height: Space.xs),
-                  Text(item.description, style: context.text.bodyLarge),
-                  const SizedBox(height: Space.xl),
-                  Text(l10n.archiveDetails, style: context.text.titleMedium),
-                  const SizedBox(height: Space.xs),
-                  _DetailRow(label: l10n.category, value: item.category),
-                  _DetailRow(label: l10n.year, value: item.eraYear?.toString()),
-                  _DetailRow(label: l10n.owner, value: item.ownerName),
-                ],
+                ),
               ),
             ),
           ),
@@ -328,49 +361,64 @@ class _AuctionBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    return Container(
+    return HeroPanel(
       padding: const EdgeInsets.all(Space.md),
-      decoration: BoxDecoration(
-        color: Color.alphaBlend(brand.rust.withValues(alpha: 0.08), brand.surfaceRaised),
-        borderRadius: BorderRadius.circular(Radii.md),
-        border: Border.all(color: brand.rust.withValues(alpha: 0.4)),
-      ),
       child: Row(
         children: [
-          Icon(Icons.gavel, color: brand.rustStrong),
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(color: brand.gold, shape: BoxShape.circle),
+            child: Icon(Icons.gavel_rounded, color: brand.onGold),
+          ),
           const SizedBox(width: Space.sm),
-          Expanded(child: Text(context.l10n.inAuction, style: context.text.titleSmall)),
-          TextButton(onPressed: () => context.go(Routes.auction(auctionId)), child: Text(context.l10n.viewAuction)),
+          Expanded(
+            child: Text(context.l10n.inAuction, style: context.text.titleMedium?.copyWith(color: Colors.white)),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: const Color(0xFF0E1640),
+              minimumSize: const Size(0, 44),
+              padding: const EdgeInsets.symmetric(horizontal: Space.md),
+            ),
+            onPressed: () => context.go(Routes.auction(auctionId)),
+            child: Text(context.l10n.viewAuction),
+          ),
         ],
       ),
     );
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({required this.icon, required this.label, required this.value});
+  final IconData icon;
   final String label;
-  final String? value;
+  final String value;
 
   @override
   Widget build(BuildContext context) {
-    if (value == null || value!.isEmpty || label.isEmpty) return const SizedBox.shrink();
+    final brand = context.brand;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: Space.sm),
+      padding: const EdgeInsets.all(Space.sm),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: context.brand.line)),
+        color: brand.surfaceRaised,
+        borderRadius: BorderRadius.circular(Radii.sm),
+        border: Border.all(color: brand.line),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(icon, size: 20, color: brand.accent),
+          const SizedBox(width: Space.xs),
           Expanded(
-            flex: 2,
-            child: Text(label, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
-          ),
-          const SizedBox(width: Space.sm),
-          Expanded(
-            flex: 3,
-            child: Text(value!, style: context.text.bodyMedium, textAlign: TextAlign.end),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(value, style: context.text.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+              ],
+            ),
           ),
         ],
       ),

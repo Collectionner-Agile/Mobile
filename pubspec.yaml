@@ -49,6 +49,17 @@ flutter:
     - assets/images/collectibles/watches/
     - assets/images/lab/
     - assets/images/placeholders/
+    - assets/images/editorial/
+
+  # Google Fonts (SIL Open Font License, see assets/fonts/*-OFL.txt), bundled so
+  # nothing is downloaded at runtime. Variable fonts: FontWeight drives `wght`.
+  fonts:
+    - family: Sora
+      fonts:
+        - asset: assets/fonts/Sora-Variable.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf
 
 # Icon and splash use the official mark the web ships as logo and favicon
 # (public/assets/icons/site-icon-512.png). Padded copies live in tool/branding

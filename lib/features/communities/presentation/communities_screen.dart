@@ -72,11 +72,7 @@ class _CommunitiesScreenState extends ConsumerState<CommunitiesScreen> {
                     controller: _search,
                     onChanged: _onChanged,
                     textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: l10n.searchCommunities,
-                      prefixIcon: const Icon(Icons.search),
-                    ),
+                    decoration: searchDecoration(context, l10n.searchCommunities),
                   ),
                 ),
               ),

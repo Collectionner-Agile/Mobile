@@ -13,7 +13,9 @@ void main() {
   testWidgets('home loads catalogue, auctions and communities from the API', (tester) async {
     await pumpApp(tester);
     expect(find.text('Objetos con historia. Registro con criterio.'), findsOneWidget);
-    // Latest entries first; the rail builds lazily, so check the newest record.
+    // Live auctions and latest entries sit below the hero; lists build lazily.
+    await tester.scrollUntilVisible(find.text('Últimos ingresos'), 300, scrollable: find.byType(Scrollable).first);
+    await settle(tester, 3);
     expect(find.text('Lego Millennium Falcon 75192'), findsWidgets);
     await tester.scrollUntilVisible(
       find.text('Retro Gaming Preservation'),
@@ -170,7 +172,10 @@ void main() {
       final continueButton = find.widgetWithText(FilledButton, 'Ver ficha');
       await tester.scrollUntilVisible(continueButton, 200, scrollable: find.byType(Scrollable).first);
       expect(tester.widget<FilledButton>(continueButton).onPressed, isNull);
-      await tester.tap(find.text('Lego Falcon 7965'));
+      final alternative = find.text('Lego Falcon 7965');
+      await tester.ensureVisible(alternative);
+      await settle(tester, 2);
+      await tester.tap(alternative);
       await settle(tester, 3);
       expect(tester.widget<FilledButton>(continueButton).onPressed, isNotNull);
     });

@@ -58,15 +58,30 @@ class AppShell extends ConsumerWidget {
               children: [
                 SafeArea(
                   right: false,
-                  child: NavigationRail(
-                    selectedIndex: shell.currentIndex,
-                    onDestinationSelected: _select,
-                    labelType: NavigationRailLabelType.all,
-                    groupAlignment: -0.85,
-                    destinations: [
-                      for (final (icon, selected, label) in destinations)
-                        NavigationRailDestination(icon: Icon(icon), selectedIcon: Icon(selected), label: Text(label)),
-                    ],
+                  // Landscape phones are short: let the rail scroll instead of
+                  // overflowing when labels are large.
+                  child: LayoutBuilder(
+                    builder: (context, rail) => SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: rail.maxHeight),
+                        child: IntrinsicHeight(
+                          child: NavigationRail(
+                            selectedIndex: shell.currentIndex,
+                            onDestinationSelected: _select,
+                            labelType: NavigationRailLabelType.all,
+                            groupAlignment: -0.85,
+                            destinations: [
+                              for (final (icon, selected, label) in destinations)
+                                NavigationRailDestination(
+                                  icon: Icon(icon),
+                                  selectedIcon: Icon(selected),
+                                  label: Text(label),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 VerticalDivider(width: 1, color: context.brand.line),

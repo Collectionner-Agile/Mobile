@@ -20,7 +20,7 @@ class Kicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
-    style: context.text.labelSmall?.copyWith(color: color ?? context.brand.rustStrong),
+    style: context.text.labelSmall?.copyWith(color: color ?? context.brand.accentStrong),
     maxLines: 2,
     overflow: TextOverflow.ellipsis,
   );
@@ -38,7 +38,7 @@ class SectionHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xl, Space.xs, Space.sm),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -282,7 +282,7 @@ class RatingStars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = context.brand.rust;
+    final color = context.brand.accent;
     return Semantics(
       label: context.l10n.ratingOutOfFive(rating.toStringAsFixed(1)),
       child: ExcludeSemantics(
@@ -392,5 +392,133 @@ class ContentWidth extends StatelessWidget {
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: child,
     ),
+  );
+}
+
+/// Gold pill for auction / premium states, readable over photos.
+class GoldBadge extends StatelessWidget {
+  const GoldBadge({super.key, required this.label, this.icon = Icons.gavel_rounded});
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 4),
+      decoration: BoxDecoration(
+        color: brand.gold,
+        borderRadius: BorderRadius.circular(Radii.pill),
+        boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 8, offset: Offset(0, 2))],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: brand.onGold),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.text.labelMedium?.copyWith(
+                color: brand.onGold,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact star rating over imagery.
+class RatingPill extends StatelessWidget {
+  const RatingPill({super.key, required this.rating});
+  final double rating;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(color: const Color(0xCC0D1330), borderRadius: BorderRadius.circular(Radii.pill)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.star_rounded, size: 14, color: brand.gold),
+          const SizedBox(width: 2),
+          Text(
+            rating.toStringAsFixed(1),
+            style: context.text.labelMedium?.copyWith(color: Colors.white, fontSize: 11.5),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Brand gradient panel (navy → indigo) with a soft gold glow.
+class HeroPanel extends StatelessWidget {
+  const HeroPanel({super.key, required this.child, this.padding = const EdgeInsets.all(Space.lg)});
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: BrandColors.heroGradient,
+        borderRadius: BorderRadius.circular(Radii.lg),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF26338F).withValues(alpha: 0.35),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+            spreadRadius: -8,
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          Positioned(
+            right: -60,
+            top: -70,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [Color(0x66F4C152), Color(0x00F4C152)]),
+              ),
+            ),
+          ),
+          Padding(padding: padding, child: child),
+        ],
+      ),
+    );
+  }
+}
+
+/// Rounded, borderless search field decoration used by list screens.
+InputDecoration searchDecoration(BuildContext context, String hint) {
+  final brand = context.brand;
+  final pill = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(Radii.pill),
+    borderSide: BorderSide(color: brand.line),
+  );
+  return InputDecoration(
+    hintText: hint,
+    isDense: true,
+    filled: true,
+    fillColor: brand.surfaceRaised,
+    prefixIcon: Icon(Icons.search_rounded, color: brand.muted),
+    contentPadding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 14),
+    border: pill,
+    enabledBorder: pill,
+    focusedBorder: pill.copyWith(borderSide: BorderSide(color: brand.accent, width: 1.6)),
   );
 }

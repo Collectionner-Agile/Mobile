@@ -94,10 +94,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                         controller: _search,
                         onChanged: _onSearch,
                         textInputAction: TextInputAction.search,
-                        decoration: InputDecoration(
-                          hintText: l10n.catalogSearchHint,
-                          prefixIcon: const Icon(Icons.search),
-                          isDense: true,
+                        decoration: searchDecoration(context, l10n.catalogSearchHint).copyWith(
                           suffixIcon: ValueListenableBuilder(
                             valueListenable: _search,
                             builder: (_, value, _) => value.text.isEmpty

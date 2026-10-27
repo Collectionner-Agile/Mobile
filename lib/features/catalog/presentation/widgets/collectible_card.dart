@@ -19,6 +19,14 @@ class CollectibleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
+    final image = HeroMode(
+      enabled: hero,
+      child: Hero(
+        tag: 'collectible-${item.id}',
+        child: ColoredBox(color: brand.surfaceMuted, child: CollectibleImage(item.artwork, cacheWidth: 360)),
+      ),
+    );
+
     return SizedBox(
       width: width,
       child: Pressable(
@@ -28,62 +36,53 @@ class CollectibleCard extends StatelessWidget {
           child: ExcludeSemantics(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                // In fixed-height slots (grid cells, horizontal rails) the photo
-                // takes whatever the text leaves; otherwise it is square.
-                final bounded = constraints.hasBoundedHeight;
-                final image = Stack(
+                // In fixed-height slots (grid cells, rails) the photo takes the
+                // space the text leaves; elsewhere it is square.
+                final framed = Stack(
                   fit: StackFit.expand,
                   children: [
-                    HeroMode(
-                      enabled: hero,
-                      child: Hero(
-                        tag: 'collectible-${item.id}',
-                        child: ColoredBox(
-                          color: brand.surface,
-                          child: CollectibleImage(item.coverUrl, cacheWidth: 360),
-                        ),
-                      ),
-                    ),
+                    image,
                     if (item.auctionId != null)
                       Positioned(
                         left: Space.xs,
                         top: Space.xs,
-                        child: InfoChip(label: context.l10n.inAuction, icon: Icons.gavel, color: brand.rustStrong),
+                        child: GoldBadge(label: context.l10n.inAuction),
+                      ),
+                    if (item.reviewCount > 0)
+                      Positioned(
+                        right: Space.xs,
+                        top: Space.xs,
+                        child: RatingPill(rating: item.rating),
                       ),
                   ],
                 );
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (bounded) Expanded(child: image) else AspectRatio(aspectRatio: 1, child: image),
+                    if (constraints.hasBoundedHeight)
+                      Expanded(child: framed)
+                    else
+                      AspectRatio(aspectRatio: 1, child: framed),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(Space.sm, Space.sm, Space.sm, Space.sm),
+                      padding: const EdgeInsets.all(Space.sm),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (item.category != null) Kicker(item.category!.toUpperCase(), color: brand.muted),
+                          if (item.category != null)
+                            Text(
+                              item.category!,
+                              style: context.text.labelMedium?.copyWith(color: brand.accent),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           const SizedBox(height: 2),
                           Text(item.name, style: context.text.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
                           const SizedBox(height: Space.xs),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  context.money(item.value),
-                                  style: context.text.labelLarge?.copyWith(color: brand.ink),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (item.reviewCount > 0) ...[
-                                Icon(Icons.star_rounded, size: 15, color: brand.rust),
-                                const SizedBox(width: 2),
-                                Text(
-                                  item.rating.toStringAsFixed(1),
-                                  style: context.text.labelMedium?.copyWith(color: brand.muted),
-                                ),
-                              ],
-                            ],
+                          Text(
+                            context.money(item.value),
+                            style: context.text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

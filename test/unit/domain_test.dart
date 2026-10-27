@@ -38,7 +38,9 @@ void main() {
     test('missing optional fields do not throw', () {
       final item = Collectible.fromJson({'id': 9});
       expect(item.name, '');
-      expect(item.galleryUrls, isEmpty);
+      expect(item.galleryUrls, [
+        '/assets/editorial/archival-instrument.webp',
+      ], reason: 'curated artwork stands in for missing photos');
     });
   });
 

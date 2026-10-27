@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
+import '../../../core/media/artwork.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/collectible_image.dart';
@@ -105,7 +106,11 @@ class _AuctionBody extends ConsumerWidget {
             aspectRatio: 4 / 3,
             child: ColoredBox(
               color: brand.surface,
-              child: CollectibleImage(auction.collectibleImage, fit: BoxFit.contain, cacheWidth: 600),
+              child: CollectibleImage(
+                artworkFor(name: auction.collectibleName ?? '', url: auction.collectibleImage),
+                fit: BoxFit.cover,
+                cacheWidth: 600,
+              ),
             ),
           ),
         );
@@ -211,7 +216,7 @@ class _AuctionBody extends ConsumerWidget {
                       Icon(
                         index == 0 ? Icons.emoji_events_outlined : Icons.circle_outlined,
                         size: index == 0 ? 20 : 10,
-                        color: index == 0 ? brand.rust : brand.line,
+                        color: index == 0 ? brand.accent : brand.line,
                       ),
                       const SizedBox(width: Space.sm),
                       Expanded(
@@ -233,7 +238,7 @@ class _AuctionBody extends ConsumerWidget {
                       ),
                       Text(
                         context.money(bid.amount),
-                        style: context.text.titleSmall?.copyWith(color: index == 0 ? brand.rustStrong : brand.ink),
+                        style: context.text.titleSmall?.copyWith(color: index == 0 ? brand.accentStrong : brand.ink),
                       ),
                     ],
                   ),
@@ -259,7 +264,7 @@ class _Stat extends StatelessWidget {
       decoration: BoxDecoration(
         color: brand.surfaceRaised,
         borderRadius: BorderRadius.circular(Radii.sm),
-        border: Border.all(color: emphasis ? brand.rust.withValues(alpha: 0.5) : brand.line),
+        border: Border.all(color: emphasis ? brand.accent.withValues(alpha: 0.5) : brand.line),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +276,7 @@ class _Stat extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               value,
-              style: context.text.titleLarge?.copyWith(color: emphasis ? brand.rustStrong : brand.ink),
+              style: context.text.titleLarge?.copyWith(color: emphasis ? brand.accentStrong : brand.ink),
             ),
           ),
         ],

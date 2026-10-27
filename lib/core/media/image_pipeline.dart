@@ -110,9 +110,9 @@ Future<String?> cropImage(BuildContext context, String path, {required String ti
       AndroidUiSettings(
         toolbarTitle: title,
         toolbarColor: BrandColors.light.ink,
-        toolbarWidgetColor: BrandColors.light.paper,
+        toolbarWidgetColor: Colors.white,
         statusBarLight: false,
-        activeControlsWidgetColor: brand.rust,
+        activeControlsWidgetColor: brand.accent,
         backgroundColor: Colors.black,
         initAspectRatio: CropAspectRatioPreset.original,
         lockAspectRatio: false,

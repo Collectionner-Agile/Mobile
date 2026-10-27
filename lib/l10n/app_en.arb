@@ -8,7 +8,6 @@
   "navCommunities": "Communities",
   "profile": "Profile",
   "settings": "Settings",
-
   "retry": "Try again",
   "cancel": "Cancel",
   "confirm": "Confirm",
@@ -24,7 +23,6 @@
   "signInToParticipate": "Sign in to take part.",
   "back": "Back",
   "optional": "Optional",
-
   "errorNetwork": "Can't reach the server. Check your connection and try again.",
   "errorTimeout": "The server took too long to respond.",
   "errorUnauthorized": "Your session is not valid. Please sign in again.",
@@ -40,7 +38,6 @@
   "errorInvalidResponse": "The server sent an unexpected response.",
   "errorUnknown": "Something went wrong. Please try again.",
   "sessionExpired": "Your session expired. Please sign in again.",
-
   "homeKicker": "COLLECTIONNER / OPEN COLLECTION",
   "homeTitle": "Objects with history. Records with care.",
   "homeIntro": "A living archive of objects, provenance and communities for people who collect with intention.",
@@ -52,8 +49,13 @@
   "homeLiveAuctions": "Open auctions",
   "homeCommunities": "Study communities",
   "homeGreeting": "Hello, {name}",
-  "@homeGreeting": {"placeholders": {"name": {"type": "String"}}},
-
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "catalogTitle": "Catalogue",
   "catalogKicker": "COMPLETE ARCHIVE",
   "catalogSearchHint": "Search by object, category or year",
@@ -68,8 +70,13 @@
   "clearFilters": "Clear filters",
   "publishItem": "Register object",
   "resultsCount": "{count, plural, =0{No objects} =1{1 object} other{{count} objects}}",
-  "@resultsCount": {"placeholders": {"count": {"type": "int"}}},
-
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "declaredValue": "Declared value",
   "declaredValueNote": "The keeper's personal reference; not an offer or an appraisal.",
   "category": "Category",
@@ -88,9 +95,21 @@
   "reviewPublished": "Review published.",
   "commentPublished": "Comment published.",
   "ratingOutOfFive": "{rating} out of 5",
-  "@ratingOutOfFive": {"placeholders": {"rating": {"type": "String"}}},
+  "@ratingOutOfFive": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "reviewsCount": "{count, plural, =0{No reviews} =1{1 review} other{{count} reviews}}",
-  "@reviewsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "inAuction": "In auction",
   "viewAuction": "View auction",
   "startAuction": "Auction this object",
@@ -102,8 +121,16 @@
   "uploadingPhoto": "Uploading photo…",
   "yourItem": "Your object",
   "photoCount": "{index} of {total}",
-  "@photoCount": {"placeholders": {"index": {"type": "int"}, "total": {"type": "int"}}},
-
+  "@photoCount": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "publishTitle": "Register object",
   "publishIntro": "Document an object for the archive. You can add more photos later.",
   "fieldName": "Object name",
@@ -119,19 +146,36 @@
   "publishSubmit": "Publish to the archive",
   "publishSuccess": "Object registered.",
   "publishPhotosFailed": "The object was registered, but {count} photo(s) could not be uploaded.",
-  "@publishPhotosFailed": {"placeholders": {"count": {"type": "int"}}},
+  "@publishPhotosFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errRequired": "Required field.",
   "errMinLength": "Enter at least {min} characters.",
-  "@errMinLength": {"placeholders": {"min": {"type": "int"}}},
+  "@errMinLength": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
   "errNumber": "Enter a valid number of 0 or more.",
   "errPositive": "Enter an amount above 0.",
   "errYear": "Enter a year between 1800 and {max}.",
-  "@errYear": {"placeholders": {"max": {"type": "int"}}},
+  "@errYear": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "errEmail": "Enter a valid email.",
   "errPasswordLength": "The password must have at least 6 characters.",
   "errPasswordMatch": "Passwords don't match.",
   "errUsername": "3 to 30 characters: letters, numbers, dot, hyphen or underscore.",
-
   "auctionsTitle": "Auctions",
   "auctionsKicker": "CATALOGUE ROUNDS",
   "auctionsIntro": "Bidding with a visible closing time and public history.",
@@ -140,19 +184,49 @@
   "currentBid": "Current bid",
   "startingPrice": "Starting price",
   "bidsCount": "{count, plural, =0{No bids} =1{1 bid} other{{count} bids}}",
-  "@bidsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@bidsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "endsIn": "Closes in {time}",
-  "@endsIn": {"placeholders": {"time": {"type": "String"}}},
+  "@endsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "ended": "Closed",
   "live": "Open",
   "closesAt": "Closes: {date}",
-  "@closesAt": {"placeholders": {"date": {"type": "String"}}},
+  "@closesAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "placeBid": "Bid",
   "bidAmount": "Your bid (S/)",
   "minBid": "Suggested minimum bid: {amount}",
-  "@minBid": {"placeholders": {"amount": {"type": "String"}}},
+  "@minBid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "bidMustExceed": "Your bid must exceed {amount}.",
-  "@bidMustExceed": {"placeholders": {"amount": {"type": "String"}}},
+  "@bidMustExceed": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "bidPlaced": "Bid placed.",
   "bidHistory": "Bid history",
   "noBids": "No bids yet. The first one sets the pace.",
@@ -160,13 +234,31 @@
   "auctionClosedNotice": "This auction has closed.",
   "confirmBidTitle": "Confirm bid",
   "confirmBidBody": "You are bidding {amount}. If you win, the commitment is real. Continue?",
-  "@confirmBidBody": {"placeholders": {"amount": {"type": "String"}}},
+  "@confirmBidBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "createAuctionTitle": "Auction this object",
   "auctionDuration": "Duration",
   "durationHours": "{count, plural, =1{1 hour} other{{count} hours}}",
-  "@durationHours": {"placeholders": {"count": {"type": "int"}}},
+  "@durationHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "durationDays": "{count, plural, =1{1 day} other{{count} days}}",
-  "@durationDays": {"placeholders": {"count": {"type": "int"}}},
+  "@durationDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "createAuctionSubmit": "Open auction",
   "auctionCreated": "Auction opened.",
   "cancelAuction": "Withdraw auction",
@@ -174,8 +266,13 @@
   "auctionCancelled": "Auction withdrawn.",
   "auctioneer": "Auctioneer",
   "lotNumber": "LOT {id}",
-  "@lotNumber": {"placeholders": {"id": {"type": "int"}}},
-
+  "@lotNumber": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
   "communitiesTitle": "Communities",
   "communitiesKicker": "STUDY TABLES",
   "communitiesIntro": "Study, conservation and exchange among specialists.",
@@ -183,9 +280,21 @@
   "communitiesEmpty": "No communities yet.",
   "communitiesNoResults": "No community matches the search.",
   "membersCount": "{count, plural, =1{1 member} other{{count} members}}",
-  "@membersCount": {"placeholders": {"count": {"type": "int"}}},
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "postsCount": "{count, plural, =0{No posts} =1{1 post} other{{count} posts}}",
-  "@postsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@postsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "join": "Join",
   "leave": "Leave",
   "joined": "Member",
@@ -207,12 +316,17 @@
   "postContent": "Content",
   "postPublished": "Note published.",
   "postBy": "By {name}",
-  "@postBy": {"placeholders": {"name": {"type": "String"}}},
+  "@postBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "deletePost": "Delete note",
   "deletePostConfirm": "The note and its comments will be deleted.",
   "postDeleted": "Note deleted.",
   "searchInCommunity": "Search this community",
-
   "profileKicker": "MY RECORD",
   "myArchive": "My archive",
   "myCommunities": "My communities",
@@ -222,9 +336,14 @@
   "fieldBio": "Bio",
   "fieldLocation": "Location",
   "memberSince": "Member since {date}",
-  "@memberSince": {"placeholders": {"date": {"type": "String"}}},
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "profileUpdated": "Profile updated.",
-
   "appearance": "Appearance",
   "themeSystem": "System",
   "themeLight": "Light",
@@ -246,11 +365,22 @@
   "signOutConfirm": "Sign out on this device?",
   "about": "About",
   "versionLabel": "Version {version}",
-  "@versionLabel": {"placeholders": {"version": {"type": "String"}}},
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "privacySummary": "Recognition photos are sent only when you confirm, and the server doesn't keep them. Your session is stored encrypted on the device.",
   "serverLabel": "Server: {url}",
-  "@serverLabel": {"placeholders": {"url": {"type": "String"}}},
-
+  "@serverLabel": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "loginKicker": "COLLECTOR SIGN IN",
   "loginTitle": "Welcome back",
   "loginIntro": "Sign in to publish objects, bid and join communities.",
@@ -277,7 +407,6 @@
   "recoveryToken": "Recovery code",
   "resetSubmit": "Reset",
   "resetDone": "Password reset. You can sign in now.",
-
   "scanTitle": "Scan an object",
   "scanKicker": "VISUAL LAB",
   "scanIntro": "Identify an object from a photo and check it against the real catalogue and open auctions.",
@@ -306,13 +435,18 @@
   "permissionGalleryDenied": "No permission to access photos.",
   "imageUnreadable": "The image couldn't be read. Try another photo.",
   "imageTooLarge": "The image is too large even after optimizing it.",
-
   "resultKicker": "ANALYSIS RESULT",
   "resultTitle": "Identification",
   "notDetected": "No object was identified",
   "confidenceLabel": "Estimated certainty",
   "confidenceValue": "{percent}%",
-  "@confidenceValue": {"placeholders": {"percent": {"type": "int"}}},
+  "@confidenceValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "brand": "Brand",
   "model": "Model",
   "visibleText": "Visible text",
@@ -322,7 +456,13 @@
   "alternatives": "Other possible matches",
   "chooseMatchHint": "Choose the right object to continue.",
   "matchScore": "Similarity {percent}%",
-  "@matchScore": {"placeholders": {"percent": {"type": "int"}}},
+  "@matchScore": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "statusAvailable": "Available at auction",
   "statusUnavailable": "Registered, not offered",
   "statusNotInCatalog": "Not in the catalogue",
@@ -336,6 +476,14 @@
   "resultDisclaimer": "The AI describes only what is visible. Availability and final price depend on the catalogue and the auction; a visual match does not confirm a sale.",
   "newScan": "New scan",
   "modelUsed": "Model: {model}",
-  "@modelUsed": {"placeholders": {"model": {"type": "String"}}},
-  "openAuctionTag": "Open auction"
+  "@modelUsed": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      }
+    }
+  },
+  "openAuctionTag": "Open auction",
+  "homeCategories": "Browse by category",
+  "homeExplore": "Explore catalogue"
 }

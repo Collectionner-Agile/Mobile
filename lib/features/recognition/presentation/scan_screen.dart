@@ -224,8 +224,8 @@ class _BigAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    final background = primary ? BrandColors.light.ink : brand.surfaceRaised;
-    final foreground = primary ? BrandColors.light.paper : brand.ink;
+    final background = primary ? brand.accent : brand.surfaceRaised;
+    final foreground = primary ? brand.onAccent : brand.ink;
     return Material(
       color: background,
       shape: RoundedRectangleBorder(
@@ -242,7 +242,7 @@ class _BigAction extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 32, color: primary ? const Color(0xFFF0A07F) : brand.rustStrong),
+                Icon(icon, size: 32, color: primary ? brand.onAccent : brand.accent),
                 const SizedBox(height: Space.xs),
                 Text(
                   label,
@@ -527,7 +527,7 @@ class _ScanningOverlayState extends State<_ScanningOverlay> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
-    const rust = Color(0xFFE2805C);
+    const accent = Color(0xFFF4C152);
     return ExcludeSemantics(
       child: RepaintBoundary(
         child: ColoredBox(
@@ -539,8 +539,8 @@ class _ScanningOverlayState extends State<_ScanningOverlay> with SingleTickerPro
               child: Container(
                 height: 3,
                 decoration: BoxDecoration(
-                  color: rust,
-                  boxShadow: [BoxShadow(color: rust.withValues(alpha: 0.6), blurRadius: 16, spreadRadius: 2)],
+                  color: accent,
+                  boxShadow: [BoxShadow(color: accent.withValues(alpha: 0.6), blurRadius: 16, spreadRadius: 2)],
                 ),
               ),
             ),

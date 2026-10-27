@@ -1,3 +1,4 @@
+import '../../../core/media/artwork.dart';
 import '../../../core/utils/json.dart';
 
 class MediaAsset {
@@ -62,8 +63,11 @@ class Collectible {
 
   List<String> get galleryUrls {
     final urls = <String>[?primaryImageUrl, for (final item in media) item.url];
-    return urls.toSet().toList(growable: false);
+    return galleryFor(name: name, category: category, urls: urls.toSet().toList(growable: false));
   }
+
+  /// Image for cards: a real photo when there is one, else curated artwork.
+  String get artwork => artworkFor(name: name, category: category, url: coverUrl);
 
   factory Collectible.fromJson(JsonMap json) => Collectible(
     id: json.requireInt('id'),

@@ -148,7 +148,7 @@ class ProfileScreen extends ConsumerWidget {
                                   child: SizedBox(
                                     width: 56,
                                     height: 56,
-                                    child: CollectibleImage(item.coverUrl, cacheWidth: 56),
+                                    child: CollectibleImage(item.artwork, cacheWidth: 56),
                                   ),
                                 ),
                                 title: Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis),

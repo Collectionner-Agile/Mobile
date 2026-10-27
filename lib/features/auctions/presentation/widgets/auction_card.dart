@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/theme/tokens.dart';
+import '../../../../core/media/artwork.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/collectible_image.dart';
 import '../../../../core/widgets/pressable.dart';
@@ -32,11 +33,14 @@ class AuctionCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(Radii.sm),
                   child: SizedBox(
-                    width: 88,
-                    height: 88,
+                    width: 104,
+                    height: 104,
                     child: ColoredBox(
-                      color: brand.surface,
-                      child: CollectibleImage(auction.collectibleImage, cacheWidth: 88),
+                      color: brand.surfaceMuted,
+                      child: CollectibleImage(
+                        artworkFor(name: auction.collectibleName ?? '', url: auction.collectibleImage),
+                        cacheWidth: 104,
+                      ),
                     ),
                   ),
                 ),
@@ -61,7 +65,7 @@ class AuctionCard extends StatelessWidget {
                         children: [
                           Text(
                             context.money(auction.currentPrice),
-                            style: context.text.titleSmall?.copyWith(color: brand.rustStrong),
+                            style: context.text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           Text(
                             '· ${l10n.bidsCount(auction.bidCount)}',

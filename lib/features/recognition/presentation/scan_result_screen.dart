@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
+import '../../../core/media/artwork.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/ui.dart';
@@ -329,7 +330,7 @@ class _MatchCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: brand.surfaceRaised,
           borderRadius: BorderRadius.circular(Radii.md),
-          border: Border.all(color: selected ? brand.rust : brand.line, width: selected ? 2 : 1),
+          border: Border.all(color: selected ? brand.accent : brand.line, width: selected ? 2 : 1),
         ),
         padding: const EdgeInsets.all(Space.sm),
         child: ExcludeSemantics(
@@ -337,7 +338,14 @@ class _MatchCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(Radii.sm),
-                child: SizedBox(width: 64, height: 64, child: CollectibleImage(match.imageUrl, cacheWidth: 64)),
+                child: SizedBox(
+                  width: 64,
+                  height: 64,
+                  child: CollectibleImage(
+                    artworkFor(name: match.name, category: match.category, url: match.imageUrl),
+                    cacheWidth: 64,
+                  ),
+                ),
               ),
               const SizedBox(width: Space.sm),
               Expanded(
@@ -360,7 +368,7 @@ class _MatchCard extends StatelessWidget {
               ),
               Icon(
                 selected ? Icons.radio_button_checked : Icons.chevron_right,
-                color: selected ? brand.rust : brand.muted,
+                color: selected ? brand.accent : brand.muted,
               ),
             ],
           ),

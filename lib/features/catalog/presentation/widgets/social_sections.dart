@@ -166,7 +166,7 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
                         onPressed: () => setState(() => _rating = star),
                         icon: Icon(
                           star <= _rating ? Icons.star_rounded : Icons.star_outline_rounded,
-                          color: brand.rust,
+                          color: brand.accent,
                           size: 32,
                         ),
                       ),

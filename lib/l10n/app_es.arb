@@ -8,7 +8,6 @@
   "navCommunities": "Comunidades",
   "profile": "Perfil",
   "settings": "Ajustes",
-
   "retry": "Reintentar",
   "cancel": "Cancelar",
   "confirm": "Confirmar",
@@ -24,7 +23,6 @@
   "signInToParticipate": "Inicia sesión para participar.",
   "back": "Volver",
   "optional": "Opcional",
-
   "errorNetwork": "Sin conexión con el servidor. Revisa tu red e inténtalo de nuevo.",
   "errorTimeout": "El servidor tardó demasiado en responder.",
   "errorUnauthorized": "Tu sesión no es válida. Vuelve a iniciar sesión.",
@@ -40,7 +38,6 @@
   "errorInvalidResponse": "El servidor devolvió una respuesta inesperada.",
   "errorUnknown": "Algo salió mal. Inténtalo de nuevo.",
   "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo.",
-
   "homeKicker": "COLLECTIONNER / COLECCIÓN ABIERTA",
   "homeTitle": "Objetos con historia. Registro con criterio.",
   "homeIntro": "Un archivo vivo de piezas, procedencias y comunidades para quienes coleccionan con intención.",
@@ -52,8 +49,13 @@
   "homeLiveAuctions": "Subastas abiertas",
   "homeCommunities": "Comunidades de estudio",
   "homeGreeting": "Hola, {name}",
-  "@homeGreeting": {"placeholders": {"name": {"type": "String"}}},
-
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "catalogTitle": "Catálogo",
   "catalogKicker": "ARCHIVO COMPLETO",
   "catalogSearchHint": "Buscar por pieza, categoría o año",
@@ -68,8 +70,13 @@
   "clearFilters": "Limpiar filtros",
   "publishItem": "Registrar pieza",
   "resultsCount": "{count, plural, =0{Sin piezas} =1{1 pieza} other{{count} piezas}}",
-  "@resultsCount": {"placeholders": {"count": {"type": "int"}}},
-
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "declaredValue": "Valor declarado",
   "declaredValueNote": "Referencia personal del custodio; no constituye oferta ni tasación.",
   "category": "Categoría",
@@ -88,9 +95,21 @@
   "reviewPublished": "Reseña publicada.",
   "commentPublished": "Comentario publicado.",
   "ratingOutOfFive": "{rating} de 5",
-  "@ratingOutOfFive": {"placeholders": {"rating": {"type": "String"}}},
+  "@ratingOutOfFive": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "reviewsCount": "{count, plural, =0{Sin reseñas} =1{1 reseña} other{{count} reseñas}}",
-  "@reviewsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "inAuction": "En subasta",
   "viewAuction": "Ver subasta",
   "startAuction": "Subastar pieza",
@@ -102,8 +121,16 @@
   "uploadingPhoto": "Subiendo foto…",
   "yourItem": "Tu pieza",
   "photoCount": "{index} de {total}",
-  "@photoCount": {"placeholders": {"index": {"type": "int"}, "total": {"type": "int"}}},
-
+  "@photoCount": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "publishTitle": "Registrar pieza",
   "publishIntro": "Documenta una pieza para el archivo. Podrás añadir más fotos después.",
   "fieldName": "Nombre de la pieza",
@@ -119,19 +146,36 @@
   "publishSubmit": "Publicar en el archivo",
   "publishSuccess": "Pieza registrada.",
   "publishPhotosFailed": "La pieza se registró, pero {count} foto(s) no se pudieron subir.",
-  "@publishPhotosFailed": {"placeholders": {"count": {"type": "int"}}},
+  "@publishPhotosFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "errRequired": "Campo obligatorio.",
   "errMinLength": "Escribe al menos {min} caracteres.",
-  "@errMinLength": {"placeholders": {"min": {"type": "int"}}},
+  "@errMinLength": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
   "errNumber": "Introduce un número válido mayor o igual a 0.",
   "errPositive": "Introduce un monto mayor a 0.",
   "errYear": "Introduce un año entre 1800 y {max}.",
-  "@errYear": {"placeholders": {"max": {"type": "int"}}},
+  "@errYear": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "errEmail": "Introduce un correo válido.",
   "errPasswordLength": "La contraseña debe tener al menos 6 caracteres.",
   "errPasswordMatch": "Las contraseñas no coinciden.",
   "errUsername": "Entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.",
-
   "auctionsTitle": "Subastas",
   "auctionsKicker": "RONDAS DE CATÁLOGO",
   "auctionsIntro": "Pujas con hora de cierre visible e historial publicado.",
@@ -140,19 +184,49 @@
   "currentBid": "Oferta actual",
   "startingPrice": "Precio inicial",
   "bidsCount": "{count, plural, =0{Sin pujas} =1{1 puja} other{{count} pujas}}",
-  "@bidsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@bidsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "endsIn": "Cierra en {time}",
-  "@endsIn": {"placeholders": {"time": {"type": "String"}}},
+  "@endsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "ended": "Cerrada",
   "live": "Abierta",
   "closesAt": "Cierre: {date}",
-  "@closesAt": {"placeholders": {"date": {"type": "String"}}},
+  "@closesAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "placeBid": "Pujar",
   "bidAmount": "Monto de tu puja (S/)",
   "minBid": "Puja mínima sugerida: {amount}",
-  "@minBid": {"placeholders": {"amount": {"type": "String"}}},
+  "@minBid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "bidMustExceed": "La puja debe superar {amount}.",
-  "@bidMustExceed": {"placeholders": {"amount": {"type": "String"}}},
+  "@bidMustExceed": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "bidPlaced": "Puja registrada.",
   "bidHistory": "Historial de pujas",
   "noBids": "Aún no hay pujas. La primera fija el ritmo.",
@@ -160,13 +234,31 @@
   "auctionClosedNotice": "Esta subasta ya cerró.",
   "confirmBidTitle": "Confirmar puja",
   "confirmBidBody": "Vas a ofertar {amount}. Si ganas, el compromiso es real. ¿Continuar?",
-  "@confirmBidBody": {"placeholders": {"amount": {"type": "String"}}},
+  "@confirmBidBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "createAuctionTitle": "Subastar pieza",
   "auctionDuration": "Duración",
   "durationHours": "{count, plural, =1{1 hora} other{{count} horas}}",
-  "@durationHours": {"placeholders": {"count": {"type": "int"}}},
+  "@durationHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "durationDays": "{count, plural, =1{1 día} other{{count} días}}",
-  "@durationDays": {"placeholders": {"count": {"type": "int"}}},
+  "@durationDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "createAuctionSubmit": "Abrir subasta",
   "auctionCreated": "Subasta abierta.",
   "cancelAuction": "Retirar subasta",
@@ -174,8 +266,13 @@
   "auctionCancelled": "Subasta retirada.",
   "auctioneer": "Subastador",
   "lotNumber": "LOTE {id}",
-  "@lotNumber": {"placeholders": {"id": {"type": "int"}}},
-
+  "@lotNumber": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
   "communitiesTitle": "Comunidades",
   "communitiesKicker": "MESAS DE ESTUDIO",
   "communitiesIntro": "Estudio, conservación e intercambio entre especialistas.",
@@ -183,9 +280,21 @@
   "communitiesEmpty": "No hay comunidades todavía.",
   "communitiesNoResults": "Ninguna comunidad coincide con la búsqueda.",
   "membersCount": "{count, plural, =1{1 miembro} other{{count} miembros}}",
-  "@membersCount": {"placeholders": {"count": {"type": "int"}}},
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "postsCount": "{count, plural, =0{Sin publicaciones} =1{1 publicación} other{{count} publicaciones}}",
-  "@postsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@postsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "join": "Unirme",
   "leave": "Salir",
   "joined": "Miembro",
@@ -207,12 +316,17 @@
   "postContent": "Contenido",
   "postPublished": "Nota publicada.",
   "postBy": "Por {name}",
-  "@postBy": {"placeholders": {"name": {"type": "String"}}},
+  "@postBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "deletePost": "Eliminar nota",
   "deletePostConfirm": "La nota y sus comentarios se eliminarán.",
   "postDeleted": "Nota eliminada.",
   "searchInCommunity": "Buscar en la comunidad",
-
   "profileKicker": "MI REGISTRO",
   "myArchive": "Mi archivo",
   "myCommunities": "Mis comunidades",
@@ -222,9 +336,14 @@
   "fieldBio": "Biografía",
   "fieldLocation": "Ubicación",
   "memberSince": "Miembro desde {date}",
-  "@memberSince": {"placeholders": {"date": {"type": "String"}}},
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "profileUpdated": "Perfil actualizado.",
-
   "appearance": "Apariencia",
   "themeSystem": "Sistema",
   "themeLight": "Claro",
@@ -246,11 +365,22 @@
   "signOutConfirm": "¿Cerrar la sesión en este dispositivo?",
   "about": "Acerca de",
   "versionLabel": "Versión {version}",
-  "@versionLabel": {"placeholders": {"version": {"type": "String"}}},
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "privacySummary": "Las fotos para reconocimiento se envían solo cuando lo confirmas y el servidor no las guarda. Tu sesión se almacena cifrada en el dispositivo.",
   "serverLabel": "Servidor: {url}",
-  "@serverLabel": {"placeholders": {"url": {"type": "String"}}},
-
+  "@serverLabel": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "loginKicker": "ACCESO DE COLECCIONISTA",
   "loginTitle": "Bienvenido de nuevo",
   "loginIntro": "Entra para publicar piezas, pujar y participar en las comunidades.",
@@ -277,7 +407,6 @@
   "recoveryToken": "Código de recuperación",
   "resetSubmit": "Restablecer",
   "resetDone": "Contraseña restablecida. Ya puedes iniciar sesión.",
-
   "scanTitle": "Escanear pieza",
   "scanKicker": "LABORATORIO VISUAL",
   "scanIntro": "Identifica una pieza con una foto y compruébala contra el catálogo real y las subastas abiertas.",
@@ -306,13 +435,18 @@
   "permissionGalleryDenied": "Sin permiso para acceder a las fotos.",
   "imageUnreadable": "No se pudo leer la imagen. Prueba con otra foto.",
   "imageTooLarge": "La imagen es demasiado grande incluso después de optimizarla.",
-
   "resultKicker": "RESULTADO DEL ANÁLISIS",
   "resultTitle": "Identificación",
   "notDetected": "No se identificó ninguna pieza",
   "confidenceLabel": "Certeza estimada",
   "confidenceValue": "{percent} %",
-  "@confidenceValue": {"placeholders": {"percent": {"type": "int"}}},
+  "@confidenceValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "brand": "Marca",
   "model": "Modelo",
   "visibleText": "Texto visible",
@@ -322,7 +456,13 @@
   "alternatives": "Otras posibles coincidencias",
   "chooseMatchHint": "Elige la pieza correcta para continuar.",
   "matchScore": "Similitud {percent} %",
-  "@matchScore": {"placeholders": {"percent": {"type": "int"}}},
+  "@matchScore": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "statusAvailable": "Disponible en subasta",
   "statusUnavailable": "Registrada, no ofertada",
   "statusNotInCatalog": "No está en el catálogo",
@@ -336,6 +476,14 @@
   "resultDisclaimer": "La IA describe solo lo visible. La disponibilidad y el precio final dependen del catálogo y de la subasta; una coincidencia visual no confirma una venta.",
   "newScan": "Nuevo escaneo",
   "modelUsed": "Modelo: {model}",
-  "@modelUsed": {"placeholders": {"model": {"type": "String"}}},
-  "openAuctionTag": "Subasta abierta"
+  "@modelUsed": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      }
+    }
+  },
+  "openAuctionTag": "Subasta abierta",
+  "homeCategories": "Explora por categoría",
+  "homeExplore": "Explorar catálogo"
 }
