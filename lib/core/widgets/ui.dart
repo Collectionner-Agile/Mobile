@@ -70,11 +70,7 @@ class SectionHeader extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(actionLabel!),
-                    const SizedBox(width: 2),
-                    const Icon(AppIcons.chevronRight, size: 16),
-                  ],
+                  children: [Text(actionLabel!), const SizedBox(width: 2), const Icon(AppIcons.chevronRight, size: 16)],
                 ),
               ),
             ),
@@ -184,7 +180,10 @@ class StateMessage extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [color.withValues(alpha: context.isDark ? 0.22 : 0.16), color.withValues(alpha: 0)],
+                colors: [
+                  color.withValues(alpha: context.isDark ? 0.22 : 0.16),
+                  color.withValues(alpha: 0),
+                ],
               ),
             ),
             child: Center(
@@ -205,7 +204,11 @@ class StateMessage extends StatelessWidget {
           Text(title, style: context.text.titleMedium, textAlign: TextAlign.center),
           if (body != null) ...[
             const SizedBox(height: Space.xs),
-            Text(body!, style: context.text.bodyMedium?.copyWith(color: brand.muted), textAlign: TextAlign.center),
+            Text(
+              body!,
+              style: context.text.bodyMedium?.copyWith(color: brand.muted),
+              textAlign: TextAlign.center,
+            ),
           ],
           if (actionLabel != null && onAction != null) ...[
             const SizedBox(height: Space.lg),
@@ -466,12 +469,16 @@ void showToast(BuildContext context, String message, {bool error = false, IconDa
               ),
               child: Icon(
                 icon ?? (error ? AppIcons.circleAlert : AppIcons.circleCheck),
-                color: error ? (light ? const Color(0xFFFFB4B4) : brand.danger) : (light ? Brand.goldLight : brand.gold),
+                color: error
+                    ? (light ? const Color(0xFFFFB4B4) : brand.danger)
+                    : (light ? Brand.goldLight : brand.gold),
                 size: 16,
               ),
             ),
             const SizedBox(width: Space.sm),
-            Expanded(child: Text(message, style: context.text.bodyMedium?.copyWith(color: foreground))),
+            Expanded(
+              child: Text(message, style: context.text.bodyMedium?.copyWith(color: foreground)),
+            ),
           ],
         ),
       ),
@@ -510,7 +517,11 @@ Future<bool> confirmDialog(
               const SizedBox(height: Space.md),
               Text(title, style: context.text.titleLarge, textAlign: TextAlign.center),
               const SizedBox(height: Space.xs),
-              Text(body, style: context.text.bodyMedium?.copyWith(color: brand.muted), textAlign: TextAlign.center),
+              Text(
+                body,
+                style: context.text.bodyMedium?.copyWith(color: brand.muted),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: Space.xl),
               Row(
                 children: [
@@ -612,7 +623,9 @@ class HeroPanel extends StatelessWidget {
                 height: 180,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: RadialGradient(colors: [Brand.gold.withValues(alpha: 0.28), Brand.gold.withValues(alpha: 0)]),
+                  gradient: RadialGradient(
+                    colors: [Brand.gold.withValues(alpha: 0.28), Brand.gold.withValues(alpha: 0)],
+                  ),
                 ),
               ),
             ),

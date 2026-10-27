@@ -53,8 +53,10 @@ abstract final class AppTheme {
       letterSpacing: spacing,
       color: c.ink,
     );
-    TextStyle display(double size, double weight, {double height = 1.08, double spacing = -0.4}) =>
-        Fonts.display(sans(size, 700, height: height, spacing: spacing), weight: weight);
+    TextStyle display(double size, double weight, {double height = 1.08, double spacing = -0.4}) => Fonts.display(
+      sans(size, 700, height: height, spacing: spacing),
+      weight: weight,
+    );
 
     final text = TextTheme(
       displayLarge: display(42, 680, height: 1.02, spacing: -1),

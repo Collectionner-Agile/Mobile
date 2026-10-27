@@ -129,11 +129,20 @@ class BrandColors extends ThemeExtension<BrandColors> {
   /// Soft two-layer shadow: a wide ambient glow and a tight contact shadow.
   List<BoxShadow> get cardShadow => [
     BoxShadow(color: shadow, blurRadius: 28, offset: const Offset(0, 12), spreadRadius: -10),
-    BoxShadow(color: shadow.withValues(alpha: shadow.a * 0.5), blurRadius: 3, offset: const Offset(0, 1)),
+    BoxShadow(
+      color: shadow.withValues(alpha: shadow.a * 0.5),
+      blurRadius: 3,
+      offset: const Offset(0, 1),
+    ),
   ];
 
   List<BoxShadow> get floatingShadow => [
-    BoxShadow(color: shadow.withValues(alpha: math.min(1, shadow.a * 1.6)), blurRadius: 36, offset: const Offset(0, 16), spreadRadius: -8),
+    BoxShadow(
+      color: shadow.withValues(alpha: math.min(1, shadow.a * 1.6)),
+      blurRadius: 36,
+      offset: const Offset(0, 16),
+      spreadRadius: -8,
+    ),
   ];
 
   @override
@@ -225,12 +234,7 @@ class SpringCurve extends Curve {
 
   @override
   double transformInternal(double t) {
-    final simulation = SpringSimulation(
-      SpringDescription(mass: mass, stiffness: stiffness, damping: damping),
-      0,
-      1,
-      0,
-    );
+    final simulation = SpringSimulation(SpringDescription(mass: mass, stiffness: stiffness, damping: damping), 0, 1, 0);
     return simulation.x(t * settleSeconds);
   }
 }
@@ -255,12 +259,10 @@ abstract final class Motion {
   /// of overshoot.
   static const SpringCurve bouncy = SpringCurve(stiffness: 300, damping: 26);
 
-  static Duration springDuration(SpringCurve curve) =>
-      Duration(milliseconds: (curve.settleSeconds * 1000).round());
+  static Duration springDuration(SpringCurve curve) => Duration(milliseconds: (curve.settleSeconds * 1000).round());
 
   /// Honors the platform "remove animations" accessibility setting.
-  static Duration of(BuildContext context, Duration duration) =>
-      reduced(context) ? Duration.zero : duration;
+  static Duration of(BuildContext context, Duration duration) => reduced(context) ? Duration.zero : duration;
 
   static bool reduced(BuildContext context) => MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 }
@@ -307,8 +309,7 @@ abstract final class Fonts {
       (base ?? const TextStyle()).copyWith(fontFamily: family, fontWeight: weightOf(weight), letterSpacing: 0.3);
 
   /// Uppercase eyebrow above a title.
-  static TextStyle eyebrow(TextStyle? base) =>
-      label(base, weight: 680).copyWith(letterSpacing: 1.4, fontSize: 11);
+  static TextStyle eyebrow(TextStyle? base) => label(base, weight: 680).copyWith(letterSpacing: 1.4, fontSize: 11);
 
   /// Figures that do not jump while a countdown or bid changes.
   static TextStyle figures(TextStyle? base) =>
