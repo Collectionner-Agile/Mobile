@@ -6,6 +6,8 @@
 // Credentials are the development seed account documented in backend/README.md.
 import 'package:collectionner/app/router/app_router.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
+import 'package:collectionner/features/communities/presentation/widgets/community_tile.dart';
+import 'package:collectionner/features/profile/presentation/insights_screen.dart';
 import 'package:collectionner/main.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,15 +51,15 @@ void main() {
     router.go(Routes.auctions);
     await pumpFor(tester);
     router.go(Routes.communities);
-    await waitFor(tester, find.byType(Card));
+    await waitFor(tester, find.byType(CommunityTile));
 
-    // Sign in with the seed account and land on the protected profile.
-    router.go(Routes.profile);
+    // Sign in with the seed account and land on a protected screen.
+    router.go(Routes.insights);
     await waitFor(tester, find.byType(TextFormField));
     await tester.enterText(find.byType(TextFormField).at(0), _username);
     await tester.enterText(find.byType(TextFormField).at(1), _password);
     await tester.tap(find.byType(FilledButton).last);
-    await waitFor(tester, find.textContaining('@$_username'));
+    await waitFor(tester, find.byType(InsightsScreen));
 
     // Preferences apply live.
     router.go(Routes.settings);

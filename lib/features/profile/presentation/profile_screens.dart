@@ -7,6 +7,7 @@ import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/glass.dart';
 import '../../../core/widgets/motion.dart';
@@ -27,7 +28,32 @@ class ProfileScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final brand = context.brand;
     final user = ref.watch(currentUserProvider);
-    if (user == null) return const Scaffold(body: SizedBox.shrink());
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              tooltip: l10n.settings,
+              icon: const Icon(AppIcons.settings),
+              onPressed: () => context.push(Routes.settings),
+            ),
+          ],
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: StateMessage(
+              icon: AppIcons.userRound,
+              title: l10n.profileGuestTitle,
+              body: l10n.profileGuestBody,
+              actionLabel: l10n.signIn,
+              actionIcon: AppIcons.logIn,
+              onAction: () =>
+                  context.push(Uri(path: Routes.login, queryParameters: {'from': Routes.profile}).toString()),
+            ),
+          ),
+        ),
+      );
+    }
     final items = ref
         .watch(collectiblesProvider)
         .whenData((all) => all.where((item) => item.ownerId == user.id).toList());

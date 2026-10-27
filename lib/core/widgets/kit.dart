@@ -54,7 +54,12 @@ class AppCard extends StatelessWidget {
         child: content,
       );
     }
-    if (gradient != null) content = Ink(decoration: BoxDecoration(gradient: gradient), child: content);
+    if (gradient != null) {
+      content = Ink(
+        decoration: BoxDecoration(gradient: gradient),
+        child: content,
+      );
+    }
     Widget card = Material(
       color: gradient == null ? (color ?? brand.surface) : Colors.transparent,
       shape: shape,
@@ -68,7 +73,11 @@ class AppCard extends StatelessWidget {
       );
     }
     if (onTap == null) return card;
-    return Semantics(button: true, label: semanticLabel, child: TapScale(child: card));
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: TapScale(child: card),
+    );
   }
 }
 
@@ -161,7 +170,10 @@ class CircleIconButton extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: brand.live,
                             shape: BoxShape.circle,
-                            border: Border.all(color: background == Colors.transparent ? brand.paper : background, width: 1.5),
+                            border: Border.all(
+                              color: background == Colors.transparent ? brand.paper : background,
+                              width: 1.5,
+                            ),
                           ),
                         ),
                       ),
@@ -193,7 +205,10 @@ class MenuGroup extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(Space.xxs, 0, Space.xxs, Space.xs),
             child: Semantics(
               header: true,
-              child: Text(title!.toUpperCase(), style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: brand.muted)),
+              child: Text(
+                title!.toUpperCase(),
+                style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: brand.muted),
+              ),
             ),
           ),
         AppCard(
@@ -309,7 +324,10 @@ class PageTitle extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (eyebrow != null) ...[
-                  Text(eyebrow!.toUpperCase(), style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: brand.gold)),
+                  Text(
+                    eyebrow!.toUpperCase(),
+                    style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: brand.gold),
+                  ),
                   const SizedBox(height: Space.xxs),
                 ],
                 Semantics(header: true, child: Text(title, style: context.text.headlineLarge)),
@@ -487,12 +505,7 @@ class QuickAction extends StatelessWidget {
                       ),
                       child: Icon(icon, size: 24, color: highlight ? brand.onAccent : tone),
                     ),
-                    if (badge != null && badge! > 0)
-                      Positioned(
-                        top: -4,
-                        right: -4,
-                        child: _CountBubble(count: badge!),
-                      ),
+                    if (badge != null && badge! > 0) Positioned(top: -4, right: -4, child: _CountBubble(count: badge!)),
                   ],
                 ),
                 const SizedBox(height: Space.xs),
@@ -812,7 +825,10 @@ class _RollingDigit extends StatelessWidget {
           begin: incoming ? const Offset(0, 0.7) : const Offset(0, -0.7),
           end: Offset.zero,
         ).animate(animation);
-        return SlideTransition(position: slide, child: FadeTransition(opacity: animation, child: child));
+        return SlideTransition(
+          position: slide,
+          child: FadeTransition(opacity: animation, child: child),
+        );
       },
       layoutBuilder: (current, previous) => Stack(alignment: Alignment.center, children: [...previous, ?current]),
       child: Text(digit, key: ValueKey(digit), style: style),
@@ -831,9 +847,8 @@ class PriceText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolved = Fonts.figures(
-      Fonts.display(style ?? context.text.titleLarge, weight: 700),
-    ).copyWith(color: color ?? context.brand.ink);
+    final resolved = Fonts.figures(Fonts.display(style ?? context.text.titleLarge, weight: 700))
+        .copyWith(color: color ?? context.brand.ink);
     if (animate) return AnimatedNumber(value: amount, format: context.money, style: resolved);
     return Text(context.money(amount), style: resolved, maxLines: 1, overflow: TextOverflow.ellipsis);
   }
@@ -881,10 +896,19 @@ class UserAvatar extends StatelessWidget {
             ),
             child: Text(
               initial,
-              style: Fonts.display(TextStyle(fontSize: size * 0.42, height: 1), weight: 680).copyWith(color: Colors.white),
+              style: Fonts.display(
+                TextStyle(fontSize: size * 0.42, height: 1),
+                weight: 680,
+              ).copyWith(color: Colors.white),
             ),
           );
-    if (!ring) return Semantics(label: name, image: true, child: ExcludeSemantics(child: face));
+    if (!ring) {
+      return Semantics(
+        label: name,
+        image: true,
+        child: ExcludeSemantics(child: face),
+      );
+    }
     return Semantics(
       label: name,
       image: true,
@@ -945,8 +969,16 @@ class ProgressRing extends StatelessWidget {
       duration: Motion.of(context, const Duration(milliseconds: 1200)),
       curve: Motion.enter,
       builder: (context, progress, child) => CustomPaint(
-        painter: _RingPainter(progress: progress, color: color ?? brand.gold, track: brand.surfaceMuted, stroke: stroke),
-        child: SizedBox.square(dimension: size, child: Center(child: child)),
+        painter: _RingPainter(
+          progress: progress,
+          color: color ?? brand.gold,
+          track: brand.surfaceMuted,
+          stroke: stroke,
+        ),
+        child: SizedBox.square(
+          dimension: size,
+          child: Center(child: child),
+        ),
       ),
       child: child,
     );
@@ -1029,10 +1061,8 @@ class _AreaPainter extends CustomPainter {
     final span = (high - low).abs() < 1e-9 ? 1.0 : high - low;
     const top = 12.0;
     final bottom = size.height - 6;
-    Offset point(int i) => Offset(
-      size.width * i / (values.length - 1),
-      bottom - (values[i] - low) / span * (bottom - top),
-    );
+    Offset point(int i) =>
+        Offset(size.width * i / (values.length - 1), bottom - (values[i] - low) / span * (bottom - top));
 
     final gridPaint = Paint()
       ..color = grid
@@ -1113,7 +1143,10 @@ class DotsIndicator extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 3),
             width: i == index ? 22 : 7,
             height: 7,
-            decoration: BoxDecoration(color: i == index ? active : idle, borderRadius: BorderRadius.circular(Radii.pill)),
+            decoration: BoxDecoration(
+              color: i == index ? active : idle,
+              borderRadius: BorderRadius.circular(Radii.pill),
+            ),
           ),
       ],
     );
@@ -1154,7 +1187,10 @@ class _GlowPainter extends CustomPainter {
         radius,
         Paint()
           ..shader = RadialGradient(
-            colors: [color.withValues(alpha: strength), color.withValues(alpha: 0)],
+            colors: [
+              color.withValues(alpha: strength),
+              color.withValues(alpha: 0),
+            ],
           ).createShader(Rect.fromCircle(center: center, radius: radius)),
       );
     }
@@ -1217,9 +1253,5 @@ String formatDurationLabel(Duration left, AppLocalizations l10n) {
   final days = left.inDays;
   final hours = left.inHours % 24;
   final minutes = left.inMinutes % 60;
-  return [
-    if (days > 0) '$days ${l10n.unitDays}',
-    '$hours ${l10n.unitHours}',
-    '$minutes ${l10n.unitMinutes}',
-  ].join(' ');
+  return [if (days > 0) '$days ${l10n.unitDays}', '$hours ${l10n.unitHours}', '$minutes ${l10n.unitMinutes}'].join(' ');
 }

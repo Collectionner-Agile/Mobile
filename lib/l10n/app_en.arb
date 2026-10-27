@@ -579,5 +579,10 @@
   "farewellTitle": "See you soon",
   "farewellExit": "Your showcase will be waiting for you.",
   "farewellSignedOut": "You signed out. Come back anytime.",
-  "pressBackAgain": "Press back again to exit"
+  "pressBackAgain": "Press back again to exit",
+  "navExplore": "Explore",
+  "exploreSubtitle": "Pieces and communities to discover",
+  "explorePieces": "Pieces",
+  "profileGuestTitle": "Your collector space",
+  "profileGuestBody": "Sign in to keep your pieces, bid and follow auctions."
 }

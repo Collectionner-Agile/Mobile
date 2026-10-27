@@ -579,5 +579,10 @@
   "farewellTitle": "Hasta pronto",
   "farewellExit": "Tu vitrina te espera cuando vuelvas.",
   "farewellSignedOut": "Cerraste sesión. Vuelve cuando quieras.",
-  "pressBackAgain": "Presiona atrás otra vez para salir"
+  "pressBackAgain": "Presiona atrás otra vez para salir",
+  "navExplore": "Explorar",
+  "exploreSubtitle": "Piezas y comunidades para descubrir",
+  "explorePieces": "Piezas",
+  "profileGuestTitle": "Tu espacio de coleccionista",
+  "profileGuestBody": "Inicia sesión para guardar tus piezas, pujar y seguir subastas."
 }

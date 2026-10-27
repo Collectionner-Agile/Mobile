@@ -7,13 +7,12 @@ import '../../features/auctions/presentation/auction_detail_screen.dart';
 import '../../features/auctions/presentation/auctions_screen.dart';
 import '../../features/auth/application/session_controller.dart';
 import '../../features/auth/presentation/auth_screens.dart';
-import '../../features/catalog/presentation/catalog_screen.dart';
 import '../../features/catalog/presentation/collectible_detail_screen.dart';
 import '../../features/catalog/presentation/publish_collectible_screen.dart';
-import '../../features/communities/presentation/communities_screen.dart';
 import '../../features/communities/presentation/community_detail_screen.dart';
 import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
+import '../../features/explore/explore_screen.dart';
 import '../../features/favorites/favorites_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
@@ -56,8 +55,9 @@ abstract final class Routes {
   static String post(int id) => '/posts/$id';
 
   /// Paths that need a session; the user is sent to login and brought back.
+  /// The profile tab itself is open: guests see how to sign in there.
   static bool isProtected(String location) =>
-      location.startsWith(profile) ||
+      location.startsWith('$profile/') ||
       location == publishCollectible ||
       location == newCommunity ||
       RegExp(r'^/communities/\d+/post$').hasMatch(location) ||
@@ -115,6 +115,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/communities/:id/post',
         builder: (_, state) => CreatePostScreen(communityId: _id(state)),
       ),
+      // Communities live in the Explore tab; their detail opens full screen.
+      GoRoute(path: Routes.communities, redirect: (_, _) => '${Routes.catalog}?tab=communities'),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/communities/:id',
+        builder: (_, state) => CommunityDetailScreen(id: _id(state)),
+      ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/posts/:id',
@@ -136,7 +143,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const ForgotPasswordScreen(),
       ),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.resetPassword, builder: (_, _) => const ResetPasswordScreen()),
-      GoRoute(parentNavigatorKey: _rootKey, path: Routes.profile, builder: (_, _) => const ProfileScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.editProfile, builder: (_, _) => const EditProfileScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.insights, builder: (_, _) => const InsightsScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.settings, builder: (_, _) => const SettingsScreen()),
@@ -145,8 +151,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.changePassword,
         builder: (_, _) => const ChangePasswordScreen(),
       ),
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
         builder: (context, state, shell) => AppShell(shell: shell),
+        navigatorContainerBuilder: (context, shell, children) =>
+            BranchContainer(index: shell.currentIndex, children: children),
         branches: [
           StatefulShellBranch(
             routes: [GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen())],
@@ -155,7 +163,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.catalog,
-                builder: (_, _) => const CatalogScreen(),
+                builder: (_, state) => ExploreScreen(
+                  tab: state.uri.queryParameters['tab'] == 'communities' ? ExploreTab.communities : ExploreTab.pieces,
+                ),
                 routes: [
                   GoRoute(
                     path: 'item/:id',
@@ -183,18 +193,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.communities,
-                builder: (_, _) => const CommunitiesScreen(),
-                routes: [
-                  GoRoute(
-                    path: ':id',
-                    builder: (_, state) => CommunityDetailScreen(id: _id(state)),
-                  ),
-                ],
-              ),
-            ],
+            routes: [GoRoute(path: Routes.profile, builder: (_, _) => const ProfileScreen())],
           ),
         ],
       ),

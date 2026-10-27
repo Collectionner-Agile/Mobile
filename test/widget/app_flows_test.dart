@@ -63,7 +63,7 @@ void main() {
 
   testWidgets('bottom navigation switches tabs and catalogue search filters results', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('Catálogo'));
+    await tester.tap(find.byTooltip('Explorar'));
     await settle(tester);
     expect(find.text('4 piezas'), findsOneWidget);
 
@@ -83,7 +83,7 @@ void main() {
   testWidgets('API failure shows an error state and retry recovers', (tester) async {
     final backend = Fixtures.standardBackend()..json('GET', '/api/v1/collectibles', {'detail': 'boom'}, status: 500);
     await pumpApp(tester, backend: backend);
-    await tester.tap(find.byTooltip('Catálogo'));
+    await tester.tap(find.byTooltip('Explorar'));
     await settle(tester);
     expect(find.text('Ocurrió un error en el servidor. Inténtalo más tarde.'), findsOneWidget);
 
@@ -114,7 +114,7 @@ void main() {
         'name': 'Diego Collector',
       });
     final app = await pumpApp(tester, backend: backend);
-    app.container.read(routerProvider).go(Routes.profile);
+    app.container.read(routerProvider).go(Routes.insights);
     await settle(tester);
     expect(find.text('Bienvenido de nuevo'), findsOneWidget);
 
@@ -127,7 +127,7 @@ void main() {
     await tester.tap(find.text('Iniciar sesión').last);
     await settle(tester);
     expect(app.store.token, isNotNull, reason: 'token persisted to secure storage');
-    expect(find.text('Mi archivo'), findsOneWidget);
+    expect(app.container.read(routerProvider).state.matchedLocation, Routes.insights);
   });
 
   testWidgets('wrong credentials show a clear message', (tester) async {
@@ -253,13 +253,13 @@ void main() {
         backend: backend,
         overrides: [webAuthenticatorProvider.overrideWithValue(browser())],
       );
-      app.container.read(routerProvider).go(Routes.profile);
+      app.container.read(routerProvider).go(Routes.insights);
       await settle(tester);
       await tester.tap(find.text('Continuar con Google'));
       await settle(tester);
       expect(app.store.token, isNotNull);
       expect(backend.requests.any((r) => r.path == '/api/v1/auth/oauth/exchange'), isTrue);
-      expect(find.text('Mi archivo'), findsOneWidget);
+      expect(app.container.read(routerProvider).state.matchedLocation, Routes.insights);
     });
 
     testWidgets('rejects a callback for another flow', (tester) async {
