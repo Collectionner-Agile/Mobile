@@ -11,6 +11,7 @@ import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/application/auction_providers.dart';
+import '../auth/application/session_controller.dart';
 import '../catalog/application/catalog_providers.dart';
 import '../catalog/domain/catalog_models.dart';
 import '../catalog/presentation/widgets/collectible_card.dart';
@@ -68,14 +69,18 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: Space.sm),
+                  // Scales down on narrow phones instead of being cut off.
                   Flexible(
-                    child: Text(
-                      l10n.appName,
-                      overflow: TextOverflow.ellipsis,
-                      style: Fonts.display(context.text.titleLarge, weight: 800),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        l10n.appName,
+                        maxLines: 1,
+                        style: Fonts.display(context.text.titleLarge, weight: 820),
+                      ),
                     ),
                   ),
-                  if (AppConfig.demoMode) ...[const SizedBox(width: Space.xs), const _DemoBadge()],
                 ],
               ),
               actions: const [
@@ -234,16 +239,36 @@ class HomeScreen extends ConsumerWidget {
 }
 
 /// Headline and a search field that opens the catalogue.
-class _Intro extends StatelessWidget {
+class _Intro extends ConsumerWidget {
   const _Intro();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final brand = context.brand;
+    final user = ref.watch(currentUserProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (user != null || AppConfig.demoMode) ...[
+          Row(
+            children: [
+              if (user != null)
+                Expanded(
+                  child: Text(
+                    l10n.homeGreeting(user.name.split(' ').first),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.titleMedium?.copyWith(color: brand.muted),
+                  ),
+                )
+              else
+                const Spacer(),
+              if (AppConfig.demoMode) const _DemoBadge(),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+        ],
         Text(l10n.homeTitle, style: context.text.headlineMedium),
         const SizedBox(height: Space.xs),
         Text(l10n.homeIntro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
