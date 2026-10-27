@@ -301,10 +301,10 @@ void main() {
 
   testWidgets('first launch shows the introduction once', (tester) async {
     final app = await pumpApp(tester, prefs: {'pref.onboarded': false});
-    expect(find.text('Tu archivo de piezas con historia'), findsOneWidget);
+    expect(find.text('Tu colección en un solo lugar'), findsOneWidget);
     await tester.tap(find.text('Siguiente'));
     await settle(tester, 6);
-    expect(find.text('Subastas que se ven en vivo'), findsOneWidget);
+    expect(find.text('Subastas en vivo'), findsOneWidget);
     await tester.tap(find.text('Siguiente'));
     await settle(tester, 6);
     await tester.tap(find.text('Empezar'));

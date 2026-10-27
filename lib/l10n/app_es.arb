@@ -526,12 +526,12 @@
   "demoBadge": "Demo",
   "demoServerLabel": "Modo demostración: datos de ejemplo guardados en el teléfono. Los cambios no se envían a ningún servidor.",
   "demoLoginHint": "Modo demostración: cualquier usuario y contraseña abren la cuenta de ejemplo.",
-  "onboardingTitle1": "Tu archivo de piezas con historia",
-  "onboardingBody1": "Cataloga cada objeto con fotos, año, procedencia y valor declarado.",
-  "onboardingTitle2": "Subastas que se ven en vivo",
-  "onboardingBody2": "Pujas con hora de cierre a la vista, historial publicado y contador al segundo.",
-  "onboardingTitle3": "Identifica y comparte",
-  "onboardingBody3": "Reconoce piezas con la cámara y únete a comunidades de especialistas.",
+  "onboardingTitle1": "Tu colección en un solo lugar",
+  "onboardingBody1": "Guarda tus piezas con fotos, año y valor. Todo ordenado y siempre a mano.",
+  "onboardingTitle2": "Subastas en vivo",
+  "onboardingBody2": "Puja con el tiempo a la vista y entérate de cada oferta al instante.",
+  "onboardingTitle3": "Identifica con la cámara",
+  "onboardingBody3": "Apunta a una pieza y te decimos qué es y si está en el catálogo.",
   "onboardingSkip": "Saltar",
   "onboardingNext": "Siguiente",
   "onboardingStart": "Empezar",
@@ -591,5 +591,6 @@
   "liveNowNote": "Desliza para ver cada subasta",
   "liveLabel": "En vivo",
   "quickPublish": "Publicar",
-  "quickCategories": "Categorías"
+  "quickCategories": "Categorías",
+  "onboardingHaveAccount": "Ya tengo cuenta"
 }

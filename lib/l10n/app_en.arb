@@ -526,12 +526,12 @@
   "demoBadge": "Demo",
   "demoServerLabel": "Demo mode: sample data stored on the phone. Changes are not sent to any server.",
   "demoLoginHint": "Demo mode: any username and password open the sample account.",
-  "onboardingTitle1": "Your archive of objects with a story",
-  "onboardingBody1": "Catalogue each piece with photos, year, provenance and declared value.",
-  "onboardingTitle2": "Auctions you can watch live",
-  "onboardingBody2": "Bids with a visible closing time, public history and a second-by-second countdown.",
-  "onboardingTitle3": "Identify and share",
-  "onboardingBody3": "Recognise pieces with the camera and join communities of specialists.",
+  "onboardingTitle1": "Your collection in one place",
+  "onboardingBody1": "Keep your pieces with photos, year and value. Organised and always at hand.",
+  "onboardingTitle2": "Live auctions",
+  "onboardingBody2": "Bid with the clock in sight and see every offer as it happens.",
+  "onboardingTitle3": "Identify with your camera",
+  "onboardingBody3": "Point at a piece and we tell you what it is and whether it's in the catalogue.",
   "onboardingSkip": "Skip",
   "onboardingNext": "Next",
   "onboardingStart": "Get started",
@@ -591,5 +591,6 @@
   "liveNowNote": "Swipe through each auction",
   "liveLabel": "Live",
   "quickPublish": "Publish",
-  "quickCategories": "Categories"
+  "quickCategories": "Categories",
+  "onboardingHaveAccount": "I already have an account"
 }
