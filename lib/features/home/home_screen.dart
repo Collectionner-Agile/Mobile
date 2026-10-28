@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/config/app_config.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
@@ -340,22 +339,12 @@ class _Intro extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (user != null || AppConfig.demoMode) ...[
-          Row(
-            children: [
-              if (user != null)
-                Expanded(
-                  child: Text(
-                    l10n.homeGreeting(user.name.split(' ').first),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.text.titleMedium?.copyWith(color: brand.muted),
-                  ),
-                )
-              else
-                const Spacer(),
-              if (AppConfig.demoMode) const _DemoBadge(),
-            ],
+        if (user != null) ...[
+          Text(
+            l10n.homeGreeting(user.name.split(' ').first),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.text.titleMedium?.copyWith(color: brand.muted),
           ),
           const SizedBox(height: Space.xs),
         ],
@@ -727,31 +716,6 @@ class _CategoryTile extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Marks demo builds so sample data is never mistaken for the live service.
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    final brand = context.brand;
-    return Tooltip(
-      message: context.l10n.demoServerLabel,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-          color: brand.gold.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(Radii.pill),
-          border: Border.all(color: brand.gold.withValues(alpha: 0.6)),
-        ),
-        child: Text(
-          context.l10n.demoBadge,
-          style: Fonts.label(context.text.labelMedium, weight: 700).copyWith(color: brand.gold),
         ),
       ),
     );

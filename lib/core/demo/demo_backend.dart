@@ -291,10 +291,7 @@ class DemoBackend implements HttpClientAdapter {
       case (_, ['recognition', ...]) || (_, ['media', ...]):
         return (
           503,
-          {
-            'title': 'No disponible',
-            'detail': 'Esta función necesita el servidor y no está activa en modo demostración.',
-          },
+          {'title': 'No disponible', 'detail': 'Esta función no está disponible por ahora. Inténtalo más tarde.'},
         );
     }
     return _notFound();
@@ -313,7 +310,7 @@ class DemoBackend implements HttpClientAdapter {
     'createdAt': createdAt,
   };
 
-  (int, Object?) _notFound() => (404, {'title': 'No encontrado', 'detail': 'No existe en los datos de demostración.'});
+  (int, Object?) _notFound() => (404, {'title': 'No encontrado', 'detail': 'No existe o ya no está disponible.'});
 
   /// Unsigned token in JWT shape so the session logic (expiry check) works.
   static String _demoToken() {

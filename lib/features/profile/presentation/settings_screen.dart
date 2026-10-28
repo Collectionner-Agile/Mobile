@@ -194,10 +194,11 @@ class SettingsScreen extends ConsumerWidget {
                       Text(l10n.privacySummary, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
                       const SizedBox(height: Space.sm),
                       Text(l10n.versionLabel(appVersion), style: context.text.bodySmall?.copyWith(color: brand.muted)),
-                      Text(
-                        AppConfig.demoMode ? l10n.demoServerLabel : l10n.serverLabel(AppConfig.apiBaseUrl),
-                        style: context.text.bodySmall?.copyWith(color: brand.muted),
-                      ),
+                      if (!AppConfig.demoMode)
+                        Text(
+                          l10n.serverLabel(AppConfig.apiBaseUrl),
+                          style: context.text.bodySmall?.copyWith(color: brand.muted),
+                        ),
                     ],
                   ),
                 ),

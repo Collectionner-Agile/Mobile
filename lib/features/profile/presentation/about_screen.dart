@@ -68,12 +68,7 @@ class AboutScreen extends StatelessWidget {
                               .copyWith(color: const Color(0xB3FFFFFF), letterSpacing: 2),
                         ),
                         const SizedBox(height: Space.md),
-                        Tag(
-                          AppConfig.demoMode
-                              ? '${l10n.versionLabel(appVersion)} · ${l10n.demoBadge}'
-                              : l10n.versionLabel(appVersion),
-                          onPhoto: true,
-                        ),
+                        Tag(l10n.versionLabel(appVersion), onPhoto: true),
                       ],
                     ),
                   ),
@@ -115,11 +110,10 @@ class AboutScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(l10n.privacySummary, style: context.text.bodyMedium),
-                            const SizedBox(height: Space.xs),
-                            Text(
-                              AppConfig.demoMode ? l10n.demoServerLabel : l10n.serverLabel(AppConfig.apiBaseUrl),
-                              style: context.text.bodySmall,
-                            ),
+                            if (!AppConfig.demoMode) ...[
+                              const SizedBox(height: Space.xs),
+                              Text(l10n.serverLabel(AppConfig.apiBaseUrl), style: context.text.bodySmall),
+                            ],
                           ],
                         ),
                       ),

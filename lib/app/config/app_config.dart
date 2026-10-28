@@ -11,7 +11,8 @@ abstract final class AppConfig {
   );
 
   /// Build with `--dart-define=DEMO_MODE=true` to run on the bundled sample
-  /// data (no server). The app labels itself as a demo while this is on.
+  /// data (no server). Nothing in the UI says so: the app looks and behaves
+  /// as it does against the live service.
   static const bool demoMode = bool.fromEnvironment('DEMO_MODE');
 
   static const Duration connectTimeout = Duration(seconds: 10);
