@@ -238,6 +238,17 @@ void main() {
     expect(find.text('Charizard Holo Base Set'), findsOneWidget);
   });
 
+  testWidgets('categories open a category page with its pieces', (tester) async {
+    final app = await pumpApp(tester);
+    unawaited(app.container.read(routerProvider).push(Routes.categories));
+    await settle(tester);
+    expect(find.text('Categorías'), findsWidgets);
+    await tester.tap(find.text('Relojería Vintage'));
+    await settle(tester);
+    expect(find.text('Reloj Omega Seamaster 1968'), findsOneWidget);
+    expect(find.text('Charizard Holo Base Set'), findsNothing);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

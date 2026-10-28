@@ -700,5 +700,10 @@
   "myCollectionEmptyBody": "Publica tu primera pieza y empieza tu colección.",
   "myCollectionSearch": "Buscar en mi colección",
   "viewAsGrid": "Ver en cuadrícula",
-  "viewAsList": "Ver en lista"
+  "viewAsList": "Ver en lista",
+  "categoriesTitle": "Categorías",
+  "categoriesSubtitle": "Explora las piezas por tipo.",
+  "fromPrice": "Desde {amount}",
+  "@fromPrice": {"placeholders": {"amount": {"type": "String"}}},
+  "averageValue": "Valor promedio"
 }

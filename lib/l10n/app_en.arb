@@ -690,5 +690,9 @@
   "myCollectionEmptyBody": "Publish your first piece to start your collection.",
   "myCollectionSearch": "Search my collection",
   "viewAsGrid": "Show as grid",
-  "viewAsList": "Show as list"
+  "viewAsList": "Show as list",
+  "categoriesTitle": "Categories",
+  "categoriesSubtitle": "Browse pieces by kind.",
+  "fromPrice": "From {amount}",
+  "averageValue": "Average value"
 }

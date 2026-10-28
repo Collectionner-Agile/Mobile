@@ -13,6 +13,7 @@ import '../../features/auth/application/session_controller.dart';
 import '../../features/auth/presentation/auth_screens.dart';
 import '../../features/catalog/presentation/collectible_detail_screen.dart';
 import '../../features/catalog/presentation/publish_collectible_screen.dart';
+import '../../features/categories/categories_screen.dart';
 import '../../features/communities/presentation/community_detail_screen.dart';
 import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
@@ -51,6 +52,7 @@ abstract final class Routes {
   static const auctionResults = '/auctions/results';
   static const notifications = '/notifications';
   static const myCollection = '/profile/collection';
+  static const categories = '/categories';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -65,6 +67,7 @@ abstract final class Routes {
   static const newCommunity = '/communities/new';
 
   static String collectible(int id) => '/catalog/item/$id';
+  static String category(String name) => '/categories/${Uri.encodeComponent(name)}';
   static String auction(int id) => '/auctions/$id';
   static String community(int id) => '/communities/$id';
   static String newPost(int communityId) => '/communities/$communityId/post';
@@ -112,6 +115,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.favorites, builder: (_, _) => const FavoritesScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.activity, builder: (_, _) => const ActivityScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.search, builder: (_, _) => const SearchScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.categories, builder: (_, _) => const CategoriesScreen()),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/categories/:name',
+        builder: (_, state) => CategoryDetailScreen(name: state.pathParameters['name'] ?? ''),
+      ),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.

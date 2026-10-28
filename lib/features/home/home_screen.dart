@@ -44,10 +44,7 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
-  void _openCategory(BuildContext context, WidgetRef ref, String category) {
-    ref.read(catalogFilterProvider.notifier).category(category);
-    context.go(Routes.catalog);
-  }
+  void _openCategory(BuildContext context, WidgetRef ref, String category) => context.push(Routes.category(category));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +68,7 @@ class HomeScreen extends ConsumerWidget {
                 maxWidth: 900,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(Space.gutter, Space.md, Space.gutter, 0),
-                  child: _QuickActions(onCategories: () => context.go(Routes.catalog)),
+                  child: _QuickActions(onCategories: () => context.push(Routes.categories)),
                 ),
               ),
             ),
@@ -106,7 +103,13 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             if (categories.isNotEmpty) ...[
-              SliverToBoxAdapter(child: SectionHeader(title: l10n.homeCategories)),
+              SliverToBoxAdapter(
+                child: SectionHeader(
+                  title: l10n.homeCategories,
+                  actionLabel: l10n.seeAll,
+                  onAction: () => context.push(Routes.categories),
+                ),
+              ),
               SliverToBoxAdapter(
                 child: _CategoryRail(
                   categories: categories,
