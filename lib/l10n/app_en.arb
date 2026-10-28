@@ -178,7 +178,7 @@
   "errUsername": "3 to 30 characters: letters, numbers, dot, hyphen or underscore.",
   "auctionsTitle": "Auctions",
   "auctionsKicker": "CATALOGUE ROUNDS",
-  "auctionsIntro": "Bidding with a visible closing time and public history.",
+  "auctionsIntro": "Bid live with the clock in sight.",
   "auctionsEmpty": "No open auctions right now.",
   "auctionsShowClosed": "Show closed",
   "currentBid": "Current bid",
@@ -592,5 +592,13 @@
   "liveLabel": "Live",
   "quickPublish": "Publish",
   "quickCategories": "Categories",
-  "onboardingHaveAccount": "I already have an account"
+  "onboardingHaveAccount": "I already have an account",
+  "closedLabel": "Closed",
+  "finalPrice": "Final price",
+  "closingToday": "Closing today",
+  "finishedLabel": "Finished",
+  "noClosedAuctions": "No finished auctions yet.",
+  "yourBid": "Your bid",
+  "lowerBid": "Lower bid",
+  "raiseBid": "Raise bid"
 }

@@ -178,7 +178,7 @@
   "errUsername": "Entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.",
   "auctionsTitle": "Subastas",
   "auctionsKicker": "RONDAS DE CATÁLOGO",
-  "auctionsIntro": "Pujas con hora de cierre visible e historial publicado.",
+  "auctionsIntro": "Puja en vivo con el tiempo a la vista.",
   "auctionsEmpty": "No hay subastas abiertas ahora mismo.",
   "auctionsShowClosed": "Mostrar cerradas",
   "currentBid": "Oferta actual",
@@ -592,5 +592,13 @@
   "liveLabel": "En vivo",
   "quickPublish": "Publicar",
   "quickCategories": "Categorías",
-  "onboardingHaveAccount": "Ya tengo cuenta"
+  "onboardingHaveAccount": "Ya tengo cuenta",
+  "closedLabel": "Cerrada",
+  "finalPrice": "Precio final",
+  "closingToday": "Cierran hoy",
+  "finishedLabel": "Terminadas",
+  "noClosedAuctions": "Aún no hay subastas terminadas.",
+  "yourBid": "Tu puja",
+  "lowerBid": "Bajar puja",
+  "raiseBid": "Subir puja"
 }

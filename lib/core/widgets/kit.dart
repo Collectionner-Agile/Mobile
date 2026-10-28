@@ -744,14 +744,18 @@ class CountdownTiles extends StatelessWidget {
           child: MediaQuery.withClampedTextScaling(
             maxScaleFactor: 1.25,
             child: ExcludeSemantics(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final (i, (value, label)) in units.indexed) ...[
-                    if (i > 0) SizedBox(width: compact ? 4 : 6),
-                    _TimeTile(value: value, label: label, onPhoto: onPhoto, compact: compact),
+              // Shrinks as a whole on very narrow cards instead of clipping.
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final (i, (value, label)) in units.indexed) ...[
+                      if (i > 0) SizedBox(width: compact ? 4 : 6),
+                      _TimeTile(value: value, label: label, onPhoto: onPhoto, compact: compact),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

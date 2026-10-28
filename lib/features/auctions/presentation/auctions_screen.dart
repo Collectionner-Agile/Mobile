@@ -4,13 +4,18 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/account_button.dart';
+import '../../../core/widgets/app_icons.dart';
+import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/auction_providers.dart';
 import '../domain/auction_models.dart';
 import 'widgets/auction_card.dart';
 
+enum AuctionFilter { live, today, closed }
+
+/// The Auctions tab: three plain segments (live, closing today, finished)
+/// over one list of row cards.
 class AuctionsScreen extends ConsumerStatefulWidget {
   const AuctionsScreen({super.key});
 
@@ -19,12 +24,24 @@ class AuctionsScreen extends ConsumerStatefulWidget {
 }
 
 class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
-  bool _showClosed = false;
+  AuctionFilter _filter = AuctionFilter.live;
+
+  List<Auction> _apply(List<Auction> all) {
+    final now = DateTime.now();
+    return switch (_filter) {
+      AuctionFilter.live => all.where((a) => a.isLive(now)).toList(),
+      AuctionFilter.today =>
+        all.where((a) => a.isLive(now) && a.deadline!.difference(now) <= const Duration(hours: 24)).toList(),
+      AuctionFilter.closed =>
+        all.where((a) => !a.isLive(now)).toList()..sort((a, b) => (b.deadline ?? now).compareTo(a.deadline ?? now)),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final auctions = ref.watch(auctionsProvider);
+    final bottom = MediaQuery.paddingOf(context).bottom;
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -33,61 +50,56 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
         },
         child: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              pinned: true,
-              titleSpacing: Space.gutter,
-              title: Text(l10n.auctionsTitle),
-              actions: const [
-                AccountButton(),
-                SizedBox(width: Space.xxs),
-              ],
+            SliverToBoxAdapter(
+              child: SafeArea(
+                bottom: false,
+                child: PageTitle(title: l10n.auctionsTitle, subtitle: l10n.auctionsIntro),
+              ),
             ),
             SliverToBoxAdapter(
-              child: ContentWidth(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xs, Space.gutter, Space.sm),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(l10n.auctionsIntro, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
-                      const SizedBox(height: Space.xs),
-                      Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: FilterChip(
-                          label: Text(l10n.auctionsShowClosed),
-                          selected: _showClosed,
-                          onSelected: (value) => setState(() => _showClosed = value),
-                        ),
-                      ),
-                    ],
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xxs, Space.gutter, Space.md),
+                child: ContentWidth(
+                  child: SegmentedTabs(
+                    labels: [l10n.liveLabel, l10n.closingToday, l10n.finishedLabel],
+                    index: _filter.index,
+                    onChanged: (index) => setState(() => _filter = AuctionFilter.values[index]),
                   ),
                 ),
               ),
             ),
             ...switch (auctions) {
               AsyncValue(:final value?) => () {
-                final now = DateTime.now();
-                final items = _showClosed ? value : value.where((a) => a.isLive(now)).toList();
+                final items = _apply(value);
                 if (items.isEmpty) {
                   return [
                     SliverFillRemaining(
                       hasScrollBody: false,
-                      child: EmptyState(message: l10n.auctionsEmpty, icon: Icons.gavel_outlined),
+                      child: EmptyState(
+                        message: _filter == AuctionFilter.closed ? l10n.noClosedAuctions : l10n.auctionsEmpty,
+                        icon: AppIcons.gavel,
+                      ),
                     ),
                   ];
                 }
                 return [
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                    sliver: SliverList.separated(
-                      itemCount: items.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-                      itemBuilder: (context, index) => Reveal(
-                        index: index,
-                        child: ContentWidth(
-                          child: AuctionCard(
-                            auction: items[index],
-                            onTap: () => context.go(Routes.auction(items[index].id)),
+                  // A new window per filter replays the entrance when the
+                  // segment changes.
+                  RevealWindow(
+                    key: ValueKey(_filter),
+                    child: SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                      sliver: SliverList.separated(
+                        itemCount: items.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
+                        itemBuilder: (context, index) => Reveal(
+                          key: ValueKey('${_filter.name}-${items[index].id}'),
+                          index: index,
+                          child: ContentWidth(
+                            child: AuctionCard(
+                              auction: items[index],
+                              onTap: () => context.go(Routes.auction(items[index].id)),
+                            ),
                           ),
                         ),
                       ),
@@ -112,7 +124,7 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
                 ),
               ],
             },
-            const SliverToBoxAdapter(child: SizedBox(height: Space.xxl)),
+            SliverToBoxAdapter(child: SizedBox(height: Space.xxl + bottom)),
           ],
         ),
       ),
