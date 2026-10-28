@@ -679,5 +679,11 @@
   "noticePieceBody": "{piece} arrived in the catalogue.",
   "noticeWelcomeTitle": "Welcome, {name}",
   "noticeWelcomeTitleGuest": "Welcome to Collectionner",
-  "noticeWelcomeBody": "Explore pieces, follow auctions and scan with your camera."
+  "noticeWelcomeBody": "Explore pieces, follow auctions and scan with your camera.",
+  "myPieces": "My pieces",
+  "yourAccount": "Your account",
+  "collectionValue": "Your collection's value",
+  "guestPerkCollection": "Keep your pieces with photos and their value.",
+  "guestPerkBids": "Bid in live auctions.",
+  "guestPerkFollow": "Follow auctions and get notices."
 }

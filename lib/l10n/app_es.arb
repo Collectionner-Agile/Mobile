@@ -689,5 +689,11 @@
   "noticeWelcomeTitle": "Bienvenido, {name}",
   "@noticeWelcomeTitle": {"placeholders": {"name": {"type": "String"}}},
   "noticeWelcomeTitleGuest": "Bienvenido a Collectionner",
-  "noticeWelcomeBody": "Explora piezas, sigue subastas y escanea con la cámara."
+  "noticeWelcomeBody": "Explora piezas, sigue subastas y escanea con la cámara.",
+  "myPieces": "Mis piezas",
+  "yourAccount": "Tu cuenta",
+  "collectionValue": "Valor de tu colección",
+  "guestPerkCollection": "Guarda tus piezas con fotos y su valor.",
+  "guestPerkBids": "Puja en subastas en vivo.",
+  "guestPerkFollow": "Sigue subastas y recibe avisos."
 }
