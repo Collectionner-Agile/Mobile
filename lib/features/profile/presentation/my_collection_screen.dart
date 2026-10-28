@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
@@ -14,7 +13,6 @@ import '../../auth/application/session_controller.dart';
 import '../../catalog/application/catalog_providers.dart';
 import '../../catalog/domain/catalog_models.dart';
 import '../../catalog/presentation/widgets/collectible_card.dart';
-import '../../explore/explore_screen.dart' show sortLabel;
 
 /// Everything the user owns: the total on top, then a searchable, sortable
 /// collection shown as a grid or as a compact list.
@@ -43,13 +41,13 @@ class _MyCollectionScreenState extends ConsumerState<MyCollectionScreen> {
         title: Text(l10n.myCollectionTitle),
         actions: [
           CircleIconButton(
-            icon: _list ? AppIcons.layoutGrid : AppIcons.list,
+            icon: _list ? Icons.grid_view_outlined : Icons.view_list_outlined,
             tooltip: _list ? l10n.viewAsGrid : l10n.viewAsList,
             onPressed: () => setState(() => _list = !_list),
           ),
           const SizedBox(width: Space.xs),
           CircleIconButton(
-            icon: AppIcons.plus,
+            icon: Icons.add_rounded,
             tooltip: l10n.publishItem,
             onPressed: () => context.push(Routes.publishCollectible),
           ),
@@ -64,7 +62,7 @@ class _MyCollectionScreenState extends ConsumerState<MyCollectionScreen> {
             return Center(
               child: SingleChildScrollView(
                 child: EmptyState(
-                  icon: AppIcons.gem,
+                  icon: Icons.diamond_outlined,
                   message: l10n.noItemsYet,
                   body: l10n.myCollectionEmptyBody,
                   actionLabel: l10n.publishItem,
@@ -108,7 +106,7 @@ class _MyCollectionScreenState extends ConsumerState<MyCollectionScreen> {
                                   if (topCategory != null)
                                     Padding(
                                       padding: const EdgeInsets.only(top: Space.xxs),
-                                      child: Tag(topCategory, icon: AppIcons.crown, color: brand.gold),
+                                      child: Tag(topCategory, icon: Icons.workspace_premium_outlined, color: brand.ink),
                                     ),
                                 ],
                               ),
@@ -170,7 +168,7 @@ class _MyCollectionScreenState extends ConsumerState<MyCollectionScreen> {
               if (shown.isEmpty)
                 SliverFillRemaining(
                   hasScrollBody: false,
-                  child: EmptyState(icon: AppIcons.scanSearch, message: l10n.catalogNoResults),
+                  child: EmptyState(icon: Icons.image_search_outlined, message: l10n.catalogNoResults),
                 )
               else if (_list)
                 SliverPadding(

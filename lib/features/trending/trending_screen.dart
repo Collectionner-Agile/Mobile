@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/motion.dart';
@@ -78,10 +77,10 @@ class _TrendingScreenState extends ConsumerState<TrendingScreen> {
           });
 
     final boards = [
-      (TrendingBoard.valuable, l10n.trendingValuable, AppIcons.gem),
-      (TrendingBoard.rated, l10n.trendingRated, AppIcons.star),
-      (TrendingBoard.bidded, l10n.trendingBidded, AppIcons.flame),
-      (TrendingBoard.newest, l10n.trendingNewest, AppIcons.sparkles),
+      (TrendingBoard.valuable, l10n.trendingValuable, Icons.diamond_outlined),
+      (TrendingBoard.rated, l10n.trendingRated, Icons.star_outline_rounded),
+      (TrendingBoard.bidded, l10n.trendingBidded, Icons.local_fire_department_outlined),
+      (TrendingBoard.newest, l10n.trendingNewest, Icons.auto_awesome_outlined),
     ];
 
     return Scaffold(
@@ -105,7 +104,7 @@ class _TrendingScreenState extends ConsumerState<TrendingScreen> {
                           avatar: Icon(
                             icon,
                             size: 15,
-                            color: board == _board ? context.brand.onAccent : context.brand.gold,
+                            color: board == _board ? context.brand.onAccent : context.brand.muted,
                           ),
                           label: Text(label),
                           selected: board == _board,
@@ -125,7 +124,7 @@ class _TrendingScreenState extends ConsumerState<TrendingScreen> {
                 ..invalidate(auctionsProvider),
               data: (rows) => rows.isEmpty
                   ? Center(
-                      child: EmptyState(icon: AppIcons.trendingUp, message: l10n.catalogEmpty),
+                      child: EmptyState(icon: Icons.trending_up_rounded, message: l10n.catalogEmpty),
                     )
                   : RevealWindow(
                       key: ValueKey(_board),
@@ -198,7 +197,7 @@ class _RankRow extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(color: medal, shape: BoxShape.circle),
-                    child: const Icon(AppIcons.crown, size: 12, color: Colors.white),
+                    child: const Icon(Icons.workspace_premium_outlined, size: 12, color: Colors.white),
                   ),
                 ),
             ],
@@ -214,7 +213,7 @@ class _RankRow extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   row.figure,
-                  style: Fonts.figures(Fonts.display(context.text.titleSmall, weight: 700)).copyWith(color: brand.gold),
+                  style: Fonts.figures(Fonts.display(context.text.titleSmall, weight: 700)).copyWith(color: brand.ink),
                 ),
               ],
             ),

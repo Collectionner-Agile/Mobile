@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../app/config/app_config.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
-import 'settings_screen.dart' show appVersion;
+
+/// Shown in About and Settings; keep in step with pubspec.yaml.
+const appVersion = '1.0.0';
 
 /// About the app: the mark and version, what is new in this version, how
 /// your data is treated, and the credits.
@@ -18,12 +19,12 @@ class AboutScreen extends StatelessWidget {
     final l10n = context.l10n;
     final brand = context.brand;
     final news = [
-      (AppIcons.palette, l10n.whatsNewDesign),
-      (AppIcons.camera, l10n.whatsNewCamera),
-      (AppIcons.bell, l10n.whatsNewNotices),
-      (AppIcons.calendarDays, l10n.whatsNewCalendar),
-      (AppIcons.trophy, l10n.whatsNewAchievements),
-      (AppIcons.sparkles, l10n.whatsNewMotion),
+      (Icons.palette_outlined, l10n.whatsNewDesign),
+      (Icons.photo_camera_outlined, l10n.whatsNewCamera),
+      (Icons.notifications_none_rounded, l10n.whatsNewNotices),
+      (Icons.calendar_month_outlined, l10n.whatsNewCalendar),
+      (Icons.emoji_events_outlined, l10n.whatsNewAchievements),
+      (Icons.auto_awesome_outlined, l10n.whatsNewMotion),
     ];
     return Scaffold(
       appBar: AppBar(title: Text(l10n.aboutTitle)),
@@ -58,12 +59,13 @@ class AboutScreen extends StatelessWidget {
                         const SizedBox(height: Space.md),
                         Text(
                           l10n.appName,
-                          style: Fonts.display(context.text.headlineLarge, weight: 660).copyWith(color: Brand.ivory),
+                          style: Fonts.display(context.text.headlineLarge, weight: 660).copyWith(color: Brand.chalk),
                         ),
                         const SizedBox(height: Space.xxs),
                         Text(
                           l10n.launchTagline,
-                          style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: Brand.gold, letterSpacing: 2),
+                          style: Fonts.eyebrow(context.text.labelSmall)
+                              .copyWith(color: const Color(0xB3FFFFFF), letterSpacing: 2),
                         ),
                         const SizedBox(height: Space.md),
                         Tag(
@@ -89,7 +91,7 @@ class AboutScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: Space.xs),
                             child: Row(
                               children: [
-                                IconBadge(icon, color: brand.gold, size: 36),
+                                IconBadge(icon, color: brand.ink, size: 36),
                                 const SizedBox(width: Space.sm),
                                 Expanded(child: Text(text, style: context.text.bodyMedium)),
                               ],
@@ -106,7 +108,7 @@ class AboutScreen extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconBadge(AppIcons.shieldCheck, color: brand.success, size: 36),
+                      IconBadge(Icons.verified_user_outlined, color: brand.success, size: 36),
                       const SizedBox(width: Space.sm),
                       Expanded(
                         child: Column(
@@ -129,10 +131,14 @@ class AboutScreen extends StatelessWidget {
                 const SizedBox(height: Space.sm),
                 MenuGroup(
                   children: [
-                    MenuTile(icon: AppIcons.swatchBook, title: l10n.creditsDesign, subtitle: '21st.dev'),
-                    MenuTile(icon: AppIcons.stars, title: l10n.creditsIcons, subtitle: 'Lucide · ISC'),
+                    MenuTile(icon: Icons.style_outlined, title: l10n.creditsDesign, subtitle: '21st.dev'),
                     MenuTile(
-                      icon: AppIcons.bookOpen,
+                      icon: Icons.stars_outlined,
+                      title: l10n.creditsIcons,
+                      subtitle: 'Material Icons · Apache 2.0',
+                    ),
+                    MenuTile(
+                      icon: Icons.menu_book_outlined,
                       title: l10n.creditsFonts,
                       subtitle: 'Fraunces · Archivo · SIL OFL',
                     ),

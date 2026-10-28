@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/ui.dart';
@@ -178,7 +177,7 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> with SingleTicker
                     child: Row(
                       children: [
                         CircleIconButton(
-                          icon: AppIcons.x,
+                          icon: Icons.close_rounded,
                           tooltip: l10n.close,
                           onPhoto: true,
                           onPressed: () => Navigator.of(context).pop(),
@@ -220,7 +219,7 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> with SingleTicker
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(Radii.sm),
                                 border: Border.all(
-                                  color: index == _index ? Brand.gold : const Color(0x33FFFFFF),
+                                  color: index == _index ? Brand.chalk : const Color(0x33FFFFFF),
                                   width: index == _index ? 2 : 1,
                                 ),
                               ),

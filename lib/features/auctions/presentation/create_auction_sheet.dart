@@ -6,7 +6,6 @@ import '../../../app/providers.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/ui.dart';
 import '../../catalog/domain/catalog_models.dart';
 import '../domain/auction_models.dart';
@@ -120,7 +119,7 @@ class _CreateAuctionSheetState extends ConsumerState<_CreateAuctionSheet> {
                 Text(_error!, style: context.text.bodySmall?.copyWith(color: context.brand.danger)),
               ],
               const SizedBox(height: Space.lg),
-              BusyButton(label: l10n.createAuctionSubmit, icon: AppIcons.gavel, busy: _busy, onPressed: _submit),
+              BusyButton(label: l10n.createAuctionSubmit, icon: Icons.gavel, busy: _busy, onPressed: _submit),
             ],
           ),
         ),

@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../app/config/app_config.dart';
 import '../../app/theme/tokens.dart';
-import 'app_icons.dart';
 
 /// Renders any image reference the backend stores: bundled web asset paths
 /// (`/assets/...`), inline `data:` URIs from media uploads, or remote URLs.
@@ -120,7 +119,7 @@ class _Placeholder extends StatelessWidget {
       image: true,
       child: ColoredBox(
         color: brand.surface,
-        child: Center(child: Icon(AppIcons.package, color: brand.line, size: 32)),
+        child: Center(child: Icon(Icons.inventory_2_outlined, color: brand.line, size: 32)),
       ),
     );
   }

@@ -7,7 +7,6 @@ import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/community_providers.dart';
 
@@ -129,7 +128,7 @@ class _CreateCommunityScreenState extends ConsumerState<CreateCommunityScreen> {
         ),
         if (_error != null) Text(_error!, style: context.text.bodyMedium?.copyWith(color: context.brand.danger)),
       ],
-      footer: BusyButton(label: l10n.createCommunity, icon: AppIcons.plus, busy: _busy, onPressed: _submit),
+      footer: BusyButton(label: l10n.createCommunity, icon: Icons.add, busy: _busy, onPressed: _submit),
     );
   }
 }
@@ -211,7 +210,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
         ),
         if (_error != null) Text(_error!, style: context.text.bodyMedium?.copyWith(color: context.brand.danger)),
       ],
-      footer: BusyButton(label: l10n.send, icon: AppIcons.send, busy: _busy, onPressed: _submit),
+      footer: BusyButton(label: l10n.send, icon: Icons.send_rounded, busy: _busy, onPressed: _submit),
     );
   }
 }

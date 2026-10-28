@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
@@ -34,7 +33,11 @@ class AuctionResultsScreen extends ConsumerWidget {
           if (closed.isEmpty) {
             return Center(
               child: SingleChildScrollView(
-                child: EmptyState(icon: AppIcons.trophy, message: l10n.noClosedAuctions, body: l10n.resultsEmptyBody),
+                child: EmptyState(
+                  icon: Icons.emoji_events_outlined,
+                  message: l10n.noClosedAuctions,
+                  body: l10n.resultsEmptyBody,
+                ),
               ),
             );
           }
@@ -57,10 +60,10 @@ class AuctionResultsScreen extends ConsumerWidget {
                       children: [
                         Text(
                           l10n.resultsTotal.toUpperCase(),
-                          style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: Brand.gold),
+                          style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: const Color(0xB3FFFFFF)),
                         ),
                         const SizedBox(height: Space.xxs),
-                        PriceText(total, style: context.text.displaySmall, color: Brand.ivory, animate: true),
+                        PriceText(total, style: context.text.displaySmall, color: Brand.chalk, animate: true),
                         const SizedBox(height: Space.md),
                         Row(
                           children: [
@@ -124,11 +127,11 @@ class AuctionResultsScreen extends ConsumerWidget {
                                       if (auction.bids.isNotEmpty)
                                         Tag(
                                           auction.bids.first.bidderName ?? '—',
-                                          icon: AppIcons.crown,
+                                          icon: Icons.workspace_premium_outlined,
                                           color: brand.gold,
                                         )
                                       else
-                                        Tag(l10n.resultsUnsold, icon: AppIcons.circleX, color: brand.muted),
+                                        Tag(l10n.resultsUnsold, icon: Icons.cancel_outlined, color: brand.muted),
                                       Tag(l10n.bidsCount(auction.bidCount), color: brand.muted),
                                       if (auction.deadline != null)
                                         Tag(formatDate(auction.deadline!, context.languageCode), color: brand.muted),
@@ -164,7 +167,7 @@ class _HeroFigure extends StatelessWidget {
         value,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: Fonts.figures(Fonts.display(context.text.titleLarge, weight: 680)).copyWith(color: Brand.ivory),
+        style: Fonts.figures(Fonts.display(context.text.titleLarge, weight: 680)).copyWith(color: Brand.chalk),
       ),
       Text(
         label,

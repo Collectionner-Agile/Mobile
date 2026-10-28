@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/motion.dart';
@@ -50,7 +49,7 @@ class CompareButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => BusyButton(
     label: context.l10n.compareAction,
-    icon: AppIcons.arrowLeftRight,
+    icon: Icons.compare_arrows_rounded,
     outlined: true,
     onPressed: () {
       ref.read(compareProvider.notifier).add(id);
@@ -178,7 +177,7 @@ class CompareScreen extends ConsumerWidget {
                       AppCard(
                         child: Row(
                           children: [
-                            IconBadge(AppIcons.arrowLeftRight, color: context.brand.gold),
+                            IconBadge(Icons.compare_arrows_rounded, color: context.brand.ink),
                             const SizedBox(width: Space.sm),
                             Expanded(child: Text(l10n.compareHint, style: context.text.bodyMedium)),
                           ],
@@ -219,7 +218,7 @@ class _Slot extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconBadge(AppIcons.plus, color: brand.gold, size: 48),
+                  IconBadge(Icons.add_rounded, color: brand.ink, size: 48),
                   const SizedBox(height: Space.sm),
                   Text(l10n.comparePick, textAlign: TextAlign.center, style: context.text.labelLarge),
                 ],
@@ -246,10 +245,10 @@ class _Slot extends StatelessWidget {
           onPressed: onPick,
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
-            foregroundColor: brand.gold,
+            foregroundColor: brand.ink,
             alignment: Alignment.centerLeft,
           ),
-          icon: const Icon(AppIcons.refreshCw, size: 14),
+          icon: const Icon(Icons.refresh_rounded, size: 14),
           label: Text(l10n.compareChange),
         ),
       ],
@@ -274,36 +273,36 @@ class _Table extends StatelessWidget {
 
     final rows = [
       (
-        AppIcons.coins,
+        Icons.monetization_on_outlined,
         l10n.declaredValue,
         context.money(left.value),
         context.money(right.value),
         winner(left.value, right.value),
       ),
       (
-        AppIcons.calendar,
+        Icons.event_outlined,
         l10n.year,
         left.eraYear?.toString() ?? '—',
         right.eraYear?.toString() ?? '—',
         winner(left.eraYear, right.eraYear, higher: false),
       ),
-      (AppIcons.tag, l10n.category, left.category ?? '—', right.category ?? '—', null),
+      (Icons.sell_outlined, l10n.category, left.category ?? '—', right.category ?? '—', null),
       (
-        AppIcons.star,
+        Icons.star_outline_rounded,
         l10n.compareRating,
         left.reviewCount == 0 ? '—' : left.rating.toStringAsFixed(1),
         right.reviewCount == 0 ? '—' : right.rating.toStringAsFixed(1),
         left.reviewCount == 0 || right.reviewCount == 0 ? null : winner(left.rating, right.rating),
       ),
       (
-        AppIcons.messagesSquare,
+        Icons.forum_outlined,
         l10n.reviews,
         '${left.reviewCount}',
         '${right.reviewCount}',
         winner(left.reviewCount, right.reviewCount),
       ),
       (
-        AppIcons.gavel,
+        Icons.gavel_outlined,
         l10n.inAuction,
         left.auctionId == null ? l10n.no : l10n.yes,
         right.auctionId == null ? l10n.no : l10n.yes,
@@ -369,11 +368,12 @@ class _Value extends StatelessWidget {
         Flexible(
           child: Text(
             text,
-            style: Fonts.figures(context.text.titleSmall)
-                .copyWith(color: best ? brand.gold : brand.ink, fontWeight: best ? FontWeight.w700 : FontWeight.w500),
+            style: Fonts.figures(
+              context.text.titleSmall,
+            ).copyWith(color: best ? brand.success : brand.ink, fontWeight: best ? FontWeight.w700 : FontWeight.w500),
           ),
         ),
-        if (best) ...[const SizedBox(width: 4), Icon(AppIcons.badgeCheck, size: 14, color: brand.gold)],
+        if (best) ...[const SizedBox(width: 4), Icon(Icons.verified_outlined, size: 14, color: brand.success)],
       ],
     );
   }

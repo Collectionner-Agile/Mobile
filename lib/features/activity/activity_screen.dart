@@ -5,13 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 import '../auctions/application/auction_providers.dart';
-import '../auctions/application/bid_events.dart';
 import '../auth/application/session_controller.dart';
+import '../home/home_extras.dart';
 
 enum _Scope { all, myBids, myAuctions }
 
@@ -111,7 +110,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                 ),
                 const SizedBox(height: Space.lg),
                 if (events.isEmpty)
-                  EmptyState(message: l10n.activityEmpty, icon: AppIcons.history)
+                  EmptyState(message: l10n.activityEmpty, icon: Icons.timeline_rounded)
                 else
                   for (final (index, event) in events.indexed)
                     Reveal(

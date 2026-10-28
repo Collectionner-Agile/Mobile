@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
@@ -79,7 +78,7 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
             return Center(
               child: SingleChildScrollView(
                 child: EmptyState(
-                  icon: AppIcons.handCoins,
+                  icon: Icons.payments_outlined,
                   message: l10n.myBidsEmpty,
                   body: l10n.myBidsEmptyBody,
                   actionLabel: l10n.navAuctions,
@@ -111,7 +110,7 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
                           child: StatTile(
                             value: '${all.where((b) => b.status == MyBidStatus.leading).length}',
                             label: l10n.myBidsLeading,
-                            icon: AppIcons.trendingUp,
+                            icon: Icons.trending_up_rounded,
                             color: brand.success,
                           ),
                         ),
@@ -119,7 +118,7 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
                           child: StatTile(
                             value: '${all.where((b) => b.status == MyBidStatus.won).length}',
                             label: l10n.myBidsWon,
-                            icon: AppIcons.trophy,
+                            icon: Icons.emoji_events_outlined,
                           ),
                         ),
                       ],
@@ -138,7 +137,7 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
               const SizedBox(height: Space.md),
               if (shown.isEmpty)
                 EmptyState(
-                  icon: _finished ? AppIcons.history : AppIcons.gavel,
+                  icon: _finished ? Icons.history_rounded : Icons.gavel_outlined,
                   message: _finished ? l10n.myBidsNoneFinished : l10n.myBidsNoneActive,
                 )
               else
@@ -171,10 +170,10 @@ class _MyBidCard extends StatelessWidget {
     final brand = context.brand;
     final auction = bid.auction;
     final (label, color, icon) = switch (bid.status) {
-      MyBidStatus.leading => (l10n.myBidLeading, brand.success, AppIcons.trendingUp),
-      MyBidStatus.outbid => (l10n.myBidOutbid, brand.live, AppIcons.triangleAlert),
-      MyBidStatus.won => (l10n.myBidWon, brand.gold, AppIcons.trophy),
-      MyBidStatus.lost => (l10n.myBidLost, brand.muted, AppIcons.circleX),
+      MyBidStatus.leading => (l10n.myBidLeading, brand.success, Icons.trending_up_rounded),
+      MyBidStatus.outbid => (l10n.myBidOutbid, brand.live, Icons.warning_amber_rounded),
+      MyBidStatus.won => (l10n.myBidWon, brand.gold, Icons.emoji_events_outlined),
+      MyBidStatus.lost => (l10n.myBidLost, brand.muted, Icons.cancel_outlined),
     };
     return AppCard(
       onTap: () => context.push(Routes.auction(auction.id)),
@@ -231,7 +230,7 @@ class _MyBidCard extends StatelessWidget {
             const SizedBox(height: Space.sm),
             BusyButton(
               label: l10n.bidAgain,
-              icon: AppIcons.gavel,
+              icon: Icons.gavel_outlined,
               color: brand.live,
               onPressed: () => context.push(Routes.auction(auction.id)),
             ),

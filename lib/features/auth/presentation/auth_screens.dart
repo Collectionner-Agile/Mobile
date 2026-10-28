@@ -11,18 +11,13 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/app_icons.dart';
-import '../../../core/widgets/kit.dart';
-import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/password_field.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/session_controller.dart';
 
-/// Shared layout (21st.dev "Login Minimal" on the app's midnight stage): a
-/// midnight header with the mark over a dimmed photograph, then a sheet that
-/// rises over it with the title, one line of intro and the form. Scrolls
-/// under the keyboard and caps width on large screens; [header] is false for
-/// secondary screens (recovery), which get a plain bar.
+/// Shared layout: a photographic header that fades into the page, then the
+/// title, intro and form. Scrolls under the keyboard and caps width on large
+/// screens; [header] is false for secondary screens (recovery).
 class _AuthPage extends StatelessWidget {
   const _AuthPage({required this.title, required this.intro, required this.children, this.header = true});
   final String title;
@@ -35,131 +30,67 @@ class _AuthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    final l10n = context.l10n;
     final width = MediaQuery.sizeOf(context).width;
-    final heroHeight = (width * 0.62).clamp(200.0, 300.0);
-    final form = ContentWidth(
-      maxWidth: 480,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-        child: AutofillGroup(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Reveal(child: Text(title, style: context.text.headlineLarge)),
-              const SizedBox(height: Space.xs),
-              Reveal(
-                index: 1,
-                child: Text(intro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
-              ),
-              const SizedBox(height: Space.xl),
-              ...children,
-            ],
-          ),
-        ),
-      ),
-    );
-    if (!header) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: SafeArea(
-          top: false,
-          child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.only(top: Space.xs, bottom: Space.xxl),
-            children: [form],
-          ),
-        ),
-      );
-    }
-    return AnnotatedRegion(
-      value: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
-      child: Scaffold(
-        body: ListView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: EdgeInsets.only(bottom: Space.xxl + MediaQuery.paddingOf(context).bottom),
-          children: [
-            SizedBox(
-              height: heroHeight + MediaQuery.paddingOf(context).top,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  ExcludeSemantics(
-                    child: Image.asset(_image, fit: BoxFit.cover, cacheWidth: (width * 2).round()),
+    final heroHeight = (width * 0.78).clamp(220.0, 340.0);
+    return Scaffold(
+      extendBodyBehindAppBar: header,
+      appBar: AppBar(
+        backgroundColor: header ? Colors.transparent : null,
+        leading: Navigator.of(context).canPop()
+            ? Padding(
+                padding: const EdgeInsets.all(6),
+                child: BackButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: header ? brand.surface : null,
+                    foregroundColor: brand.ink,
                   ),
-                  const DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xE60B1222), Color(0xB30B1222), Color(0xF20B1222)],
+                ),
+              )
+            : null,
+      ),
+      body: SafeArea(
+        top: !header,
+        child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.only(bottom: Space.xxl),
+          children: [
+            if (header)
+              SizedBox(
+                height: heroHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ExcludeSemantics(
+                      child: Image.asset(_image, fit: BoxFit.cover, cacheWidth: (width * 2).round()),
+                    ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.45, 1],
+                          colors: [brand.paper.withValues(alpha: 0), brand.paper],
+                        ),
                       ),
                     ),
-                  ),
-                  SafeArea(
-                    bottom: false,
-                    child: Stack(
-                      children: [
-                        if (Navigator.of(context).canPop())
-                          Positioned(
-                            left: Space.sm,
-                            top: Space.xs,
-                            child: CircleIconButton(
-                              icon: AppIcons.arrowLeft,
-                              tooltip: l10n.back,
-                              onPhoto: true,
-                              onPressed: () => Navigator.of(context).maybePop(),
-                            ),
-                          ),
-                        Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ShineSweep(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(18),
-                                  child: Image.asset(
-                                    'assets/branding/site-icon-512.png',
-                                    width: 64,
-                                    height: 64,
-                                    cacheWidth: 192,
-                                    semanticLabel: l10n.appName,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: Space.sm),
-                              Text(
-                                l10n.appName,
-                                style: Fonts.display(
-                                  context.text.headlineSmall,
-                                  weight: 660,
-                                ).copyWith(color: Brand.ivory),
-                              ),
-                              Text(
-                                l10n.launchTagline.toUpperCase(),
-                                style: Fonts.eyebrow(context.text.labelSmall)
-                                    .copyWith(color: Brand.gold, letterSpacing: 2),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // The sheet rises over the bottom of the header.
-            Transform.translate(
-              offset: const Offset(0, -Space.xl),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: brand.paper,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.xl)),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: Space.xl),
-                  child: form,
+              ),
+            ContentWidth(
+              maxWidth: 480,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                child: AutofillGroup(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(title, style: context.text.headlineMedium),
+                      const SizedBox(height: Space.xs),
+                      Text(intro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
+                      const SizedBox(height: Space.xl),
+                      ...children,
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -224,9 +155,8 @@ class _GoogleSignInState extends ConsumerState<_GoogleSignIn> {
         OutlinedButton(
           style: OutlinedButton.styleFrom(
             backgroundColor: brand.surface,
-            minimumSize: const Size.fromHeight(54),
+            minimumSize: const Size.fromHeight(52),
             side: BorderSide(color: brand.line),
-            shape: const StadiumBorder(),
           ),
           onPressed: _busy ? null : _start,
           child: Row(
@@ -273,21 +203,13 @@ class _FormError extends StatelessWidget {
               margin: const EdgeInsets.only(top: Space.md),
               padding: const EdgeInsets.all(Space.sm),
               decoration: BoxDecoration(
-                color: context.brand.danger.withValues(alpha: context.isDark ? 0.14 : 0.07),
-                borderRadius: BorderRadius.circular(Radii.md),
+                color: Color.alphaBlend(context.brand.danger.withValues(alpha: 0.08), context.brand.surfaceRaised),
+                borderRadius: BorderRadius.circular(Radii.sm),
+                border: Border.all(color: context.brand.danger.withValues(alpha: 0.4)),
               ),
               child: Semantics(
                 liveRegion: true,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(AppIcons.circleAlert, size: 18, color: context.brand.danger),
-                    const SizedBox(width: Space.xs),
-                    Expanded(
-                      child: Text(message!, style: context.text.bodyMedium?.copyWith(color: context.brand.danger)),
-                    ),
-                  ],
-                ),
+                child: Text(message!, style: context.text.bodyMedium?.copyWith(color: context.brand.danger)),
               ),
             ),
     );
@@ -360,7 +282,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       intro: l10n.loginIntro,
       children: [
         if (AppConfig.demoMode) ...[
-          InfoChip(label: l10n.demoLoginHint, icon: AppIcons.sparkles, color: context.brand.gold),
+          InfoChip(label: l10n.demoLoginHint, icon: Icons.science_outlined, color: context.brand.gold),
           const SizedBox(height: Space.md),
         ],
         _GoogleSignIn(from: widget.from),
@@ -377,7 +299,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
                   labelText: l10n.usernameOrEmail,
-                  prefixIcon: const Icon(AppIcons.user, size: 20),
+                  prefixIcon: const Icon(Icons.person_outline),
                 ),
                 validator: validators.required,
               ),
@@ -489,10 +411,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 autofillHints: const [AutofillHints.name],
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: l10n.fullName,
-                  prefixIcon: const Icon(AppIcons.userRound, size: 20),
-                ),
+                decoration: InputDecoration(labelText: l10n.fullName),
                 validator: (value) => validators.minLength(value, 2),
               ),
               const SizedBox(height: Space.md),
@@ -501,10 +420,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 autofillHints: const [AutofillHints.newUsername],
                 autocorrect: false,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: l10n.username,
-                  prefixIcon: const Icon(AppIcons.atSign, size: 20),
-                ),
+                decoration: InputDecoration(labelText: l10n.username, prefixText: '@'),
                 validator: validators.username,
               ),
               const SizedBox(height: Space.md),
@@ -514,7 +430,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(labelText: l10n.email, prefixIcon: const Icon(AppIcons.mail, size: 20)),
+                decoration: InputDecoration(labelText: l10n.email),
                 validator: validators.email,
               ),
               const SizedBox(height: Space.md),
@@ -610,7 +526,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             controller: _email,
             autofillHints: const [AutofillHints.email],
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(labelText: l10n.email, prefixIcon: const Icon(AppIcons.mail, size: 20)),
+            decoration: InputDecoration(labelText: l10n.email),
             validator: Validators(l10n).email,
             onFieldSubmitted: (_) => _submit(),
           ),

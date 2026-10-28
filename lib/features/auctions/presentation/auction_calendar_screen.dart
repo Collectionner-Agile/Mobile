@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/auction_providers.dart';
@@ -93,7 +92,7 @@ class _AuctionCalendarScreenState extends ConsumerState<AuctionCalendarScreen> {
                     child: items.isEmpty
                         ? EmptyState(
                             key: ValueKey(selected),
-                            icon: AppIcons.calendarDays,
+                            icon: Icons.calendar_month_outlined,
                             message: l10n.calendarEmptyDay,
                           )
                         : Column(
@@ -179,34 +178,40 @@ class _DayChip extends StatelessWidget {
             width: 60,
             decoration: BoxDecoration(
               color: selected ? brand.accent : brand.surface,
-              borderRadius: BorderRadius.circular(Radii.lg),
-              border: Border.all(color: selected ? brand.accent : (today ? brand.gold : brand.line)),
+              borderRadius: BorderRadius.circular(Radii.md),
+              border: Border.all(color: selected ? brand.accent : (today ? brand.live : brand.line)),
               boxShadow: selected ? brand.cardShadow : null,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  weekday.toUpperCase(),
-                  maxLines: 1,
-                  style: Fonts.eyebrow(context.text.labelSmall)
-                      .copyWith(color: selected ? foreground.withValues(alpha: 0.8) : brand.muted, letterSpacing: 0.6),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  number,
-                  style: Fonts.figures(Fonts.display(context.text.titleLarge, weight: 700)).copyWith(color: foreground),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: busy > 0 ? (selected ? brand.onAccent : brand.live) : Colors.transparent,
+            // Shrinks with very large text instead of spilling out of the day.
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    weekday.toUpperCase(),
+                    maxLines: 1,
+                    style: Fonts.eyebrow(
+                      context.text.labelSmall,
+                    ).copyWith(color: selected ? foreground.withValues(alpha: 0.8) : brand.muted, letterSpacing: 0.6),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    number,
+                    style: Fonts.figures(Fonts.display(context.text.titleLarge, weight: 700))
+                        .copyWith(color: foreground),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: busy > 0 ? (selected ? brand.onAccent : brand.live) : Colors.transparent,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

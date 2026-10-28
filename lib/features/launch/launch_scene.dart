@@ -131,7 +131,7 @@ class _LaunchSceneState extends State<LaunchScene> with SingleTickerProviderStat
               return ClipPath(
                 clipper: _HoleClipper(center: logoCenter, radius: radius),
                 child: Material(
-                  color: Brand.midnight,
+                  color: Brand.ink,
                   child: Opacity(
                     opacity: (1 - exit * 1.6).clamp(0.0, 1.0),
                     child: Transform.scale(scale: 1 + 0.08 * exit, child: child),
@@ -195,7 +195,7 @@ class _Stage extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: RadialGradient(
               radius: 1.1,
-              colors: [Color(0xFF16244A), Brand.midnight, Brand.midnightDeep],
+              colors: [Color(0xFF16244A), Brand.ink, Brand.inkDeep],
               stops: [0, 0.55, 1],
             ),
           ),
@@ -267,7 +267,7 @@ class _Stage extends StatelessWidget {
                   style: Fonts.display(
                     const TextStyle(fontSize: 36, height: 1.2, letterSpacing: -0.6),
                     weight: 640,
-                  ).copyWith(color: Brand.ivory),
+                  ).copyWith(color: Brand.chalk),
                 ),
               ),
               const SizedBox(height: 14),
@@ -385,7 +385,7 @@ class _FarewellSceneState extends State<FarewellScene> with SingleTickerProvider
         builder: (context, _) => ClipPath(
           clipper: _CircleClipper(center: origin, radius: full * _cover.value),
           child: Material(
-            color: Brand.midnight,
+            color: Brand.ink,
             child: Opacity(
               opacity: 1 - _fade.value,
               child: Center(
@@ -417,7 +417,7 @@ class _FarewellSceneState extends State<FarewellScene> with SingleTickerProvider
                               style: Fonts.display(
                                 const TextStyle(fontSize: 30, height: 1.15),
                                 weight: 640,
-                              ).copyWith(color: Brand.ivory),
+                              ).copyWith(color: Brand.chalk),
                             ),
                             const SizedBox(height: Space.xs),
                             Padding(

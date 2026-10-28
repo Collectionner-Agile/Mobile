@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/motion.dart';
@@ -52,7 +51,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         actions: [
           if (unread.isNotEmpty)
             CircleIconButton(
-              icon: AppIcons.listChecks,
+              icon: Icons.checklist_rounded,
               tooltip: l10n.markAllRead,
               onPressed: () {
                 HapticFeedback.selectionClick();
@@ -91,7 +90,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 const SizedBox(height: Space.sm),
               ]
             else if (shown.isEmpty)
-              EmptyState(icon: AppIcons.bell, message: l10n.noticesEmpty, body: l10n.noticesEmptyBody)
+              EmptyState(
+                icon: Icons.notifications_none_rounded,
+                message: l10n.noticesEmpty,
+                body: l10n.noticesEmptyBody,
+              )
             else
               RevealWindow(
                 key: ValueKey(_unreadOnly),
@@ -149,33 +152,43 @@ class _NoticeCard extends StatelessWidget {
     final who = notice.who ?? '—';
     final (icon, color, title, body) = switch (notice.kind) {
       NoticeKind.outbid => (
-        AppIcons.triangleAlert,
+        Icons.warning_amber_rounded,
         brand.live,
         l10n.noticeOutbidTitle,
         l10n.noticeOutbidBody(who, amount, subject),
       ),
       NoticeKind.leading => (
-        AppIcons.trendingUp,
+        Icons.trending_up_rounded,
         brand.success,
         l10n.noticeLeadingTitle,
         l10n.noticeLeadingBody(subject, amount),
       ),
       NoticeKind.bidOnYours => (
-        AppIcons.handCoins,
-        brand.gold,
+        Icons.payments_outlined,
+        brand.live,
         l10n.noticeBidTitle,
         l10n.noticeBidBody(who, amount, subject),
       ),
       NoticeKind.closingSoon => (
-        AppIcons.hourglass,
+        Icons.hourglass_empty_rounded,
         brand.warning,
         l10n.noticeClosingTitle,
         l10n.noticeClosingBody(subject),
       ),
-      NoticeKind.ended => (AppIcons.trophy, brand.info, l10n.noticeEndedTitle, l10n.noticeEndedBody(subject, amount)),
-      NoticeKind.newPiece => (AppIcons.sparkles, brand.gold, l10n.noticePieceTitle, l10n.noticePieceBody(subject)),
+      NoticeKind.ended => (
+        Icons.emoji_events_outlined,
+        brand.info,
+        l10n.noticeEndedTitle,
+        l10n.noticeEndedBody(subject, amount),
+      ),
+      NoticeKind.newPiece => (
+        Icons.auto_awesome_outlined,
+        brand.ink,
+        l10n.noticePieceTitle,
+        l10n.noticePieceBody(subject),
+      ),
       NoticeKind.welcome => (
-        AppIcons.partyPopper,
+        Icons.celebration_outlined,
         brand.accent,
         subject.isEmpty ? l10n.noticeWelcomeTitleGuest : l10n.noticeWelcomeTitle(subject),
         l10n.noticeWelcomeBody,

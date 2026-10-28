@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/motion.dart';
@@ -14,7 +13,6 @@ import '../../core/widgets/ui.dart';
 import '../catalog/application/catalog_providers.dart';
 import '../catalog/domain/catalog_models.dart';
 import '../catalog/presentation/widgets/collectible_card.dart';
-import '../explore/explore_screen.dart' show sortLabel;
 
 /// One category with its pieces and figures.
 class CategorySummary {
@@ -58,7 +56,7 @@ class CategoriesScreen extends ConsumerWidget {
         data: (list) {
           if (list.isEmpty) {
             return Center(
-              child: EmptyState(icon: AppIcons.layoutGrid, message: l10n.catalogEmpty),
+              child: EmptyState(icon: Icons.grid_view_outlined, message: l10n.catalogEmpty),
             );
           }
           return LayoutBuilder(
@@ -215,7 +213,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 leading: Padding(
                   padding: const EdgeInsets.all(Space.xxs),
                   child: CircleIconButton(
-                    icon: AppIcons.arrowLeft,
+                    icon: Icons.arrow_back_rounded,
                     tooltip: l10n.back,
                     onPhoto: true,
                     onPressed: () => Navigator.of(context).maybePop(),
@@ -247,7 +245,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
               if (summary == null)
                 SliverFillRemaining(
                   hasScrollBody: false,
-                  child: EmptyState(icon: AppIcons.layoutGrid, message: l10n.catalogNoResults),
+                  child: EmptyState(icon: Icons.grid_view_outlined, message: l10n.catalogNoResults),
                 )
               else ...[
                 SliverToBoxAdapter(

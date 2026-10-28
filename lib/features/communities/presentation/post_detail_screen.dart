@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../../catalog/presentation/widgets/social_sections.dart';
@@ -51,7 +50,7 @@ class PostDetailScreen extends ConsumerWidget {
           if (post.value != null && user?.id == post.value!.authorId)
             IconButton(
               tooltip: l10n.deletePost,
-              icon: Icon(AppIcons.trash2, color: brand.danger),
+              icon: Icon(Icons.delete_outline, color: brand.danger),
               onPressed: () => _delete(context, ref, post.value!),
             ),
         ],
@@ -97,7 +96,7 @@ class PostDetailScreen extends ConsumerWidget {
                           ),
                         ),
                         if (data.commentsCount > 0)
-                          InfoChip(label: '${data.commentsCount}', icon: AppIcons.messageCircle),
+                          InfoChip(label: '${data.commentsCount}', icon: Icons.chat_bubble_outline_rounded),
                       ],
                     ),
                     const SizedBox(height: Space.lg),

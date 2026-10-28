@@ -10,19 +10,17 @@ import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/app_icons.dart';
-import '../../../core/widgets/kit.dart';
-import '../../../core/widgets/motion.dart';
+import '../../../core/widgets/account_button.dart';
+import '../../../core/widgets/glass.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../application/scan_controller.dart';
 import '../application/scan_history.dart';
 
-/// The Scan tab: open the camera (or pick a photo), check the shot, and send
-/// it for identification with each step shown as it happens.
 class ScanScreen extends ConsumerWidget {
   const ScanScreen({super.key});
 
+  /// The app's own camera; it returns the path of the photo taken.
   Future<void> _openCamera(BuildContext context, WidgetRef ref, {bool replace = false}) async {
     final path = await context.push<String>(Routes.camera);
     if (path == null) return;
@@ -30,15 +28,21 @@ class ScanScreen extends ConsumerWidget {
     replace ? controller.replacePhoto(path) : controller.usePhoto(path);
   }
 
-  Future<void> _pickGallery(BuildContext context, WidgetRef ref, {bool replace = false}) async {
+  Future<void> _pick(BuildContext context, WidgetRef ref, ImageSource source, {bool replace = false}) async {
     final l10n = context.l10n;
     try {
-      final picked = await ImageSourcePicker().pick(ImageSource.gallery);
+      final picked = await ImageSourcePicker().pick(source);
       if (picked == null) return;
       final controller = ref.read(scanControllerProvider.notifier);
       replace ? controller.replacePhoto(picked.path) : controller.usePhoto(picked.path);
     } on PickException {
-      if (context.mounted) showToast(context, l10n.permissionGalleryDenied, error: true);
+      if (context.mounted) {
+        showToast(
+          context,
+          source == ImageSource.camera ? l10n.permissionCameraDenied : l10n.permissionGalleryDenied,
+          error: true,
+        );
+      }
     } catch (_) {
       if (context.mounted) showToast(context, l10n.imageUnreadable, error: true);
     }
@@ -64,14 +68,14 @@ class ScanScreen extends ConsumerWidget {
       body = _Intro(
         key: const ValueKey('intro'),
         onCamera: () => _openCamera(context, ref),
-        onGallery: () => _pickGallery(context, ref),
+        onGallery: () => _pick(context, ref, ImageSource.gallery),
       );
     } else {
       body = _Preview(
         key: const ValueKey('preview'),
         state: scan,
+        onReplace: () => _pick(context, ref, ImageSource.gallery, replace: true),
         onRetake: () => _openCamera(context, ref, replace: true),
-        onReplace: () => _pickGallery(context, ref, replace: true),
       );
     }
 
@@ -83,33 +87,32 @@ class ScanScreen extends ConsumerWidget {
         scan.isBusy ? controller.cancel() : controller.reset();
       },
       child: Scaffold(
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              PageTitle(
-                title: l10n.navScan,
-                subtitle: scan.imagePath == null ? l10n.scanSubtitle : l10n.scanPreviewTitle,
-                actions: [
-                  if (scan.imagePath == null && user != null)
-                    CircleIconButton(
-                      icon: AppIcons.history,
-                      tooltip: l10n.scanHistoryTitle,
-                      badge: ref.watch(scanHistoryProvider).isNotEmpty,
-                      onPressed: () => context.push(Routes.scanHistory),
-                    ),
-                  if (scan.imagePath != null && !scan.isBusy)
-                    CircleIconButton(
-                      icon: AppIcons.x,
-                      tooltip: l10n.back,
-                      onPressed: ref.read(scanControllerProvider.notifier).reset,
-                    ),
-                ],
+        appBar: AppBar(
+          titleSpacing: Space.gutter,
+          title: Text(l10n.scanTitle),
+          leading: scan.imagePath != null && !scan.isBusy
+              ? IconButton(
+                  tooltip: l10n.back,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: ref.read(scanControllerProvider.notifier).reset,
+                )
+              : null,
+          actions: [
+            IconButton(
+              tooltip: l10n.scanHistoryTitle,
+              onPressed: () => context.push(Routes.scanHistory),
+              icon: Badge(
+                isLabelVisible: ref.watch(scanHistoryProvider).isNotEmpty,
+                backgroundColor: context.brand.live,
+                smallSize: 8,
+                child: const Icon(Icons.history_rounded),
               ),
-              Expanded(child: FadeSwitch(child: body)),
-            ],
-          ),
+            ),
+            const AccountButton(),
+            const SizedBox(width: Space.xxs),
+          ],
         ),
+        body: AnimatedSwitcher(duration: Motion.of(context, Motion.base), child: body),
       ),
     );
   }
@@ -122,62 +125,36 @@ class _SignInPrompt extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return ListView(
-      padding: EdgeInsets.fromLTRB(
-        Space.gutter,
-        Space.xs,
-        Space.gutter,
-        Space.xxl + MediaQuery.paddingOf(context).bottom,
-      ),
+      padding: const EdgeInsets.all(Space.gutter),
       children: [
         ContentWidth(
-          child: HeroPanel(
-            padding: EdgeInsets.zero,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.xl)),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 10,
-                    child: Image.asset(
-                      'assets/images/lab/archive-worktable.webp',
-                      fit: BoxFit.cover,
-                      cacheWidth: 900,
-                      semanticLabel: l10n.scanTitle,
-                    ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l10n.scanSignInTitle, style: context.text.headlineSmall),
+              const SizedBox(height: Space.xs),
+              Text(l10n.scanSignInBody, style: context.text.bodyMedium?.copyWith(color: context.brand.muted)),
+              const SizedBox(height: Space.lg),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(Radii.md),
+                child: AspectRatio(
+                  aspectRatio: 3 / 2,
+                  child: Image.asset(
+                    'assets/images/lab/archive-worktable.webp',
+                    fit: BoxFit.cover,
+                    cacheWidth: 900,
+                    semanticLabel: l10n.scanTitle,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(Space.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.scanSignInTitle,
-                        style: Fonts.display(context.text.headlineSmall, weight: 660).copyWith(color: Brand.ivory),
-                      ),
-                      const SizedBox(height: Space.xs),
-                      Text(
-                        l10n.scanSignInBody,
-                        style: context.text.bodyMedium?.copyWith(color: const Color(0xB3F5F1E7)),
-                      ),
-                      const SizedBox(height: Space.lg),
-                      FilledButton.icon(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Brand.gold,
-                          foregroundColor: const Color(0xFF1A1305),
-                          minimumSize: const Size.fromHeight(54),
-                        ),
-                        onPressed: () =>
-                            context.push(Uri(path: Routes.login, queryParameters: {'from': Routes.scan}).toString()),
-                        icon: const Icon(AppIcons.logIn, size: 18),
-                        label: Text(l10n.signIn),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: Space.lg),
+              BusyButton(
+                label: l10n.signIn,
+                icon: Icons.login,
+                onPressed: () =>
+                    context.push(Uri(path: Routes.login, queryParameters: {'from': Routes.scan}).toString()),
+              ),
+            ],
           ),
         ),
       ],
@@ -194,7 +171,7 @@ class _Intro extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final brand = context.brand;
-    final enabled = ref.watch(recognitionEnabledProvider).value;
+    final enabled = ref.watch(recognitionEnabledProvider);
     return ListView(
       padding: EdgeInsets.fromLTRB(
         Space.gutter,
@@ -207,39 +184,43 @@ class _Intro extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Reveal(
-                child: _Viewfinder(enabled: enabled, onCamera: onCamera, onGallery: onGallery),
-              ),
-              if (enabled == false) ...[
-                const SizedBox(height: Space.md),
-                _Banner(icon: AppIcons.wifiOff, text: l10n.scanUnavailable, color: brand.warning),
-              ],
+              _Viewfinder(enabled: enabled.value, onCamera: onCamera, onGallery: onGallery),
+              const SizedBox(height: Space.md),
+              Text(l10n.scanIntro, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
               const SizedBox(height: Space.xl),
               Text(l10n.scanTipsTitle, style: context.text.titleLarge),
               const SizedBox(height: Space.sm),
-              for (final (index, (icon, tip)) in [
-                (AppIcons.focus, l10n.scanTip1),
-                (AppIcons.sun, l10n.scanTip2),
-                (AppIcons.tag, l10n.scanTip3),
-              ].indexed)
+              for (final (index, tip) in [l10n.scanTip1, l10n.scanTip2, l10n.scanTip3].indexed)
                 Padding(
                   padding: const EdgeInsets.only(bottom: Space.sm),
-                  child: Reveal(
-                    index: index + 1,
-                    child: AppCard(
-                      padding: const EdgeInsets.all(Space.md),
-                      child: Row(
-                        children: [
-                          IconBadge(icon, color: brand.gold),
-                          const SizedBox(width: Space.sm),
-                          Expanded(child: Text(tip, style: context.text.bodyMedium)),
-                        ],
-                      ),
+                  child: Container(
+                    padding: const EdgeInsets.all(Space.md),
+                    decoration: BoxDecoration(
+                      color: brand.surface,
+                      borderRadius: BorderRadius.circular(Radii.md),
+                      border: Border.all(color: brand.line),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(color: brand.ink, shape: BoxShape.circle),
+                          child: Text(
+                            '${index + 1}',
+                            style: Fonts.figures(Fonts.display(context.text.labelLarge)).copyWith(color: brand.paper),
+                          ),
+                        ),
+                        const SizedBox(width: Space.sm),
+                        Expanded(child: Text(tip, style: context.text.bodyMedium)),
+                      ],
                     ),
                   ),
                 ),
-              const SizedBox(height: Space.sm),
-              _Banner(icon: AppIcons.shieldCheck, text: l10n.scanPrivacy, color: brand.info),
+              const SizedBox(height: Space.lg),
+              _Banner(icon: Icons.lock_outline, text: l10n.scanPrivacy, color: brand.info),
             ],
           ),
         ),
@@ -248,119 +229,120 @@ class _Intro extends ConsumerWidget {
   }
 }
 
-/// Midnight viewfinder card: a sample piece behind breathing brackets, the
-/// service status, and the two ways in.
-class _Viewfinder extends StatefulWidget {
+/// Camera-style hero: a framed sample object with corner brackets, the
+/// service status and the two ways in (camera, gallery) on glass.
+class _Viewfinder extends StatelessWidget {
   const _Viewfinder({required this.enabled, required this.onCamera, required this.onGallery});
   final bool? enabled;
   final VoidCallback onCamera;
   final VoidCallback onGallery;
 
-  @override
-  State<_Viewfinder> createState() => _ViewfinderState();
-}
-
-class _ViewfinderState extends State<_Viewfinder> with SingleTickerProviderStateMixin {
   static const _sample = 'assets/images/collectibles/records/star-destroyer-model.webp';
-
-  late final AnimationController _breath = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 2200),
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (Motion.reduced(context)) {
-      _breath.stop();
-    } else if (!_breath.isAnimating) {
-      _breath.repeat(reverse: true);
-    }
-  }
-
-  @override
-  void dispose() {
-    _breath.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final ready = widget.enabled == true;
+    final brand = context.brand;
+    final ready = enabled == true;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(Radii.xl),
+      borderRadius: BorderRadius.circular(Radii.lg),
       child: AspectRatio(
         aspectRatio: 4 / 5,
         child: Stack(
           fit: StackFit.expand,
           children: [
             ExcludeSemantics(child: Image.asset(_sample, fit: BoxFit.cover, cacheWidth: 900)),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0x99060A14), Color(0x40060A14), Color(0xF2060A14)],
-                  stops: [0, 0.45, 1],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(36, 76, 36, 190),
-              child: AnimatedBuilder(
-                animation: _breath,
-                builder: (context, _) => Transform.scale(
-                  scale: 0.97 + 0.03 * Curves.easeInOut.transform(_breath.value),
-                  child: const CustomPaint(painter: _BracketPainter()),
-                ),
-              ),
+            const ColoredBox(color: Color(0x73000000)),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(28, 64, 28, 150),
+              child: CustomPaint(painter: _BracketPainter()),
             ),
             Positioned(
               top: Space.md,
               left: Space.md,
-              child: Tag(
-                widget.enabled == null ? l10n.loadingShort : (ready ? l10n.scanAiReady : l10n.scanAiOff),
-                icon: ready ? AppIcons.sparkles : AppIcons.circleAlert,
-                onPhoto: true,
+              child: GlassPanel(
+                radius: Radii.pill,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: ready ? const Color(0xFF4ADE80) : const Color(0xFFFBBF24),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      ready ? l10n.scanAiReady : l10n.scanAiOff,
+                      style: Fonts.label(context.text.labelMedium, weight: 660).copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
             Positioned(
-              left: Space.lg,
-              right: Space.lg,
-              bottom: Space.lg,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    l10n.scanFrameHint,
-                    textAlign: TextAlign.center,
-                    style: context.text.bodyMedium?.copyWith(color: const Color(0xE6FFFFFF)),
-                  ),
-                  const SizedBox(height: Space.md),
-                  TapScale(
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Brand.gold,
-                        foregroundColor: const Color(0xFF1A1305),
-                        minimumSize: const Size.fromHeight(56),
-                      ),
-                      onPressed: widget.onCamera,
-                      icon: const Icon(AppIcons.camera, size: 20),
-                      label: Text(l10n.openCamera, overflow: TextOverflow.ellipsis),
+              left: Space.md,
+              right: Space.md,
+              bottom: Space.md,
+              child: GlassPanel(
+                padding: const EdgeInsets.all(Space.sm),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.scanFrameHint,
+                      textAlign: TextAlign.center,
+                      style: context.text.bodyMedium?.copyWith(color: const Color(0xE6FFFFFF)),
                     ),
-                  ),
-                  const SizedBox(height: Space.xs),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(foregroundColor: Colors.white),
-                    onPressed: widget.onGallery,
-                    icon: const Icon(AppIcons.images, size: 18),
-                    label: Text(l10n.scanGallery, overflow: TextOverflow.ellipsis),
-                  ),
-                ],
+                    const SizedBox(height: Space.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: FilledButton.icon(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: BrandColors.light.ink,
+                              minimumSize: const Size.fromHeight(52),
+                              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                            ),
+                            onPressed: onCamera,
+                            icon: const Icon(Icons.photo_camera_outlined),
+                            label: Text(l10n.scanCamera, overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                        const SizedBox(width: Space.xs),
+                        Expanded(
+                          flex: 4,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              side: const BorderSide(color: Color(0x80FFFFFF)),
+                              minimumSize: const Size.fromHeight(52),
+                              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                            ),
+                            onPressed: onGallery,
+                            icon: const Icon(Icons.photo_library_outlined),
+                            label: Text(l10n.scanGalleryShort, overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
+            if (enabled == false)
+              Positioned(
+                top: 56,
+                left: Space.md,
+                right: Space.md,
+                child: _Banner(icon: Icons.cloud_off_outlined, text: l10n.scanUnavailable, color: brand.warning),
+              ),
           ],
         ),
       ),
@@ -374,21 +356,17 @@ class _BracketPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Brand.goldLight
+      ..color = Colors.white
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    const arm = 30.0;
-    const r = 18.0;
+    const arm = 28.0;
     final w = size.width;
     final h = size.height;
     for (final (x, y, dx, dy) in [(0.0, 0.0, 1.0, 1.0), (w, 0.0, -1.0, 1.0), (0.0, h, 1.0, -1.0), (w, h, -1.0, -1.0)]) {
-      final path = Path()
-        ..moveTo(x, y + arm * dy)
-        ..lineTo(x, y + r * dy)
-        ..quadraticBezierTo(x, y, x + r * dx, y)
-        ..lineTo(x + arm * dx, y);
-      canvas.drawPath(path, paint);
+      canvas
+        ..drawLine(Offset(x, y), Offset(x + arm * dx, y), paint)
+        ..drawLine(Offset(x, y), Offset(x, y + arm * dy), paint);
     }
   }
 
@@ -404,19 +382,18 @@ class _Banner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(Space.md),
+    padding: const EdgeInsets.all(Space.sm),
     decoration: BoxDecoration(
-      color: color.withValues(alpha: context.isDark ? 0.14 : 0.07),
-      borderRadius: BorderRadius.circular(Radii.md),
+      color: Color.alphaBlend(color.withValues(alpha: 0.08), context.brand.surfaceRaised),
+      borderRadius: BorderRadius.circular(Radii.sm),
+      border: Border.all(color: color.withValues(alpha: 0.35)),
     ),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 20, color: color),
         const SizedBox(width: Space.sm),
-        Expanded(
-          child: Text(text, style: context.text.bodySmall?.copyWith(color: context.brand.ink)),
-        ),
+        Expanded(child: Text(text, style: context.text.bodySmall)),
       ],
     ),
   );
@@ -440,7 +417,6 @@ class _Preview extends ConsumerWidget {
       title: l10n.scanAnalyze,
       body: l10n.scanConfirmSend,
       confirmLabel: l10n.send,
-      icon: AppIcons.scanSearch,
     );
     if (ok) await ref.read(scanControllerProvider.notifier).analyze();
   }
@@ -455,7 +431,7 @@ class _Preview extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxImageHeight = (constraints.maxHeight * 0.58).clamp(220.0, 640.0);
+        final maxImageHeight = (constraints.maxHeight * 0.55).clamp(220.0, 640.0);
         return ListView(
           padding: EdgeInsets.fromLTRB(
             Space.gutter,
@@ -468,10 +444,12 @@ class _Preview extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(l10n.scanPreviewTitle, style: context.text.titleMedium),
+                  const SizedBox(height: Space.sm),
                   ConstrainedBox(
                     constraints: BoxConstraints(maxHeight: maxImageHeight),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(Radii.xl),
+                      borderRadius: BorderRadius.circular(Radii.md),
                       child: ColoredBox(
                         color: Colors.black,
                         child: Stack(
@@ -500,15 +478,33 @@ class _Preview extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: Space.md),
+                  const SizedBox(height: Space.sm),
                   if (!busy)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: Space.xs,
+                      runSpacing: Space.xs,
                       children: [
-                        _Tool(icon: AppIcons.crop, label: l10n.scanCrop, onTap: () => _crop(context, ref)),
-                        _Tool(icon: AppIcons.rotateCw, label: l10n.scanRotate, onTap: controller.rotate),
-                        _Tool(icon: AppIcons.camera, label: l10n.retakePhoto, onTap: onRetake),
-                        _Tool(icon: AppIcons.images, label: l10n.scanGalleryShort, onTap: onReplace),
+                        OutlinedButton.icon(
+                          onPressed: () => _crop(context, ref),
+                          icon: const Icon(Icons.crop),
+                          label: Text(l10n.scanCrop),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: controller.rotate,
+                          icon: const Icon(Icons.rotate_90_degrees_cw_outlined),
+                          label: Text(l10n.scanRotate),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: onRetake,
+                          icon: const Icon(Icons.photo_camera_outlined),
+                          label: Text(l10n.scanCamera),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: onReplace,
+                          icon: const Icon(Icons.photo_library_outlined),
+                          label: Text(l10n.scanRetake),
+                        ),
                       ],
                     ),
                   const SizedBox(height: Space.lg),
@@ -517,7 +513,7 @@ class _Preview extends ConsumerWidget {
                   else ...[
                     if (state.stage == ScanStage.failed && state.error != null) ...[
                       _Banner(
-                        icon: AppIcons.circleAlert,
+                        icon: Icons.error_outline,
                         color: brand.danger,
                         text: state.error is ImageProcessingException
                             ? ((state.error! as ImageProcessingException).reason == ImageProcessingFailure.tooLarge
@@ -528,12 +524,12 @@ class _Preview extends ConsumerWidget {
                       const SizedBox(height: Space.md),
                     ],
                     if (!enabled) ...[
-                      _Banner(icon: AppIcons.wifiOff, text: l10n.scanUnavailable, color: brand.warning),
+                      _Banner(icon: Icons.cloud_off_outlined, text: l10n.scanUnavailable, color: brand.warning),
                       const SizedBox(height: Space.md),
                     ],
                     BusyButton(
                       label: state.stage == ScanStage.failed ? l10n.retry : l10n.scanAnalyze,
-                      icon: AppIcons.wandSparkles,
+                      icon: Icons.auto_awesome_outlined,
                       onPressed: enabled ? () => _analyze(context, ref) : null,
                     ),
                     const SizedBox(height: Space.sm),
@@ -553,49 +549,6 @@ class _Preview extends ConsumerWidget {
   }
 }
 
-class _Tool extends StatelessWidget {
-  const _Tool({required this.icon, required this.label, required this.onTap});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    label: label,
-    excludeSemantics: true,
-    child: TapScale(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(Radii.md),
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onTap();
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(Space.xs),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: context.brand.surface,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: context.brand.line),
-                ),
-                child: Icon(icon, size: 20, color: context.brand.ink),
-              ),
-              const SizedBox(height: Space.xxs),
-              Text(label, style: context.text.labelSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
 class _Progress extends StatelessWidget {
   const _Progress({required this.state, required this.onCancel});
   final ScanState state;
@@ -606,9 +559,9 @@ class _Progress extends StatelessWidget {
     final l10n = context.l10n;
     final brand = context.brand;
     final steps = [
-      (ScanStage.preparing, l10n.scanPreparing, AppIcons.crop),
-      (ScanStage.uploading, l10n.scanStepUpload, AppIcons.upload),
-      (ScanStage.analyzing, '${l10n.scanStepIdentify} · ${l10n.scanStepMatch}', AppIcons.sparkles),
+      (ScanStage.preparing, l10n.scanPreparing),
+      (ScanStage.uploading, l10n.scanStepUpload),
+      (ScanStage.analyzing, '${l10n.scanStepIdentify} · ${l10n.scanStepMatch}'),
     ];
     final current = steps.indexWhere((step) => step.$1 == state.stage);
     return Semantics(
@@ -617,74 +570,48 @@ class _Progress extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppCard(
-            child: Column(
-              children: [
-                for (final (index, (_, label, icon)) in steps.indexed)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: Space.xs),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 36,
-                          height: 36,
-                          child: AnimatedSwitcher(
-                            duration: Motion.of(context, Motion.base),
-                            child: index < current
-                                ? Icon(
-                                    AppIcons.circleCheck,
-                                    key: const ValueKey('done'),
-                                    color: brand.success,
-                                    size: 24,
-                                  )
-                                : index == current
-                                ? Stack(
-                                    key: const ValueKey('now'),
-                                    alignment: Alignment.center,
-                                    children: [
-                                      CircularProgressIndicator(
-                                        strokeWidth: 2.4,
-                                        color: brand.gold,
-                                        value: state.stage == ScanStage.uploading && state.uploadProgress > 0
-                                            ? state.uploadProgress
-                                            : null,
-                                      ),
-                                      Icon(icon, size: 15, color: brand.gold),
-                                    ],
-                                  )
-                                : Icon(icon, key: const ValueKey('next'), color: brand.line, size: 20),
-                          ),
-                        ),
-                        const SizedBox(width: Space.sm),
-                        Expanded(
-                          child: Text(
-                            label,
-                            style: context.text.bodyMedium?.copyWith(
-                              color: index <= current ? brand.ink : brand.muted,
-                              fontWeight: index == current ? FontWeight.w600 : FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
+          for (final (index, (_, label)) in steps.indexed)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.xxs),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: index < current
+                        ? Icon(Icons.check_circle, color: brand.success, size: 22)
+                        : index == current
+                        ? CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            value: state.stage == ScanStage.uploading && state.uploadProgress > 0
+                                ? state.uploadProgress
+                                : null,
+                          )
+                        : Icon(Icons.radio_button_unchecked, color: brand.line, size: 22),
+                  ),
+                  const SizedBox(width: Space.sm),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: context.text.bodyMedium?.copyWith(
+                        color: index <= current ? brand.ink : brand.muted,
+                        fontWeight: index == current ? FontWeight.w600 : FontWeight.w400,
+                      ),
                     ),
                   ),
-              ],
+                ],
+              ),
             ),
-          ),
           const SizedBox(height: Space.md),
-          OutlinedButton.icon(
-            onPressed: onCancel,
-            icon: const Icon(AppIcons.x, size: 18),
-            label: Text(l10n.scanCancelAnalysis),
-          ),
+          OutlinedButton.icon(onPressed: onCancel, icon: const Icon(Icons.close), label: Text(l10n.scanCancelAnalysis)),
         ],
       ),
     );
   }
 }
 
-/// Gold beam sweeping over the photo while the analysis runs, with a soft
-/// glow trailing it. A static tint when the system asks to reduce motion.
+/// Sweeping scan line over the photo while the analysis runs. Replaced by a
+/// static tint when the system asks to reduce motion.
 class _ScanningOverlay extends StatefulWidget {
   const _ScanningOverlay();
 
@@ -716,35 +643,16 @@ class _ScanningOverlayState extends State<_ScanningOverlay> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
+    const accent = Colors.white;
     return ExcludeSemantics(
       child: RepaintBoundary(
         child: ColoredBox(
-          color: const Color(0x40060A14),
+          color: Colors.black.withValues(alpha: 0.25),
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, _) => Align(
               alignment: Alignment(0, -1 + 2 * Curves.easeInOut.transform(_controller.value)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Brand.gold.withValues(alpha: 0), Brand.gold.withValues(alpha: 0.35)],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 2.5,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(colors: [Color(0x00F3DCA2), Brand.goldLight, Color(0x00F3DCA2)]),
-                    ),
-                  ),
-                ],
-              ),
+              child: Container(height: 3, decoration: const BoxDecoration(color: accent)),
             ),
           ),
         ),

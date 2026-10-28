@@ -6,23 +6,23 @@ import 'package:flutter/services.dart';
 
 import '../../app/theme/tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'app_icons.dart';
 import 'collectible_image.dart';
 import 'motion.dart';
 import 'ui.dart';
 
-/// Surface with a hairline edge and a soft two-layer shadow. With [onTap] it
-/// presses in like a physical card and ripples above its fill.
+/// Flat surface with a hairline edge, like the frame of a slab; [shadow]
+/// lifts it for things that float. With [onTap] it presses in like a
+/// physical card and ripples above its fill.
 class AppCard extends StatelessWidget {
   const AppCard({
     super.key,
     required this.child,
     this.onTap,
     this.padding = const EdgeInsets.all(Space.md),
-    this.radius = Radii.lg,
+    this.radius = Radii.md,
     this.color,
     this.gradient,
-    this.shadow = true,
+    this.shadow = false,
     this.border = true,
     this.semanticLabel,
   });
@@ -98,8 +98,8 @@ class IconBadge extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: solid ? tone : tone.withValues(alpha: context.isDark ? 0.16 : 0.09),
-        borderRadius: BorderRadius.circular(size * 0.32),
+        color: solid ? tone : tone.withValues(alpha: context.isDark ? 0.16 : 0.08),
+        borderRadius: BorderRadius.circular(size * 0.26),
       ),
       child: Icon(icon, size: size * 0.5, color: solid ? onTone : tone),
     );
@@ -283,7 +283,7 @@ class MenuTile extends StatelessWidget {
                 ),
               ),
               if (trailing != null) ...[const SizedBox(width: Space.xs), trailing!],
-              if (trailing == null && onTap != null) Icon(AppIcons.chevronRight, size: 18, color: brand.muted),
+              if (trailing == null && onTap != null) Icon(Icons.chevron_right_rounded, size: 18, color: brand.muted),
             ],
           ),
         ),
@@ -292,7 +292,7 @@ class MenuTile extends StatelessWidget {
   }
 }
 
-/// Large page title for hub screens: optional gold eyebrow, serif title, a
+/// Large page title for hub screens: optional tracked eyebrow, serif title, a
 /// one-line subtitle and trailing actions.
 class PageTitle extends StatelessWidget {
   const PageTitle({
@@ -326,7 +326,7 @@ class PageTitle extends StatelessWidget {
                 if (eyebrow != null) ...[
                   Text(
                     eyebrow!.toUpperCase(),
-                    style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: brand.gold),
+                    style: Fonts.eyebrow(context.text.labelSmall).copyWith(color: brand.muted),
                   ),
                   const SizedBox(height: Space.xxs),
                 ],
@@ -345,8 +345,8 @@ class PageTitle extends StatelessWidget {
   }
 }
 
-/// Pill segmented control with a thumb that springs between segments
-/// (21st.dev "Animated Tabs", pill variant).
+/// Pill segmented control: an ink capsule (the same one the tab bar uses)
+/// springs between segments.
 class SegmentedTabs extends StatelessWidget {
   const SegmentedTabs({super.key, required this.labels, required this.index, required this.onChanged, this.icons});
   final List<String> labels;
@@ -360,9 +360,9 @@ class SegmentedTabs extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: context.isDark ? brand.surface : brand.surfaceMuted,
+        color: brand.surface,
         borderRadius: BorderRadius.circular(Radii.pill),
-        border: Border.all(color: context.isDark ? brand.line : Colors.transparent),
+        border: Border.all(color: brand.line),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -377,11 +377,7 @@ class SegmentedTabs extends StatelessWidget {
                 top: 0,
                 bottom: 0,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: context.isDark ? brand.surfaceMuted : brand.surface,
-                    borderRadius: BorderRadius.circular(Radii.pill),
-                    boxShadow: context.isDark ? null : brand.cardShadow,
-                  ),
+                  decoration: BoxDecoration(color: brand.accent, borderRadius: BorderRadius.circular(Radii.pill)),
                 ),
               ),
               Row(
@@ -406,14 +402,14 @@ class SegmentedTabs extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   if (icons != null) ...[
-                                    Icon(icons![i], size: 16, color: i == index ? brand.ink : brand.muted),
+                                    Icon(icons![i], size: 16, color: i == index ? brand.onAccent : brand.muted),
                                     const SizedBox(width: 6),
                                   ],
                                   Flexible(
                                     child: AnimatedDefaultTextStyle(
                                       duration: Motion.of(context, Motion.fast),
                                       style: context.text.labelLarge!.copyWith(
-                                        color: i == index ? brand.ink : brand.muted,
+                                        color: i == index ? brand.onAccent : brand.muted,
                                         fontWeight: i == index ? FontWeight.w700 : FontWeight.w500,
                                       ),
                                       child: Text(
@@ -492,16 +488,8 @@ class QuickAction extends StatelessWidget {
                       height: 58,
                       decoration: BoxDecoration(
                         color: highlight ? brand.accent : brand.surface,
-                        gradient: highlight
-                            ? LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [brand.accent, Color.lerp(brand.accent, brand.gold, 0.35)!],
-                              )
-                            : null,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(Radii.md + 2),
                         border: highlight ? null : Border.all(color: brand.line),
-                        boxShadow: brand.cardShadow,
                       ),
                       child: Icon(icon, size: 24, color: highlight ? brand.onAccent : tone),
                     ),
@@ -565,7 +553,7 @@ class StatTile extends StatelessWidget {
       crossAxisAlignment: alignment ?? CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (icon != null) ...[Icon(icon, size: 18, color: color ?? brand.gold), const SizedBox(height: Space.xs)],
+        if (icon != null) ...[Icon(icon, size: 18, color: color ?? brand.muted), const SizedBox(height: Space.xs)],
         Text(
           value,
           maxLines: 1,
@@ -863,30 +851,21 @@ class PriceText extends StatelessWidget {
   }
 }
 
-/// Avatar: the photo when there is one, else the initial on one of a few
-/// premium gradients picked from the name (so a person keeps their colour).
+/// Avatar: the photo when there is one, else the initial on an ink disc, the
+/// same mark the account button shows.
 class UserAvatar extends StatelessWidget {
   const UserAvatar({super.key, required this.name, this.url, this.size = 40, this.ring = false});
   final String name;
   final String? url;
   final double size;
 
-  /// Gold ring around the avatar.
+  /// Hairline ring around the avatar, for the owner of a page.
   final bool ring;
-
-  static const _gradients = [
-    [Color(0xFF14213D), Color(0xFF3B4F86)],
-    [Color(0xFF6B4E16), Color(0xFFC9A04C)],
-    [Color(0xFF3D1F3A), Color(0xFF8A4D7E)],
-    [Color(0xFF113B3A), Color(0xFF3E8E7E)],
-    [Color(0xFF4A1F1F), Color(0xFFB0574A)],
-    [Color(0xFF24324F), Color(0xFF7286B8)],
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final brand = context.brand;
     final initial = name.trim().isEmpty ? '?' : String.fromCharCode(name.trim().runes.first).toUpperCase();
-    final colors = _gradients[name.codeUnits.fold<int>(0, (a, b) => a + b) % _gradients.length];
     final hasPhoto = url != null && url!.trim().isNotEmpty;
     final face = hasPhoto
         ? ClipOval(
@@ -899,16 +878,13 @@ class UserAvatar extends StatelessWidget {
             width: size,
             height: size,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: colors),
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: brand.ink),
             child: Text(
               initial,
               style: Fonts.display(
                 TextStyle(fontSize: size * 0.42, height: 1),
                 weight: 680,
-              ).copyWith(color: Colors.white),
+              ).copyWith(color: brand.paper),
             ),
           );
     if (!ring) {
@@ -923,16 +899,13 @@ class UserAvatar extends StatelessWidget {
       image: true,
       child: ExcludeSemantics(
         child: Container(
-          padding: const EdgeInsets.all(2.5),
+          padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(colors: [Brand.goldLight, context.brand.gold, Brand.goldLight]),
+            color: brand.paper,
+            border: Border.all(color: brand.line, width: 1.5),
           ),
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: context.brand.paper),
-            child: face,
-          ),
+          child: face,
         ),
       ),
     );
@@ -978,12 +951,7 @@ class ProgressRing extends StatelessWidget {
       duration: Motion.of(context, const Duration(milliseconds: 1200)),
       curve: Motion.enter,
       builder: (context, progress, child) => CustomPaint(
-        painter: _RingPainter(
-          progress: progress,
-          color: color ?? brand.gold,
-          track: brand.surfaceMuted,
-          stroke: stroke,
-        ),
+        painter: _RingPainter(progress: progress, color: color ?? brand.ink, track: brand.surfaceMuted, stroke: stroke),
         child: SizedBox.square(
           dimension: size,
           child: Center(child: child),
@@ -1039,7 +1007,7 @@ class AreaChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tone = color ?? context.brand.gold;
+    final tone = color ?? context.brand.ink;
     return SizedBox(
       height: height,
       child: TweenAnimationBuilder<double>(
@@ -1162,8 +1130,8 @@ class DotsIndicator extends StatelessWidget {
   }
 }
 
-/// Soft colour fields painted behind a hero area, like the pastel glow behind
-/// the 21st.dev notification feed. Radial gradients only: no blur filter.
+/// Faint shading painted behind a hero area so it reads as a lit case rather
+/// than a flat page. Radial gradients only: no blur filter.
 class AmbientGlow extends StatelessWidget {
   const AmbientGlow({super.key, required this.child, this.colors});
   final Widget child;
@@ -1172,8 +1140,8 @@ class AmbientGlow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    final tones = colors ?? [brand.gold, brand.info, brand.accent];
-    return CustomPaint(painter: _GlowPainter(tones, context.isDark ? 0.22 : 0.16), child: child);
+    final tones = colors ?? [brand.surface, brand.surfaceMuted, brand.surface];
+    return CustomPaint(painter: _GlowPainter(tones, context.isDark ? 0.5 : 0.9), child: child);
   }
 }
 
@@ -1209,7 +1177,7 @@ class _GlowPainter extends CustomPainter {
   bool shouldRepaint(_GlowPainter old) => old.strength != strength || old.colors != colors;
 }
 
-/// A gold highlight that sweeps across [child] every [period] (logo shine).
+/// A soft highlight that sweeps across [child] every [period] (logo shine).
 class ShineSweep extends StatefulWidget {
   const ShineSweep({super.key, required this.child, this.period = const Duration(milliseconds: 2600)});
   final Widget child;
@@ -1249,7 +1217,7 @@ class _ShineSweepState extends State<ShineSweep> with SingleTickerProviderStateM
         shaderCallback: (bounds) => LinearGradient(
           begin: Alignment(-1.6 + 3.2 * t, -0.6),
           end: Alignment(-0.6 + 3.2 * t, 0.6),
-          colors: const [Color(0x00FFFFFF), Color(0x66FFF4D6), Color(0x00FFFFFF)],
+          colors: const [Color(0x00FFFFFF), Color(0x59FFFFFF), Color(0x00FFFFFF)],
         ).createShader(bounds),
         child: child,
       );

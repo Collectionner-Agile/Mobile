@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 import '../catalog/application/catalog_providers.dart';
@@ -32,7 +31,7 @@ class FavoritesScreen extends ConsumerWidget {
               children: [
                 EmptyState(
                   message: l10n.favoritesEmpty,
-                  icon: AppIcons.heart,
+                  icon: Icons.favorite_border_rounded,
                   actionLabel: l10n.homeExplore,
                   onAction: () => context.go(Routes.catalog),
                 ),

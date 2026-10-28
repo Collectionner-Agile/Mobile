@@ -9,8 +9,8 @@ built with Flutter widgets. The Astro web app ([Collectionner-Agile/Frontend](ht
 | --- | --- |
 | Flutter / Dart | 3.47.8 stable / 3.13.7, strict analysis (`analysis_options.yaml`) |
 | State | Riverpod 3 (`Notifier`, `FutureProvider`), no code generation |
-| Navigation | go_router 18: five-tab `StatefulShellRoute` (Inicio, Explorar, Escanear, Subastas, Perfil) with cross-faded tabs, protected routes, deep links `collectionner://app/...` |
-| Design | "Vitrina" tokens (midnight navy + champagne gold, Fraunces/Archivo), Lucide icons subset into `assets/fonts/AppIcons.ttf` by `dart run tool/build_icons.dart`, motion kit after 21st.dev references (`lib/core/widgets/kit.dart`, `motion.dart`) |
+| Navigation | go_router 18: five-tab `StatefulShellRoute` (Inicio, Catálogo, Escanear, Subastas, Comunidades) on a floating pill bar whose active tab stretches into an ink capsule, cross-faded tabs, profile from the avatar, protected routes, deep links `collectionner://app/...` |
+| Design | "Slab" tokens: cool grey ground, black ink for structure and actions, lacquer red only for what is live; Fraunces for titles and prices, Archivo for UI; Material icons; pieces cased like graded collectibles (`lib/core/widgets/slab.dart`); motion kit in `lib/core/widgets/motion.dart` and `kit.dart` |
 | HTTP | Dio wrapped in `ApiClient`; every failure becomes a typed `ApiException` (RFC 9457 aware) |
 | Session | JWT in Android Keystore / iOS Keychain (`flutter_secure_storage`), excluded from backups |
 | Images | In-app live camera (`camera`, CameraX) for scanning, `image_picker` for the gallery, `image_cropper`, re-encode on an isolate (EXIF stripped) |

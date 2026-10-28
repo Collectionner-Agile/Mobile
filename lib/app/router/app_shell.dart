@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/widgets/app_icons.dart';
-import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 import '../../features/auth/application/session_controller.dart';
 import '../../features/launch/launch_scene.dart';
@@ -19,7 +17,7 @@ class NotFoundScreen extends StatelessWidget {
     body: Center(
       child: EmptyState(
         message: context.l10n.errorNotFound,
-        icon: AppIcons.compass,
+        icon: Icons.travel_explore_outlined,
         actionLabel: context.l10n.navHome,
         onAction: () => context.go('/home'),
       ),
@@ -27,19 +25,12 @@ class NotFoundScreen extends StatelessWidget {
   );
 }
 
-/// One destination of the main navigation.
-typedef _Destination = ({IconData icon, String label});
-
-/// Floating pill bar on phones (21st.dev "Bottom Nav Bar": the active tab
-/// widens on a spring into a tinted capsule with its label) with the scan
-/// button raised in the middle; a navigation rail on wide layouts. Tabs
-/// cross-fade, and re-tapping the active tab returns to its root.
+/// Bottom navigation on phones, navigation rail on wide layouts (landscape,
+/// tablets, foldables). Tabs cross-fade, re-tapping the active tab returns to
+/// its root, and Back on Home asks twice before saying goodbye.
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.shell});
   final StatefulNavigationShell shell;
-
-  /// Index of the scan tab, drawn as the raised centre button.
-  static const scanIndex = 2;
 
   @override
   ConsumerState<AppShell> createState() => _AppShellState();
@@ -73,7 +64,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     }
     _lastBack = now;
     HapticFeedback.selectionClick();
-    showToast(context, context.l10n.pressBackAgain, icon: AppIcons.doorOpen);
+    showToast(context, context.l10n.pressBackAgain);
   }
 
   @override
@@ -86,12 +77,12 @@ class _AppShellState extends ConsumerState<AppShell> {
       }
     });
 
-    final List<_Destination> destinations = [
-      (icon: AppIcons.house, label: l10n.navHome),
-      (icon: AppIcons.compass, label: l10n.navExplore),
-      (icon: AppIcons.scanLine, label: l10n.navScan),
-      (icon: AppIcons.gavel, label: l10n.navAuctions),
-      (icon: AppIcons.circleUserRound, label: l10n.profile),
+    final destinations = [
+      (Icons.home_outlined, Icons.home, l10n.navHome),
+      (Icons.grid_view_outlined, Icons.grid_view_rounded, l10n.navCatalog),
+      (Icons.center_focus_weak_outlined, Icons.center_focus_strong, l10n.navScan),
+      (Icons.gavel_outlined, Icons.gavel, l10n.navAuctions),
+      (Icons.forum_outlined, Icons.forum, l10n.navCommunities),
     ];
 
     return PopScope(
@@ -101,14 +92,15 @@ class _AppShellState extends ConsumerState<AppShell> {
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth >= 720) {
+          final wide = constraints.maxWidth >= 720;
+          if (wide) {
             return Scaffold(
               body: Row(
                 children: [
                   SafeArea(
                     right: false,
-                    // Landscape phones are short: let the rail scroll instead
-                    // of overflowing when labels are large.
+                    // Landscape phones are short: let the rail scroll instead of
+                    // overflowing when labels are large.
                     child: LayoutBuilder(
                       builder: (context, rail) => SingleChildScrollView(
                         child: ConstrainedBox(
@@ -120,10 +112,11 @@ class _AppShellState extends ConsumerState<AppShell> {
                               labelType: NavigationRailLabelType.all,
                               groupAlignment: -0.85,
                               destinations: [
-                                for (final destination in destinations)
+                                for (final (icon, selected, label) in destinations)
                                   NavigationRailDestination(
-                                    icon: Icon(destination.icon),
-                                    label: Text(destination.label),
+                                    icon: Icon(icon),
+                                    selectedIcon: Icon(selected),
+                                    label: Text(label),
                                   ),
                               ],
                             ),
@@ -139,9 +132,12 @@ class _AppShellState extends ConsumerState<AppShell> {
             );
           }
           return Scaffold(
-            extendBody: true,
             body: shell,
-            bottomNavigationBar: _PillNavBar(index: shell.currentIndex, onSelect: _select, destinations: destinations),
+            bottomNavigationBar: _FloatingNavBar(
+              index: shell.currentIndex,
+              onSelect: _select,
+              destinations: destinations,
+            ),
           );
         },
       ),
@@ -149,112 +145,56 @@ class _AppShellState extends ConsumerState<AppShell> {
   }
 }
 
-class _PillNavBar extends StatelessWidget {
-  const _PillNavBar({required this.index, required this.onSelect, required this.destinations});
+/// Floating pill bar: the active tab expands into an ink capsule with its
+/// label, the others stay as icons.
+class _FloatingNavBar extends StatelessWidget {
+  const _FloatingNavBar({required this.index, required this.onSelect, required this.destinations});
   final int index;
   final ValueChanged<int> onSelect;
-  final List<_Destination> destinations;
+  final List<(IconData, IconData, String)> destinations;
 
-  static const double _slot = 52;
-  static const double _scan = 60;
-  static const double _height = 64;
+  static const double _iconSlot = 52;
 
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
     final bottom = MediaQuery.paddingOf(context).bottom;
-    // The bar is a fixed control: let labels grow a little with the user's
-    // text size, never enough to break the pill.
-    return MediaQuery.withClampedTextScaling(
-      maxScaleFactor: 1.2,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Content fades out under the floating bar instead of colliding
-          // with it.
-          Positioned.fill(
-            top: -28,
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [brand.paper.withValues(alpha: 0), brand.paper.withValues(alpha: 0.92)],
-                  ),
-                ),
-              ),
+    return ColoredBox(
+      color: brand.paper,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(Space.sm, Space.xs, Space.sm, Space.sm + bottom),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: brand.surface,
+            borderRadius: BorderRadius.circular(Radii.pill),
+            border: Border.all(color: brand.line),
+            boxShadow: brand.cardShadow,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final active = (constraints.maxWidth - _iconSlot * (destinations.length - 1)).clamp(
+                  _iconSlot,
+                  double.infinity,
+                );
+                return Row(
+                  children: [
+                    for (final (i, (icon, selected, label)) in destinations.indexed)
+                      _NavItem(
+                        width: i == index ? active : _iconSlot,
+                        selected: i == index,
+                        icon: i == index ? selected : icon,
+                        label: label,
+                        onTap: () => onSelect(i),
+                      ),
+                  ],
+                );
+              },
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(Space.md, Space.xs, Space.md, Space.sm + bottom),
-            child: _Entrance(
-              child: Container(
-                height: _height,
-                decoration: BoxDecoration(
-                  color: brand.surface,
-                  borderRadius: BorderRadius.circular(Radii.pill),
-                  border: Border.all(color: brand.line),
-                  boxShadow: brand.floatingShadow,
-                ),
-                padding: const EdgeInsets.all(6),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final inner = constraints.maxWidth;
-                    final regular = destinations.length - 1;
-                    final scanActive = index == AppShell.scanIndex;
-                    final even = (inner - _scan) / regular;
-                    final active = (inner - _scan - _slot * (regular - 1)).clamp(_slot, double.infinity);
-                    final showLabel = active >= 104;
-                    return Row(
-                      children: [
-                        for (final (i, destination) in destinations.indexed)
-                          if (i == AppShell.scanIndex)
-                            _ScanButton(
-                              label: destination.label,
-                              icon: destination.icon,
-                              selected: scanActive,
-                              onTap: () => onSelect(i),
-                            )
-                          else
-                            _NavItem(
-                              width: scanActive ? even : (i == index ? active : _slot),
-                              selected: i == index,
-                              showLabel: showLabel && i == index,
-                              icon: destination.icon,
-                              label: destination.label,
-                              onTap: () => onSelect(i),
-                            ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
-    );
-  }
-}
-
-/// The bar springs in once when the shell first appears (scale 0.9 → 1).
-class _Entrance extends StatelessWidget {
-  const _Entrance({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (Motion.reduced(context)) return child;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: Motion.springDuration(Motion.bouncy),
-      curve: Motion.bouncy,
-      builder: (context, t, child) => Opacity(
-        opacity: t.clamp(0.0, 1.0),
-        child: Transform.scale(scale: 0.9 + 0.1 * t, child: child),
-      ),
-      child: child,
     );
   }
 }
@@ -263,14 +203,12 @@ class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.width,
     required this.selected,
-    required this.showLabel,
     required this.icon,
     required this.label,
     required this.onTap,
   });
   final double width;
   final bool selected;
-  final bool showLabel;
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -278,70 +216,65 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    final tint = context.isDark ? brand.gold : brand.accent;
-    final foreground = selected ? tint : brand.muted;
-    final spring = Motion.of(context, Motion.springDuration(Motion.spring));
+    final fg = selected ? brand.onAccent : brand.muted;
+    final duration = Motion.of(context, Motion.springDuration(Motion.spring));
     return Semantics(
       selected: selected,
       button: true,
-      label: label,
-      excludeSemantics: true,
       child: Tooltip(
         message: label,
-        excludeFromSemantics: true,
-        child: TapScale(
-          child: AnimatedContainer(
-            duration: spring,
-            curve: Motion.spring,
-            width: width,
-            height: 52,
-            decoration: BoxDecoration(
-              color: selected ? tint.withValues(alpha: context.isDark ? 0.16 : 0.08) : Colors.transparent,
-              borderRadius: BorderRadius.circular(Radii.pill),
-            ),
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                customBorder: const StadiumBorder(),
-                onTap: onTap,
-                child: ClipRect(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AnimatedScale(
-                        scale: selected ? 1.06 : 1,
-                        duration: spring,
-                        curve: Motion.bouncy,
-                        child: Icon(icon, color: foreground, size: 22),
+        excludeFromSemantics: false,
+        // The capsule settles on a spring while the icon swaps with a small
+        // pop and the label slides out of it.
+        child: AnimatedContainer(
+          duration: duration,
+          curve: Motion.spring,
+          width: width,
+          height: 52,
+          decoration: BoxDecoration(
+            color: selected ? brand.accent : Colors.transparent,
+            borderRadius: BorderRadius.circular(Radii.pill),
+          ),
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              customBorder: const StadiumBorder(),
+              onTap: onTap,
+              child: ClipRect(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: Motion.of(context, Motion.base),
+                      switchInCurve: Motion.bouncy,
+                      transitionBuilder: (child, animation) => ScaleTransition(
+                        scale: Tween<double>(begin: 0.6, end: 1).animate(animation),
+                        child: FadeTransition(opacity: animation, child: child),
                       ),
+                      child: Icon(icon, key: ValueKey(icon), color: fg, size: 24),
+                    ),
+                    if (selected) ...[
+                      const SizedBox(width: Space.xs),
                       Flexible(
-                        child: AnimatedSize(
-                          duration: spring,
-                          curve: Motion.spring,
-                          alignment: Alignment.centerLeft,
-                          child: AnimatedOpacity(
-                            opacity: showLabel ? 1 : 0,
-                            duration: Motion.of(context, const Duration(milliseconds: 190)),
-                            child: showLabel
-                                ? Padding(
-                                    padding: const EdgeInsets.only(left: Space.xs),
-                                    child: Text(
-                                      label,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: false,
-                                      style: Fonts.label(
-                                        context.text.labelLarge,
-                                        weight: 680,
-                                      ).copyWith(color: foreground),
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: 1),
+                          duration: duration,
+                          curve: Motion.enter,
+                          builder: (context, t, child) => Opacity(
+                            opacity: t,
+                            child: Transform.translate(offset: Offset(-8 * (1 - t), 0), child: child),
+                          ),
+                          child: Text(
+                            label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            style: Fonts.label(context.text.labelLarge, weight: 680).copyWith(color: fg),
                           ),
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -352,71 +285,8 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-/// Raised circular scan button in the middle of the bar.
-class _ScanButton extends StatelessWidget {
-  const _ScanButton({required this.label, required this.icon, required this.selected, required this.onTap});
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final brand = context.brand;
-    final dark = context.isDark;
-    final colors = dark ? [brand.accentStrong, brand.accent] : [const Color(0xFF263A66), brand.accent];
-    return SizedBox(
-      width: _PillNavBar._scan,
-      height: 52,
-      child: OverflowBox(
-        maxHeight: 80,
-        alignment: Alignment.bottomCenter,
-        child: Semantics(
-          button: true,
-          selected: selected,
-          label: label,
-          excludeSemantics: true,
-          child: Tooltip(
-            message: label,
-            excludeFromSemantics: true,
-            child: TapScale(
-              scale: 0.9,
-              child: Transform.translate(
-                offset: const Offset(0, -12),
-                child: GestureDetector(
-                  onTap: onTap,
-                  child: AnimatedContainer(
-                    duration: Motion.of(context, Motion.base),
-                    width: 58,
-                    height: 58,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: colors),
-                      border: Border.all(color: brand.surface, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: (dark ? brand.gold : brand.accent).withValues(alpha: selected ? 0.5 : 0.32),
-                          blurRadius: selected ? 22 : 16,
-                          offset: const Offset(0, 8),
-                          spreadRadius: -4,
-                        ),
-                      ],
-                    ),
-                    child: Icon(icon, color: brand.onAccent, size: 25),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Holds the tab navigators: only the current one is painted and ticking, and
-/// it fades up when you switch to it. Wrappers stay identical for every
-/// branch, so switching never rebuilds a tab's navigator.
+/// Holds the tabs' navigators: only the active one is laid out and ticking,
+/// and switching tabs fades the new one in with a slight settle.
 class BranchContainer extends StatefulWidget {
   const BranchContainer({super.key, required this.index, required this.children});
   final int index;

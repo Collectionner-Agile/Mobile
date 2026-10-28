@@ -5,7 +5,6 @@
 //
 // Credentials are the development seed account documented in backend/README.md.
 import 'package:collectionner/app/router/app_router.dart';
-import 'package:collectionner/core/widgets/app_icons.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/communities/presentation/widgets/community_tile.dart';
 import 'package:collectionner/features/profile/presentation/insights_screen.dart';
@@ -78,6 +77,6 @@ void main() {
     // Scan tab is reachable when signed in and offers the in-app camera.
     router.go(Routes.scan);
     await pumpFor(tester);
-    expect(find.byIcon(AppIcons.camera), findsWidgets);
+    expect(find.byIcon(Icons.photo_camera_outlined), findsWidgets);
   });
 }

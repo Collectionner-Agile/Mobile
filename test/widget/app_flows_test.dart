@@ -74,7 +74,7 @@ void main() {
 
   testWidgets('bottom navigation switches tabs and catalogue search filters results', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byTooltip('Explorar'));
+    await tester.tap(find.byTooltip('Catálogo'));
     await settle(tester);
     expect(find.text('4 piezas'), findsOneWidget);
 
@@ -94,7 +94,7 @@ void main() {
   testWidgets('API failure shows an error state and retry recovers', (tester) async {
     final backend = Fixtures.standardBackend()..json('GET', '/api/v1/collectibles', {'detail': 'boom'}, status: 500);
     await pumpApp(tester, backend: backend);
-    await tester.tap(find.byTooltip('Explorar'));
+    await tester.tap(find.byTooltip('Catálogo'));
     await settle(tester);
     expect(find.text('Ocurrió un error en el servidor. Inténtalo más tarde.'), findsOneWidget);
 
@@ -314,6 +314,8 @@ void main() {
     final app = await pumpApp(tester);
     app.container.read(routerProvider).go(Routes.collectible(2));
     await settle(tester);
+    await tester.ensureVisible(find.text('Comparar'));
+    await settle(tester);
     await tester.tap(find.text('Comparar'));
     await settle(tester);
     expect(find.text('Comparar piezas'), findsOneWidget);
@@ -352,7 +354,7 @@ void main() {
     await tester.tap(find.byTooltip('Compartir'));
     await settle(tester);
     expect(find.text('Compartir pieza'), findsOneWidget);
-    await tester.tap(find.text('Marfil'));
+    await tester.tap(find.text('Claro'));
     await settle(tester, 4);
     await tester.tap(find.text('Copiar enlace'));
     await settle(tester, 3);
@@ -442,7 +444,7 @@ void main() {
     );
     await tester.tap(find.byTooltip('Escanear'));
     await settle(tester);
-    await tester.tap(find.text('Abrir cámara'));
+    await tester.tap(find.text('Tomar foto'));
     await settle(tester);
     expect(find.byType(CameraScreen), findsOneWidget);
     expect(find.text('Cámara no disponible'), findsOneWidget);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,10 +8,10 @@ import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
-import '../../../core/widgets/kit.dart';
-import '../../../core/widgets/motion.dart';
+import '../../../core/widgets/glass.dart';
+import '../../../core/widgets/kit.dart' show UserAvatar;
+import '../../../core/widgets/slab.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auctions/application/auction_providers.dart';
 import '../../auctions/presentation/create_auction_sheet.dart';
@@ -54,10 +53,10 @@ class _DetailBody extends ConsumerStatefulWidget {
 class _DetailBodyState extends ConsumerState<_DetailBody> {
   final _page = PageController();
   int _index = 0;
-  bool _uploading = false;
-  bool _expanded = false;
 
-  Collectible get item => widget.item;
+  /// True once the gallery has scrolled under the toolbar; shows the name there.
+  bool _collapsed = false;
+  bool _uploading = false;
 
   @override
   void dispose() {
@@ -69,24 +68,21 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     final l10n = context.l10n;
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      useRootNavigator: true,
       builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
-          child: MenuGroup(
-            children: [
-              MenuTile(
-                icon: AppIcons.camera,
-                title: l10n.scanCamera,
-                onTap: () => Navigator.pop(context, ImageSource.camera),
-              ),
-              MenuTile(
-                icon: AppIcons.images,
-                title: l10n.scanGallery,
-                onTap: () => Navigator.pop(context, ImageSource.gallery),
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(l10n.scanCamera),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l10n.scanGallery),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
         ),
       ),
     );
@@ -96,11 +92,11 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
       final picked = await ImageSourcePicker().pick(source);
       if (picked == null) return;
       final bytes = await prepareJpeg(picked.path);
-      await ref.read(catalogRepositoryProvider).uploadPhoto(item.id, bytes);
+      await ref.read(catalogRepositoryProvider).uploadPhoto(widget.item.id, bytes);
       ref
-        ..invalidate(collectibleProvider(item.id))
+        ..invalidate(collectibleProvider(widget.item.id))
         ..invalidate(collectiblesProvider);
-      if (mounted) showToast(context, l10n.photoUploaded, icon: AppIcons.image);
+      if (mounted) showToast(context, l10n.photoUploaded);
     } on PickException catch (error) {
       if (mounted && error.reason == PickFailure.permissionDenied) {
         showToast(
@@ -134,7 +130,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     );
     if (!ok || !mounted) return;
     try {
-      await ref.read(catalogRepositoryProvider).delete(item.id);
+      await ref.read(catalogRepositoryProvider).delete(widget.item.id);
       ref.invalidate(collectiblesProvider);
       if (!mounted) return;
       showToast(context, l10n.itemDeleted);
@@ -145,343 +141,303 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
   }
 
   Future<void> _startAuction() async {
-    final created = await showCreateAuctionSheet(context, collectible: item);
+    final created = await showCreateAuctionSheet(context, collectible: widget.item);
     if (created == null || !mounted) return;
     ref
-      ..invalidate(collectibleProvider(item.id))
+      ..invalidate(collectibleProvider(widget.item.id))
       ..invalidate(collectiblesProvider)
       ..invalidate(auctionsProvider);
-    showToast(context, context.l10n.auctionCreated, icon: AppIcons.gavel);
+    showToast(context, context.l10n.auctionCreated);
     context.go(Routes.auction(created.id));
-  }
-
-  Future<void> _ownerMenu() async {
-    final l10n = context.l10n;
-    final action = await showModalBottomSheet<String>(
-      context: context,
-      useRootNavigator: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
-          child: MenuGroup(
-            title: l10n.yourItem,
-            children: [
-              MenuTile(icon: AppIcons.imagePlus, title: l10n.addPhoto, onTap: () => Navigator.pop(context, 'photo')),
-              if (item.auctionId == null)
-                MenuTile(
-                  icon: AppIcons.gavel,
-                  title: l10n.startAuction,
-                  color: context.brand.live,
-                  onTap: () => Navigator.pop(context, 'auction'),
-                ),
-              MenuTile(
-                icon: AppIcons.trash2,
-                title: l10n.deleteItem,
-                destructive: true,
-                onTap: () => Navigator.pop(context, 'delete'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    switch (action) {
-      case 'photo':
-        await _addPhoto();
-      case 'auction':
-        await _startAuction();
-      case 'delete':
-        await _delete();
-    }
   }
 
   void _openGallery(List<String> urls, int initial) => PhotoViewerScreen.open(
     context,
     urls: urls,
     initial: initial,
-    heroTag: initial == 0 ? 'collectible-${item.id}' : null,
-    title: item.name,
+    heroTag: initial == 0 ? 'collectible-${widget.item.id}' : null,
+    title: widget.item.name,
   );
 
   @override
   Widget build(BuildContext context) {
+    final item = widget.item;
     final l10n = context.l10n;
     final brand = context.brand;
     final user = ref.watch(currentUserProvider);
     final isOwner = user != null && user.id == item.ownerId;
     final urls = item.galleryUrls;
-    final heroHeight = (MediaQuery.sizeOf(context).height * 0.5).clamp(260.0, 520.0);
+    final width = MediaQuery.sizeOf(context).width;
+    final galleryHeight = (width * 0.92).clamp(260.0, 520.0);
 
-    return Column(
-      children: [
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(collectibleProvider(item.id));
-              await ref.read(collectibleProvider(item.id).future).catchError((Object _) => item);
-            },
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  pinned: true,
-                  stretch: true,
-                  expandedHeight: heroHeight,
-                  backgroundColor: brand.paper,
-                  automaticallyImplyLeading: false,
-                  leadingWidth: 60,
-                  leading: Padding(
-                    padding: const EdgeInsets.all(Space.xxs),
-                    child: CircleIconButton(
-                      icon: AppIcons.arrowLeft,
-                      tooltip: l10n.back,
-                      onPhoto: true,
-                      onPressed: () => Navigator.of(context).maybePop(),
+    return NotificationListener<ScrollUpdateNotification>(
+      onNotification: (notification) {
+        if (notification.depth == 0) {
+          final collapsed = notification.metrics.pixels > galleryHeight - kToolbarHeight - 24;
+          if (collapsed != _collapsed) setState(() => _collapsed = collapsed);
+        }
+        return false;
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            stretch: true,
+            expandedHeight: galleryHeight,
+            backgroundColor: brand.paper,
+            title: AnimatedSwitcher(
+              duration: Motion.of(context, Motion.fast),
+              child: _collapsed
+                  ? Text(item.name, key: const ValueKey('title'), maxLines: 1, overflow: TextOverflow.ellipsis)
+                  : const SizedBox.shrink(),
+            ),
+            leading: Padding(
+              padding: const EdgeInsets.all(6),
+              child: BackButton(
+                style: IconButton.styleFrom(
+                  backgroundColor: brand.surface,
+                  foregroundColor: brand.ink,
+                  side: BorderSide(color: brand.line),
+                ),
+              ),
+            ),
+            actions: [
+              IconButton(
+                tooltip: l10n.share,
+                onPressed: () => context.push(Routes.sharePiece(item.id)),
+                style: IconButton.styleFrom(
+                  backgroundColor: brand.surface,
+                  foregroundColor: brand.ink,
+                  side: BorderSide(color: brand.line),
+                ),
+                icon: const Icon(Icons.share_outlined, size: 20),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                child: FavoriteButton(id: item.id),
+              ),
+              if (isOwner)
+                PopupMenuButton<String>(
+                  onSelected: (value) => switch (value) {
+                    'photo' => _addPhoto(),
+                    'auction' => _startAuction(),
+                    'delete' => _delete(),
+                    _ => null,
+                  },
+                  itemBuilder: (_) => [
+                    PopupMenuItem(
+                      value: 'photo',
+                      child: ListTile(leading: const Icon(Icons.add_a_photo_outlined), title: Text(l10n.addPhoto)),
                     ),
-                  ),
-                  actions: [
-                    FavoriteButton(id: item.id, size: 44),
-                    const SizedBox(width: Space.xs),
-                    CircleIconButton(
-                      icon: AppIcons.share2,
-                      tooltip: l10n.share,
-                      onPhoto: true,
-                      onPressed: () => context.push(Routes.sharePiece(item.id)),
+                    if (!item.isLinkedToProcess && item.auctionId == null)
+                      PopupMenuItem(
+                        value: 'auction',
+                        child: ListTile(leading: const Icon(Icons.gavel_outlined), title: Text(l10n.startAuction)),
+                      ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: ListTile(
+                        leading: Icon(Icons.delete_outline, color: brand.danger),
+                        title: Text(l10n.deleteItem),
+                      ),
                     ),
-                    if (isOwner) ...[
-                      const SizedBox(width: Space.xs),
-                      _uploading
-                          ? const SizedBox.square(
-                              dimension: 44,
-                              child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                              ),
-                            )
-                          : CircleIconButton(
-                              icon: AppIcons.ellipsis,
-                              tooltip: l10n.yourItem,
-                              onPhoto: true,
-                              onPressed: _ownerMenu,
-                            ),
-                    ],
-                    const SizedBox(width: Space.sm),
                   ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    stretchModes: const [StretchMode.zoomBackground],
-                    background: Stack(
-                      fit: StackFit.expand,
+                ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              stretchModes: const [StretchMode.zoomBackground],
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ColoredBox(color: brand.surfaceMuted),
+                  if (urls.isEmpty)
+                    Hero(
+                      tag: 'collectible-${item.id}',
+                      child: CollectibleImage(null, semanticLabel: item.name),
+                    )
+                  else
+                    PageView.builder(
+                      controller: _page,
+                      itemCount: urls.length,
+                      onPageChanged: (value) => setState(() => _index = value),
+                      itemBuilder: (context, index) {
+                        final image = GestureDetector(
+                          onTap: () => _openGallery(urls, index),
+                          child: CollectibleImage(
+                            urls[index],
+                            fit: BoxFit.cover,
+                            semanticLabel: item.name,
+                            cacheWidth: width,
+                          ),
+                        );
+                        return index == 0 ? Hero(tag: 'collectible-${item.id}', child: image) : image;
+                      },
+                    ),
+                  const IgnorePointer(
+                    child: DecoratedBox(decoration: BoxDecoration(gradient: BrandColors.imageScrim)),
+                  ),
+                  // Name and category on frosted glass, price in a pill, page dots.
+                  Positioned(
+                    left: Space.md,
+                    right: Space.md,
+                    bottom: Space.md,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        PageView.builder(
-                          controller: _page,
-                          itemCount: urls.length,
-                          onPageChanged: (index) => setState(() => _index = index),
-                          itemBuilder: (context, index) {
-                            final image = GestureDetector(
-                              onTap: () => _openGallery(urls, index),
-                              child: ColoredBox(
-                                color: brand.surfaceMuted,
-                                child: CollectibleImage(urls[index], cacheWidth: 900, semanticLabel: item.name),
-                              ),
-                            );
-                            return index == 0 ? Hero(tag: 'collectible-${item.id}', child: image) : image;
-                          },
-                        ),
-                        const IgnorePointer(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: [0, 0.28, 0.8, 1],
-                                colors: [Color(0x66000000), Color(0x00000000), Color(0x00000000), Color(0x33000000)],
-                              ),
+                        GestureDetector(
+                          onTap: urls.isEmpty ? null : () => _openGallery(urls, _index),
+                          child: GlassPanel(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Semantics(
+                                  header: true,
+                                  child: Text(
+                                    item.name,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.text.headlineSmall?.copyWith(color: Colors.white),
+                                  ),
+                                ),
+                                if (item.category != null) ...[
+                                  const SizedBox(height: Space.xxs),
+                                  Text(
+                                    item.category!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.text.bodyMedium?.copyWith(color: const Color(0xCCFFFFFF)),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                         ),
-                        if (urls.length > 1)
-                          Positioned(
-                            bottom: Space.md,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: Semantics(
+                        const SizedBox(height: Space.sm),
+                        Row(
+                          children: [
+                            Flexible(child: PricePill(label: context.money(item.value))),
+                            const Spacer(),
+                            if (urls.length > 1)
+                              Semantics(
                                 label: l10n.photoCount(_index + 1, urls.length),
-                                child: DotsIndicator(count: urls.length, index: _index, onPhoto: true),
+                                child: ExcludeSemantics(
+                                  child: PageDots(count: urls.length, index: _index),
+                                ),
                               ),
-                            ),
-                          ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: ContentWidth(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Reveal(
-                            child: Wrap(
-                              spacing: Space.xs,
-                              runSpacing: Space.xs,
-                              children: [
-                                if (item.auctionId != null) LivePill(label: l10n.inAuction),
-                                if (item.category != null) Tag(item.category!, icon: AppIcons.tag, color: brand.gold),
-                                if (item.eraYear != null) Tag('${item.eraYear}', icon: AppIcons.calendar),
-                                if (isOwner) Tag(l10n.yourItem, icon: AppIcons.badgeCheck, color: brand.info),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: Space.sm),
-                          Reveal(index: 1, child: Text(item.name, style: context.text.headlineMedium)),
-                          const SizedBox(height: Space.md),
-                          Reveal(
-                            index: 2,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(l10n.declaredValue, style: context.text.bodySmall),
-                                      FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        alignment: Alignment.centerLeft,
-                                        child: PriceText(item.value, style: context.text.displaySmall),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (item.reviewCount > 0)
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      RatingStars(rating: item.rating),
-                                      Text(l10n.reviewsCount(item.reviewCount), style: context.text.bodySmall),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                          if (item.auctionId != null) ...[
-                            const SizedBox(height: Space.lg),
-                            Reveal(index: 3, child: _AuctionBanner(auctionId: item.auctionId!)),
-                          ],
-                          if (item.ownerName != null) ...[
-                            const SizedBox(height: Space.lg),
-                            AppCard(
-                              onTap: () => context.push(Routes.collector(item.ownerId, name: item.ownerName)),
-                              padding: const EdgeInsets.all(Space.sm),
-                              child: Row(
-                                children: [
-                                  UserAvatar(name: item.ownerName!, size: 40),
-                                  const SizedBox(width: Space.sm),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(item.ownerName!, style: context.text.titleSmall),
-                                        Text(
-                                          [
-                                            l10n.owner,
-                                            if (item.createdAt != null)
-                                              formatDate(item.createdAt!, context.languageCode),
-                                          ].join(' · '),
-                                          style: context.text.bodySmall,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: Space.xl),
-                          Text(l10n.aboutObject, style: context.text.titleLarge),
-                          const SizedBox(height: Space.xs),
-                          AnimatedSize(
-                            duration: Motion.of(context, Motion.base),
-                            curve: Motion.enter,
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                              item.description.isEmpty ? '—' : item.description,
-                              maxLines: _expanded ? null : 4,
-                              overflow: _expanded ? null : TextOverflow.fade,
-                              style: context.text.bodyLarge?.copyWith(color: brand.ink.withValues(alpha: 0.86)),
-                            ),
-                          ),
-                          if (item.description.length > 180)
-                            Align(
-                              alignment: AlignmentDirectional.centerStart,
-                              child: TextButton(
-                                onPressed: () => setState(() => _expanded = !_expanded),
-                                style: TextButton.styleFrom(padding: EdgeInsets.zero, foregroundColor: brand.gold),
-                                child: Text(_expanded ? l10n.readLess : l10n.readMore),
-                              ),
-                            ),
-                          const SizedBox(height: Space.md),
-                          Text('${l10n.declaredValue}. ${l10n.declaredValueNote}', style: context.text.bodySmall),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                if (item.category != null) SliverToBoxAdapter(child: _Related(item: item)),
-                SliverToBoxAdapter(
-                  child: ContentWidth(
-                    child: ReviewsSection(collectibleId: item.id, ownerId: item.ownerId),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: ContentWidth(child: CommentsSection.collectible(collectibleId: item.id)),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: Space.xxl)),
-              ],
+                  if (_uploading) const Positioned(left: 0, right: 0, bottom: 0, child: LinearProgressIndicator()),
+                ],
+              ),
             ),
           ),
-        ),
-        BottomCta(
-          child: item.auctionId != null
-              ? BusyButton(
-                  label: l10n.actionPlaceBid,
-                  icon: AppIcons.gavel,
-                  color: brand.live,
-                  onPressed: () => context.go(Routes.auction(item.auctionId!)),
-                )
-              : isOwner
-              ? BusyButton(label: l10n.startAuction, icon: AppIcons.gavel, onPressed: _startAuction)
-              : Row(
-                  children: [
-                    Expanded(child: _SaveButton(id: item.id)),
-                    const SizedBox(width: Space.sm),
-                    Expanded(child: CompareButton(id: item.id)),
-                  ],
+          SliverToBoxAdapter(
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: brand.paper),
+              child: ContentWidth(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (item.auctionId != null || isOwner) ...[
+                        Wrap(
+                          spacing: Space.xs,
+                          runSpacing: Space.xs,
+                          children: [
+                            if (item.auctionId != null) LiveBadge(label: l10n.inAuction),
+                            if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
+                          ],
+                        ),
+                        const SizedBox(height: Space.sm),
+                      ],
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: Space.md,
+                        runSpacing: Space.xs,
+                        children: [
+                          if (item.reviewCount > 0)
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: Space.xs,
+                              children: [
+                                RatingStars(rating: item.rating),
+                                Text(l10n.reviewsCount(item.reviewCount), style: context.text.bodySmall),
+                              ],
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: Space.xxs),
+                      Text('${l10n.declaredValue}. ${l10n.declaredValueNote}', style: context.text.bodySmall),
+                      if (item.auctionId != null) ...[
+                        const SizedBox(height: Space.lg),
+                        _AuctionBanner(auctionId: item.auctionId!),
+                      ],
+                      const SizedBox(height: Space.lg),
+                      _Particulars(
+                        rows: [
+                          if (item.eraYear != null) (l10n.year, '${item.eraYear}'),
+                          if (item.ownerName != null) (l10n.owner, item.ownerName!),
+                          if (item.category != null) (l10n.category, item.category!),
+                          if (item.reviewCount > 0) (l10n.reviews, l10n.reviewsCount(item.reviewCount)),
+                        ],
+                      ),
+                      if (item.ownerName != null) ...[
+                        const SizedBox(height: Space.sm),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(Radii.sm),
+                          onTap: () => context.push(Routes.collector(item.ownerId, name: item.ownerName)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: Space.xxs),
+                            child: Row(
+                              children: [
+                                UserAvatar(name: item.ownerName!, size: 32),
+                                const SizedBox(width: Space.sm),
+                                Expanded(
+                                  child: Text(
+                                    '${l10n.owner} · ${item.ownerName}',
+                                    style: context.text.bodyMedium?.copyWith(color: brand.muted),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(Icons.chevron_right_rounded, size: 18, color: brand.muted),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: Space.xl),
+                      Text(l10n.aboutObject, style: context.text.titleLarge),
+                      const SizedBox(height: Space.xs),
+                      Text(item.description, style: context.text.bodyLarge?.copyWith(color: brand.muted)),
+                      const SizedBox(height: Space.lg),
+                      Row(
+                        children: [Expanded(child: CompareButton(id: item.id))],
+                      ),
+                    ],
+                  ),
                 ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Primary action for visitors: keep the piece in favourites.
-class _SaveButton extends ConsumerWidget {
-  const _SaveButton({required this.id});
-  final int id;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final saved = ref.watch(favoritesProvider).contains(id);
-    return BusyButton(
-      label: saved ? l10n.savedInFavorites : l10n.addFavorite,
-      icon: saved ? AppIcons.check : AppIcons.heart,
-      outlined: saved,
-      onPressed: () {
-        HapticFeedback.lightImpact();
-        ref.read(favoritesProvider.notifier).toggle(id);
-      },
+              ),
+            ),
+          ),
+          if (item.category != null) SliverToBoxAdapter(child: _Related(item: item)),
+          SliverToBoxAdapter(
+            child: ContentWidth(
+              child: ReviewsSection(collectibleId: item.id, ownerId: item.ownerId),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ContentWidth(child: CommentsSection.collectible(collectibleId: item.id)),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: Space.xxl + MediaQuery.paddingOf(context).bottom)),
+        ],
+      ),
     );
   }
 }
@@ -492,29 +448,75 @@ class _AuctionBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final brand = context.brand;
-    return AppCard(
-      onTap: () => context.go(Routes.auction(auctionId)),
-      color: brand.live.withValues(alpha: context.isDark ? 0.14 : 0.07),
-      border: false,
-      shadow: false,
+    final fg = heroForeground(context);
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return HeroPanel(
+      padding: const EdgeInsets.all(Space.md),
       child: Row(
         children: [
-          IconBadge(AppIcons.gavel, color: brand.live, solid: true),
-          const SizedBox(width: Space.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.inAuction, style: context.text.titleSmall?.copyWith(color: brand.live)),
-                Text(l10n.auctionBannerBody, style: context.text.bodySmall),
+                LiveBadge(label: context.l10n.liveNow),
+                const SizedBox(height: Space.xs),
+                Text(context.l10n.inAuction, style: context.text.titleMedium?.copyWith(color: fg)),
               ],
             ),
           ),
-          Icon(AppIcons.chevronRight, color: brand.live, size: 20),
+          const SizedBox(width: Space.sm),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: dark ? brand.ink : brand.paper,
+              foregroundColor: dark ? brand.paper : brand.ink,
+              minimumSize: const Size(0, 44),
+              padding: const EdgeInsets.symmetric(horizontal: Space.md),
+            ),
+            onPressed: () => context.go(Routes.auction(auctionId)),
+            child: Text(context.l10n.viewAuction),
+          ),
         ],
       ),
+    );
+  }
+}
+
+/// Catalogue particulars as label/value rows between hairlines.
+class _Particulars extends StatelessWidget {
+  const _Particulars({required this.rows});
+  final List<(String, String)> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Column(
+      children: [
+        for (final (label, value) in rows)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: brand.line)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(label, style: Fonts.label(context.text.bodyMedium).copyWith(color: brand.muted)),
+                  ),
+                  const SizedBox(width: Space.sm),
+                  Expanded(
+                    flex: 3,
+                    child: Text(value, textAlign: TextAlign.end, style: Fonts.figures(context.text.titleSmall)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (rows.isNotEmpty) Divider(height: 1, color: brand.line),
+      ],
     );
   }
 }
@@ -523,26 +525,33 @@ class _DetailSkeleton extends StatelessWidget {
   const _DetailSkeleton();
 
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: EdgeInsets.zero,
-    children: const [
-      Skeleton(height: 380, radius: 0),
-      Padding(
-        padding: EdgeInsets.all(Space.gutter),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Skeleton(width: 140, height: 22, radius: Radii.pill),
-            SizedBox(height: Space.md),
-            Skeleton(height: 26),
-            SizedBox(height: Space.sm),
-            Skeleton(width: 180, height: 26),
-            SizedBox(height: Space.lg),
-            Skeleton(height: 72, radius: Radii.lg),
-          ],
+  Widget build(BuildContext context) => SafeArea(
+    child: ListView(
+      padding: EdgeInsets.zero,
+      physics: const NeverScrollableScrollPhysics(),
+      children: const [
+        AspectRatio(aspectRatio: 1, child: Skeleton(radius: 0)),
+        Padding(
+          padding: EdgeInsets.all(Space.gutter),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Skeleton(width: 90, height: 10),
+              SizedBox(height: Space.sm),
+              Skeleton(height: 24),
+              SizedBox(height: Space.sm),
+              Skeleton(width: 140, height: 20),
+              SizedBox(height: Space.xl),
+              Skeleton(height: 12),
+              SizedBox(height: Space.xs),
+              Skeleton(height: 12),
+              SizedBox(height: Space.xs),
+              Skeleton(width: 200, height: 12),
+            ],
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 

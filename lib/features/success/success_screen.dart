@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/ui.dart';
 
@@ -18,7 +17,7 @@ class SuccessArgs {
     required this.primaryRoute,
     this.secondaryLabel,
     this.secondaryRoute,
-    this.icon = AppIcons.check,
+    this.icon = Icons.check_rounded,
   });
 
   final String title;
@@ -94,7 +93,6 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
       },
       child: Scaffold(
         body: AmbientGlow(
-          colors: [brand.gold, brand.success, brand.info],
           child: SafeArea(
             child: LayoutBuilder(
               builder: (context, box) => SingleChildScrollView(
@@ -111,7 +109,7 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
                           builder: (context, _) => CustomPaint(
                             painter: _ConfettiPainter(
                               progress: _burst.value,
-                              colors: [brand.gold, brand.success, brand.info, brand.live, Brand.goldLight],
+                              colors: [brand.ink, brand.live, brand.muted, brand.gold],
                             ),
                             child: Center(
                               child: Stack(
@@ -125,7 +123,7 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
                                       height: 96 + 90 * _burst.value,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: brand.gold, width: 2),
+                                        border: Border.all(color: brand.ink, width: 2),
                                       ),
                                     ),
                                   ),
@@ -136,25 +134,23 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
                                       height: 104,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [Brand.goldLight, Brand.gold],
-                                        ),
+                                        color: brand.ink,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: brand.gold.withValues(alpha: 0.45),
+                                            color: brand.shadow,
                                             blurRadius: 30,
                                             offset: const Offset(0, 12),
                                             spreadRadius: -6,
                                           ),
                                         ],
                                       ),
-                                      child: args.icon == AppIcons.check
-                                          ? CustomPaint(painter: _CheckPainter(progress: _check.value))
+                                      child: args.icon == Icons.check_rounded
+                                          ? CustomPaint(
+                                              painter: _CheckPainter(progress: _check.value, color: brand.paper),
+                                            )
                                           : Opacity(
                                               opacity: _check.value,
-                                              child: Icon(args.icon, size: 44, color: const Color(0xFF1A1305)),
+                                              child: Icon(args.icon, size: 44, color: brand.paper),
                                             ),
                                     ),
                                   ),
@@ -190,7 +186,7 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
                                   children: [
                                     BusyButton(
                                       label: args.primaryLabel,
-                                      icon: AppIcons.arrowRight,
+                                      icon: Icons.arrow_forward_rounded,
                                       onPressed: () => context.go(args.primaryRoute),
                                     ),
                                     if (args.secondaryLabel != null && args.secondaryRoute != null) ...[
@@ -222,8 +218,9 @@ class _SuccessScreenState extends State<SuccessScreen> with SingleTickerProvider
 
 /// A check mark drawn stroke by stroke.
 class _CheckPainter extends CustomPainter {
-  const _CheckPainter({required this.progress});
+  const _CheckPainter({required this.progress, required this.color});
   final double progress;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -236,7 +233,7 @@ class _CheckPainter extends CustomPainter {
     canvas.drawPath(
       metric.extractPath(0, metric.length * progress),
       Paint()
-        ..color = const Color(0xFF1A1305)
+        ..color = color
         ..style = PaintingStyle.stroke
         ..strokeWidth = 7
         ..strokeCap = StrokeCap.round
@@ -245,7 +242,7 @@ class _CheckPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CheckPainter oldDelegate) => oldDelegate.progress != progress;
+  bool shouldRepaint(_CheckPainter oldDelegate) => oldDelegate.progress != progress || oldDelegate.color != color;
 }
 
 /// One burst of confetti from the centre: pieces fly out, turn and fall.

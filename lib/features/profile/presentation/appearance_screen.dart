@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/preferences.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
@@ -131,7 +130,7 @@ class _ThemeOption extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Radii.lg),
-                  border: Border.all(color: selected ? brand.gold : brand.line, width: selected ? 2 : 1),
+                  border: Border.all(color: selected ? brand.ink : brand.line, width: selected ? 2 : 1),
                   boxShadow: selected ? brand.cardShadow : null,
                 ),
                 child: ClipRRect(
@@ -146,8 +145,18 @@ class _ThemeOption extends StatelessWidget {
                   AnimatedSwitcher(
                     duration: Motion.of(context, Motion.fast),
                     child: selected
-                        ? Icon(AppIcons.circleCheck, key: const ValueKey('on'), size: 16, color: brand.gold)
-                        : Icon(AppIcons.circleCheck, key: const ValueKey('off'), size: 16, color: brand.line),
+                        ? Icon(
+                            Icons.check_circle_outline_rounded,
+                            key: const ValueKey('on'),
+                            size: 16,
+                            color: brand.ink,
+                          )
+                        : Icon(
+                            Icons.check_circle_outline_rounded,
+                            key: const ValueKey('off'),
+                            size: 16,
+                            color: brand.line,
+                          ),
                   ),
                   const SizedBox(width: 4),
                   Flexible(
@@ -284,16 +293,16 @@ class _LanguageOption extends StatelessWidget {
       child: AppCard(
         onTap: onTap,
         padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
-        color: selected ? Color.alphaBlend(brand.gold.withValues(alpha: 0.08), brand.surface) : null,
+        color: selected ? Color.alphaBlend(brand.ink.withValues(alpha: 0.05), brand.surface) : null,
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
               alignment: Alignment.center,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: selected ? brand.gold : brand.surfaceMuted),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: selected ? brand.ink : brand.surfaceMuted),
               child: code == null
-                  ? Icon(AppIcons.smartphone, size: 18, color: selected ? brand.onGold : brand.ink)
+                  ? Icon(Icons.smartphone_outlined, size: 18, color: selected ? brand.onGold : brand.ink)
                   : Text(
                       code!.toUpperCase(),
                       style: Fonts.label(
@@ -315,7 +324,7 @@ class _LanguageOption extends StatelessWidget {
             AnimatedSwitcher(
               duration: Motion.of(context, Motion.fast),
               child: selected
-                  ? Icon(AppIcons.circleCheck, key: const ValueKey('on'), color: brand.gold)
+                  ? Icon(Icons.check_circle_outline_rounded, key: const ValueKey('on'), color: brand.ink)
                   : const SizedBox(key: ValueKey('off'), width: 24),
             ),
           ],

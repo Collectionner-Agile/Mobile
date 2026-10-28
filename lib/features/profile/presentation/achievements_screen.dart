@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
@@ -40,15 +39,15 @@ final achievementsProvider = Provider<List<Achievement>>((ref) {
   final communities = ref.watch(myCommunitiesProvider).value?.length ?? 0;
   final profile = [user?.bio, user?.location].where((v) => v != null && v.trim().isNotEmpty).length;
   return [
-    Achievement(id: AchievementId.firstPiece, icon: AppIcons.gem, progress: pieces, goal: 1),
-    Achievement(id: AchievementId.curator, icon: AppIcons.crown, progress: pieces, goal: 5),
-    Achievement(id: AchievementId.firstBid, icon: AppIcons.gavel, progress: bids.length, goal: 1),
-    Achievement(id: AchievementId.steadyBidder, icon: AppIcons.handCoins, progress: bids.length, goal: 5),
-    Achievement(id: AchievementId.winner, icon: AppIcons.trophy, progress: won, goal: 1),
-    Achievement(id: AchievementId.heart, icon: AppIcons.heart, progress: favorites, goal: 5),
-    Achievement(id: AchievementId.lookout, icon: AppIcons.bellRing, progress: watched, goal: 3),
-    Achievement(id: AchievementId.community, icon: AppIcons.usersRound, progress: communities, goal: 2),
-    Achievement(id: AchievementId.profile, icon: AppIcons.badgeCheck, progress: profile, goal: 2),
+    Achievement(id: AchievementId.firstPiece, icon: Icons.diamond_outlined, progress: pieces, goal: 1),
+    Achievement(id: AchievementId.curator, icon: Icons.workspace_premium_outlined, progress: pieces, goal: 5),
+    Achievement(id: AchievementId.firstBid, icon: Icons.gavel_outlined, progress: bids.length, goal: 1),
+    Achievement(id: AchievementId.steadyBidder, icon: Icons.payments_outlined, progress: bids.length, goal: 5),
+    Achievement(id: AchievementId.winner, icon: Icons.emoji_events_outlined, progress: won, goal: 1),
+    Achievement(id: AchievementId.heart, icon: Icons.favorite_border_rounded, progress: favorites, goal: 5),
+    Achievement(id: AchievementId.lookout, icon: Icons.notifications_active_outlined, progress: watched, goal: 3),
+    Achievement(id: AchievementId.community, icon: Icons.groups_outlined, progress: communities, goal: 2),
+    Achievement(id: AchievementId.profile, icon: Icons.verified_outlined, progress: profile, goal: 2),
   ];
 });
 
@@ -106,7 +105,7 @@ class AchievementsScreen extends ConsumerWidget {
                               child: Text(
                                 '$unlocked/${achievements.length}',
                                 style: Fonts.figures(Fonts.display(context.text.titleLarge, weight: 700))
-                                    .copyWith(color: Brand.ivory),
+                                    .copyWith(color: Brand.chalk),
                               ),
                             ),
                             const SizedBox(width: Space.lg),
@@ -123,7 +122,7 @@ class AchievementsScreen extends ConsumerWidget {
                                     style: Fonts.display(
                                       context.text.headlineMedium,
                                       weight: 660,
-                                    ).copyWith(color: Brand.ivory),
+                                    ).copyWith(color: Brand.chalk),
                                   ),
                                   if (next.isNotEmpty) ...[
                                     const SizedBox(height: Space.xxs),
@@ -202,7 +201,7 @@ class _Medal extends StatelessWidget {
                 achievement.unlocked
                     ? l10n.achievementUnlocked
                     : '${achievement.progress.clamp(0, achievement.goal)}/${achievement.goal}',
-                icon: achievement.unlocked ? AppIcons.circleCheck : AppIcons.target,
+                icon: achievement.unlocked ? Icons.check_circle_outline_rounded : Icons.track_changes_rounded,
                 color: achievement.unlocked ? context.brand.success : context.brand.gold,
               ),
             ],
@@ -279,11 +278,11 @@ class _Disc extends StatelessWidget {
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Brand.goldLight, Brand.gold, Color(0xFF9C7426)],
+                colors: [Brand.chalk, Brand.gold, Color(0xFF9C7426)],
               )
             : null,
         color: unlocked ? null : brand.surfaceMuted,
-        border: Border.all(color: unlocked ? Brand.goldLight : brand.line, width: 2),
+        border: Border.all(color: unlocked ? Brand.chalk : brand.line, width: 2),
         boxShadow: unlocked
             ? [BoxShadow(color: brand.gold.withValues(alpha: 0.35), blurRadius: 16, offset: const Offset(0, 6))]
             : null,

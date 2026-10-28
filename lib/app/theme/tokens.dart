@@ -3,10 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
-/// "Vitrina": the app dresses like the display case of a collection. Warm
-/// ivory paper and midnight-navy ink in light mode, midnight with ivory text
-/// in dark mode, and the champagne gold of the app icon for the few moments
-/// that deserve it. Red is reserved for what is live (auctions, bids).
+/// "Slab": the visual language of a graded collectible. A cool grey ground
+/// like a case on a desk, black ink for structure and actions, and one
+/// lacquer red reserved for what is live (auctions, bids, countdowns).
 @immutable
 class BrandColors extends ThemeExtension<BrandColors> {
   const BrandColors({
@@ -36,31 +35,31 @@ class BrandColors extends ThemeExtension<BrandColors> {
   /// Page ground.
   final Color paper;
 
-  /// Cards, bars and sheets.
+  /// Bars, sheets and slab labels.
   final Color surface;
 
-  /// Inputs and panels raised above a card.
+  /// Inputs and raised panels.
   final Color surfaceRaised;
 
-  /// Image wells and quiet fills.
+  /// Image wells (the inside of the slab).
   final Color surfaceMuted;
   final Color ink;
   final Color muted;
   final Color line;
 
-  /// Primary actions: navy on ivory, gold on midnight.
+  /// Primary actions and selection: ink, so the red stays meaningful.
   final Color accent;
   final Color accentStrong;
   final Color onAccent;
 
-  /// Live auctions, bids and countdowns. Nothing else.
+  /// Lacquer red: live auctions, bids, countdowns. Nothing else.
   final Color live;
   final Color onLive;
 
-  /// Champagne gold: highlights, achievements, ratings.
+  /// Ratings and earned badges.
   final Color gold;
 
-  /// Gold-tinted fill behind gold icons.
+  /// Quiet fill behind gold marks.
   final Color goldSoft;
   final Color onGold;
   final Color success;
@@ -71,77 +70,71 @@ class BrandColors extends ThemeExtension<BrandColors> {
   final Color shadow;
 
   static const light = BrandColors(
-    paper: Color(0xFFF5F3EE),
+    paper: Color(0xFFF1F2F4),
     surface: Color(0xFFFFFFFF),
     surfaceRaised: Color(0xFFFFFFFF),
-    surfaceMuted: Color(0xFFECE9E2),
-    ink: Color(0xFF121826),
-    muted: Color(0xFF686F80),
-    line: Color(0xFFE5E1D8),
-    accent: Color(0xFF14213D),
-    accentStrong: Color(0xFF0B1428),
+    surfaceMuted: Color(0xFFE4E6EA),
+    ink: Color(0xFF0F1012),
+    muted: Color(0xFF5B616B),
+    line: Color(0xFFD5D8DE),
+    accent: Color(0xFF0F1012),
+    accentStrong: Color(0xFF000000),
     onAccent: Color(0xFFFFFFFF),
-    live: Color(0xFFE5484D),
+    live: Color(0xFFD42A3A),
     onLive: Color(0xFFFFFFFF),
-    gold: Color(0xFFB4842F),
-    goldSoft: Color(0xFFF5ECDA),
-    onGold: Color(0xFF241A06),
-    success: Color(0xFF1C9A60),
-    warning: Color(0xFFBF7212),
-    danger: Color(0xFFD63636),
-    info: Color(0xFF2F5BD3),
-    skeleton: Color(0xFFEAE7E0),
-    shadow: Color(0x1F14213D),
+    gold: Color(0xFFB7791F),
+    goldSoft: Color(0xFFF4EBDD),
+    onGold: Color(0xFF241500),
+    success: Color(0xFF15803D),
+    warning: Color(0xFFB45309),
+    danger: Color(0xFFC81E1E),
+    info: Color(0xFF1D4ED8),
+    skeleton: Color(0xFFE2E4E8),
+    shadow: Color(0x140F1012),
   );
 
   static const dark = BrandColors(
-    paper: Color(0xFF080C15),
-    surface: Color(0xFF0F1729),
-    surfaceRaised: Color(0xFF152038),
-    surfaceMuted: Color(0xFF1A2540),
-    ink: Color(0xFFF3EFE6),
-    muted: Color(0xFF98A1B5),
-    line: Color(0xFF222D45),
-    accent: Color(0xFFE3BC67),
-    accentStrong: Color(0xFFF0CD80),
-    onAccent: Color(0xFF1A1305),
-    live: Color(0xFFFF6B6E),
+    paper: Color(0xFF0E0F11),
+    surface: Color(0xFF17181B),
+    surfaceRaised: Color(0xFF1C1E22),
+    surfaceMuted: Color(0xFF23262B),
+    ink: Color(0xFFF2F3F5),
+    muted: Color(0xFF9AA0AA),
+    line: Color(0xFF2E3137),
+    accent: Color(0xFFF2F3F5),
+    accentStrong: Color(0xFFFFFFFF),
+    onAccent: Color(0xFF0E0F11),
+    live: Color(0xFFFF5263),
     onLive: Color(0xFF1A0004),
-    gold: Color(0xFFE3BC67),
-    goldSoft: Color(0xFF2A2414),
-    onGold: Color(0xFF1A1305),
-    success: Color(0xFF43D18A),
-    warning: Color(0xFFF2B33D),
+    gold: Color(0xFFF2C14E),
+    goldSoft: Color(0xFF2A2416),
+    onGold: Color(0xFF241500),
+    success: Color(0xFF4ADE80),
+    warning: Color(0xFFFBBF24),
     danger: Color(0xFFFF6B6B),
-    info: Color(0xFF85A8FF),
-    skeleton: Color(0xFF16203A),
-    shadow: Color(0x80000000),
+    info: Color(0xFF7CA8FF),
+    skeleton: Color(0xFF24272C),
+    shadow: Color(0x66000000),
   );
 
   /// Bottom scrim that keeps text legible over photos.
   static const imageScrim = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    stops: [0.35, 1],
-    colors: [Color(0x00000000), Color(0xB3000000)],
+    colors: [Color(0x00000000), Color(0xA6000000)],
   );
 
-  /// Soft two-layer shadow: a wide ambient glow and a tight contact shadow.
   List<BoxShadow> get cardShadow => [
-    BoxShadow(color: shadow, blurRadius: 28, offset: const Offset(0, 12), spreadRadius: -10),
-    BoxShadow(
-      color: shadow.withValues(alpha: shadow.a * 0.5),
-      blurRadius: 3,
-      offset: const Offset(0, 1),
-    ),
+    BoxShadow(color: shadow, blurRadius: 18, offset: const Offset(0, 6), spreadRadius: -4),
   ];
 
+  /// Deeper shadow for things that float above the page (bars, sheets).
   List<BoxShadow> get floatingShadow => [
     BoxShadow(
-      color: shadow.withValues(alpha: math.min(1, shadow.a * 1.6)),
-      blurRadius: 36,
-      offset: const Offset(0, 16),
-      spreadRadius: -8,
+      color: shadow.withValues(alpha: math.min(1, shadow.a * 1.8)),
+      blurRadius: 28,
+      offset: const Offset(0, 10),
+      spreadRadius: -6,
     ),
   ];
 
@@ -178,14 +171,14 @@ class BrandColors extends ThemeExtension<BrandColors> {
   }
 }
 
-/// Colors that do not follow the theme: the launch and farewell scenes are
-/// always midnight, like the native splash.
+/// Colors that do not follow the theme: the launch and farewell scenes, the
+/// camera and photo viewers always sit on the dark slab.
 abstract final class Brand {
-  static const midnight = Color(0xFF0B1222);
-  static const midnightDeep = Color(0xFF060A14);
-  static const gold = Color(0xFFDDB563);
-  static const goldLight = Color(0xFFF3DCA2);
-  static const ivory = Color(0xFFF5F1E7);
+  static const ink = Color(0xFF0F1012);
+  static const inkDeep = Color(0xFF08090A);
+  static const chalk = Color(0xFFF2F3F5);
+  static const live = Color(0xFFFF5263);
+  static const gold = Color(0xFFF2C14E);
 }
 
 abstract final class Space {
@@ -202,21 +195,21 @@ abstract final class Space {
   static const double gutter = 20;
 
   /// Room the floating tab bar takes at the bottom of a tab's scroll view.
-  static const double navClearance = 104;
+  static const double navClearance = 96;
 }
 
 abstract final class Radii {
-  static const double xs = 6;
-  static const double sm = 12;
-  static const double md = 16;
+  static const double xs = 4;
+  static const double sm = 10;
+  static const double md = 14;
   static const double lg = 22;
   static const double xl = 28;
   static const double pill = 999;
 }
 
 /// A curve that follows a damped spring from 0 to 1, so implicit animations
-/// (AnimatedContainer, AnimatedScale…) can move like the springs in the
-/// 21st.dev references without an explicit physics controller.
+/// (AnimatedContainer, AnimatedScale…) can settle like a physical object
+/// without an explicit physics controller.
 class SpringCurve extends Curve {
   const SpringCurve({this.stiffness = 350, this.damping = 32, this.mass = 1});
   final double stiffness;
@@ -240,23 +233,18 @@ class SpringCurve extends Curve {
 }
 
 abstract final class Motion {
-  static const Duration fast = Duration(milliseconds: 150);
-  static const Duration base = Duration(milliseconds: 260);
-  static const Duration slow = Duration(milliseconds: 420);
-  static const Duration slower = Duration(milliseconds: 620);
+  static const Duration fast = Duration(milliseconds: 160);
+  static const Duration base = Duration(milliseconds: 240);
+  static const Duration slow = Duration(milliseconds: 320);
+  static const Duration slower = Duration(milliseconds: 560);
+  static const Curve enter = Cubic(0.16, 1, 0.3, 1);
+  static const Curve exit = Cubic(0.4, 0, 1, 1);
+  static const Curve standard = Cubic(0.2, 0.6, 0.2, 1);
 
-  /// Emphasized decelerate: things arriving.
-  static const Curve enter = Cubic(0.05, 0.7, 0.1, 1);
-
-  /// Emphasized accelerate: things leaving.
-  static const Curve exit = Cubic(0.3, 0, 0.8, 0.15);
-  static const Curve standard = Cubic(0.2, 0, 0, 1);
-
-  /// 21st.dev bottom-nav label spring (stiffness 350, damping 32).
+  /// Settles without bouncing: selection capsules, sheets.
   static const SpringCurve spring = SpringCurve();
 
-  /// 21st.dev bottom-nav entrance spring (stiffness 300, damping 26): a hint
-  /// of overshoot.
+  /// A hint of overshoot for things that pop in.
   static const SpringCurve bouncy = SpringCurve(stiffness: 300, damping: 26);
 
   static Duration springDuration(SpringCurve curve) => Duration(milliseconds: (curve.settleSeconds * 1000).round());
@@ -268,7 +256,8 @@ abstract final class Motion {
 }
 
 /// Two voices: Fraunces, a soft editorial serif (auction-catalogue feel), for
-/// big titles, prices and figures; Archivo for everything you read or tap.
+/// titles, prices and figures; Archivo at its normal width for everything you
+/// read or tap.
 abstract final class Fonts {
   static const family = 'Archivo';
   static const displayFamily = 'Fraunces';
@@ -279,37 +268,43 @@ abstract final class Fonts {
     FontVariation('wght', weight),
   ];
 
-  /// Fraunces display voice. [weight] keeps the 100–900 scale; it is eased
-  /// down because the serif reads heavier than the sans. Optical size follows
-  /// the font size so small and large titles both stay crisp.
-  static TextStyle display(TextStyle? base, {double weight = 700}) {
+  /// Fraunces display voice. [weight] keeps the 100–900 scale callers already
+  /// use; it is eased down because the serif reads heavier than the sans.
+  /// Optical size follows the font size so small and large titles both stay
+  /// crisp.
+  static TextStyle display(TextStyle? base, {double weight = 760}) {
     final style = base ?? const TextStyle();
     final size = style.fontSize ?? 24;
     return style.copyWith(
       fontFamily: displayFamily,
       fontVariations: [
-        FontVariation('wght', (weight * 0.8).clamp(380, 720)),
+        FontVariation('wght', (weight * 0.8).clamp(420, 720)),
         FontVariation('opsz', size.clamp(9, 144)),
-        const FontVariation('SOFT', 100),
+        const FontVariation('SOFT', 50),
         const FontVariation('WONK', 0),
       ],
     );
   }
 
-  /// Nearest [FontWeight]; Flutter maps it onto the variable fonts' `wght`
-  /// axis, so later `copyWith(fontWeight: …)` calls keep working.
+  /// Nearest [FontWeight] for a 100–900 weight.
   static FontWeight weightOf(double weight) => FontWeight.values[((weight / 100).round() - 1).clamp(0, 8)];
 
   /// Archivo at a given weight.
-  static TextStyle sans(TextStyle? base, {double weight = 500}) =>
-      (base ?? const TextStyle()).copyWith(fontFamily: family, fontWeight: weightOf(weight));
+  static TextStyle sans(TextStyle? base, {double weight = 500}) => (base ?? const TextStyle()).copyWith(
+    fontFamily: family,
+    fontWeight: weightOf(weight),
+    fontVariations: axes(width: 100, weight: weight),
+  );
 
-  /// Small labels: a touch heavier and tracked.
-  static TextStyle label(TextStyle? base, {double weight = 620}) =>
-      (base ?? const TextStyle()).copyWith(fontFamily: family, fontWeight: weightOf(weight), letterSpacing: 0.3);
+  /// Small labels: Archivo at normal width, a touch heavier and tracked.
+  static TextStyle label(TextStyle? base, {double weight = 620}) => (base ?? const TextStyle()).copyWith(
+    fontFamily: family,
+    fontVariations: axes(width: 100, weight: weight),
+    letterSpacing: 0.25,
+  );
 
-  /// Uppercase eyebrow above a title.
-  static TextStyle eyebrow(TextStyle? base) => label(base, weight: 680).copyWith(letterSpacing: 1.4, fontSize: 11);
+  /// Small tracked line above a title.
+  static TextStyle eyebrow(TextStyle? base) => label(base, weight: 700).copyWith(letterSpacing: 1.2, fontSize: 11);
 
   /// Figures that do not jump while a countdown or bid changes.
   static TextStyle figures(TextStyle? base) =>

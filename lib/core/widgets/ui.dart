@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../utils/formatters.dart';
-import 'app_icons.dart';
 import 'motion.dart';
 
 extension L10nContext on BuildContext {
@@ -14,7 +13,7 @@ extension L10nContext on BuildContext {
   String money(num value) => formatMoney(value, languageCode);
 }
 
-/// Quiet secondary label (counts, metadata).
+/// Condensed secondary label (counts, metadata). Never sits above a heading.
 class Kicker extends StatelessWidget {
   const Kicker(this.text, {super.key, this.color});
   final String text;
@@ -30,7 +29,7 @@ class Kicker extends StatelessWidget {
 }
 
 /// Section title with an optional one-line note under it and a trailing
-/// "see all" pill.
+/// text action.
 class SectionHeader extends StatelessWidget {
   const SectionHeader({super.key, required this.title, this.note, this.actionLabel, this.onAction});
   final String title;
@@ -40,11 +39,9 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brand = context.brand;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xl, Space.gutter - Space.xxs, Space.sm),
+      padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xl, Space.xs, Space.sm),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
             child: Column(
@@ -53,35 +50,19 @@ class SectionHeader extends StatelessWidget {
                 Semantics(header: true, child: Text(title, style: context.text.titleLarge)),
                 if (note != null) ...[
                   const SizedBox(height: 2),
-                  Text(note!, style: context.text.bodySmall?.copyWith(color: brand.muted)),
+                  Text(note!, style: context.text.bodySmall?.copyWith(color: context.brand.muted)),
                 ],
               ],
             ),
           ),
-          if (actionLabel != null && onAction != null)
-            TapScale(
-              child: TextButton(
-                onPressed: onAction,
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(44, 36),
-                  padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-                  foregroundColor: brand.ink,
-                  textStyle: context.text.labelMedium,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [Text(actionLabel!), const SizedBox(width: 2), const Icon(AppIcons.chevronRight, size: 16)],
-                ),
-              ),
-            ),
+          if (actionLabel != null && onAction != null) TextButton(onPressed: onAction, child: Text(actionLabel!)),
         ],
       ),
     );
   }
 }
 
-/// Placeholder block with a soft highlight sweeping across it. Static when
-/// reduce-motion is on.
+/// Animated pulse used for skeleton loaders. Static when reduce-motion is on.
 class Skeleton extends StatefulWidget {
   const Skeleton({super.key, this.width, this.height = 14, this.radius = Radii.xs});
   final double? width;
@@ -118,34 +99,31 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     final brand = context.brand;
     final base = brand.skeleton;
-    final shine = Color.lerp(base, brand.surface, 0.75)!;
+    final shine = Color.lerp(base, brand.surface, 0.7)!;
+    // A soft highlight sweeps across the block (static when motion is reduced).
     return ExcludeSemantics(
-      child: RepaintBoundary(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            final t = _controller.value * 2 - 0.5;
-            return Container(
-              width: widget.width,
-              height: widget.height,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.radius),
-                gradient: LinearGradient(
-                  begin: Alignment(-1 + 2 * t - 0.6, -0.2),
-                  end: Alignment(-1 + 2 * t + 0.6, 0.2),
-                  colors: [base, shine, base],
-                ),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final t = _controller.value * 2 - 0.5;
+          return Container(
+            width: widget.width,
+            height: widget.height,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.radius),
+              gradient: LinearGradient(
+                begin: Alignment(-1 + 2 * t - 0.6, -0.2),
+                end: Alignment(-1 + 2 * t + 0.6, 0.2),
+                colors: [base, shine, base],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-/// Centered message for empty, error and gated states: a soft halo around the
-/// icon, a short title, an optional line and one action.
 class StateMessage extends StatelessWidget {
   const StateMessage({
     super.key,
@@ -155,7 +133,6 @@ class StateMessage extends StatelessWidget {
     this.actionLabel,
     this.onAction,
     this.tone,
-    this.actionIcon,
   });
   final IconData icon;
   final String title;
@@ -163,42 +140,24 @@ class StateMessage extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
   final Color? tone;
-  final IconData? actionIcon;
 
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    final color = tone ?? brand.gold;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Space.xl, vertical: Space.xxl),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 88,
-            height: 88,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  color.withValues(alpha: context.isDark ? 0.22 : 0.16),
-                  color.withValues(alpha: 0),
-                ],
-              ),
+              border: Border.all(color: brand.line),
+              color: brand.surfaceRaised,
             ),
-            child: Center(
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: brand.surface,
-                  border: Border.all(color: brand.line),
-                  boxShadow: brand.cardShadow,
-                ),
-                child: Icon(icon, color: color, size: 26),
-              ),
-            ),
+            child: Icon(icon, color: tone ?? brand.muted),
           ),
           const SizedBox(height: Space.md),
           Text(title, style: context.text.titleMedium, textAlign: TextAlign.center),
@@ -211,15 +170,8 @@ class StateMessage extends StatelessWidget {
             ),
           ],
           if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: Space.lg),
-            TapScale(
-              child: OutlinedButton.icon(
-                onPressed: onAction,
-                icon: Icon(actionIcon ?? AppIcons.arrowRight, size: 18),
-                label: Text(actionLabel!),
-                style: OutlinedButton.styleFrom(minimumSize: const Size(64, 48)),
-              ),
-            ),
+            const SizedBox(height: Space.md),
+            OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
           ],
         ],
       ),
@@ -234,11 +186,10 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StateMessage(
-    icon: AppIcons.wifiOff,
+    icon: Icons.cloud_off_outlined,
     tone: context.brand.danger,
     title: describeError(error, context.l10n),
     actionLabel: context.l10n.retry,
-    actionIcon: AppIcons.refreshCw,
     onAction: onRetry,
   );
 }
@@ -248,11 +199,13 @@ class EmptyState extends StatelessWidget {
     super.key,
     required this.message,
     this.body,
-    this.icon = AppIcons.package,
+    this.icon = Icons.inbox_outlined,
     this.actionLabel,
     this.onAction,
   });
   final String message;
+
+  /// One line under the title saying what will show up here.
   final String? body;
   final IconData icon;
   final String? actionLabel;
@@ -264,8 +217,7 @@ class EmptyState extends StatelessWidget {
 }
 
 /// Renders an [AsyncValue] with consistent loading / error / data states and
-/// a cross-fade between them. The data side opens a [RevealWindow], so list
-/// items stagger in once when the data first arrives.
+/// a cross-fade between them.
 class AsyncSwitch<T> extends StatelessWidget {
   const AsyncSwitch({super.key, required this.value, required this.data, required this.onRetry, this.loading});
   final AsyncValue<T> value;
@@ -277,7 +229,7 @@ class AsyncSwitch<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final Widget child;
     if (value.hasValue) {
-      child = RevealWindow(key: const ValueKey('data'), child: data(value.requireValue));
+      child = KeyedSubtree(key: const ValueKey('data'), child: data(value.requireValue));
     } else if (value.hasError) {
       child = KeyedSubtree(
         key: const ValueKey('error'),
@@ -289,7 +241,7 @@ class AsyncSwitch<T> extends StatelessWidget {
         child:
             loading ??
             const Center(
-              child: Padding(padding: EdgeInsets.all(Space.xxl), child: CircularProgressIndicator(strokeWidth: 2.4)),
+              child: Padding(padding: EdgeInsets.all(Space.xxl), child: CircularProgressIndicator()),
             ),
       );
     }
@@ -322,7 +274,7 @@ class BusyButton extends StatelessWidget {
     final brand = context.brand;
     final onColor = color == null
         ? brand.onAccent
-        : (ThemeData.estimateBrightnessForColor(color!) == Brightness.dark ? Colors.white : brand.onGold);
+        : (ThemeData.estimateBrightnessForColor(color!) == Brightness.dark ? Colors.white : brand.ink);
     final child = AnimatedSwitcher(
       duration: Motion.of(context, Motion.fast),
       child: busy
@@ -336,7 +288,7 @@ class BusyButton extends StatelessWidget {
               key: const ValueKey('idle'),
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (icon != null) ...[Icon(icon, size: 19), const SizedBox(width: Space.xs)],
+                if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: Space.xs)],
                 Flexible(child: Text(label, overflow: TextOverflow.ellipsis, maxLines: 1)),
               ],
             ),
@@ -371,7 +323,7 @@ class RatingStars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brand = context.brand;
+    final color = context.brand.accent;
     return Semantics(
       label: context.l10n.ratingOutOfFive(rating.toStringAsFixed(1)),
       child: ExcludeSemantics(
@@ -379,34 +331,17 @@ class RatingStars extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: List.generate(5, (index) {
             final fill = (rating - index).clamp(0.0, 1.0);
-            return Padding(
-              padding: const EdgeInsets.only(right: 1),
-              child: Stack(
-                children: [
-                  Icon(AppIcons.star, size: size, color: brand.line),
-                  ClipRect(
-                    clipper: _FractionClipper(fill),
-                    child: Icon(AppIcons.star, size: size, color: brand.gold),
-                  ),
-                ],
-              ),
-            );
+            final icon = fill >= 0.75
+                ? Icons.star_rounded
+                : fill >= 0.25
+                ? Icons.star_half_rounded
+                : Icons.star_outline_rounded;
+            return Icon(icon, size: size, color: color);
           }),
         ),
       ),
     );
   }
-}
-
-class _FractionClipper extends CustomClipper<Rect> {
-  const _FractionClipper(this.fraction);
-  final double fraction;
-
-  @override
-  Rect getClip(Size size) => Rect.fromLTWH(0, 0, size.width * fraction, size.height);
-
-  @override
-  bool shouldReclip(_FractionClipper oldClipper) => oldClipper.fraction != fraction;
 }
 
 class InfoChip extends StatelessWidget {
@@ -419,15 +354,16 @@ class InfoChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final tone = color ?? context.brand.muted;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 3),
       decoration: BoxDecoration(
-        color: tone.withValues(alpha: context.isDark ? 0.16 : 0.09),
-        borderRadius: BorderRadius.circular(Radii.pill),
+        color: Color.alphaBlend(tone.withValues(alpha: 0.08), context.brand.surfaceRaised),
+        borderRadius: BorderRadius.circular(Radii.xs),
+        border: Border.all(color: tone.withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[Icon(icon, size: 13, color: tone), const SizedBox(width: 4)],
+          if (icon != null) ...[Icon(icon, size: 14, color: tone), const SizedBox(width: 4)],
           Flexible(
             child: Text(
               label,
@@ -442,112 +378,50 @@ class InfoChip extends StatelessWidget {
   }
 }
 
-/// Floating confirmation above the tab bar, with an icon in its tone.
 void showToast(BuildContext context, String message, {bool error = false, IconData? icon}) {
   final messenger = ScaffoldMessenger.maybeOf(context);
   if (messenger == null) return;
   final brand = context.brand;
-  final light = !context.isDark;
-  final foreground = light ? brand.onAccent : brand.ink;
-  if (error) {
-    HapticFeedback.heavyImpact();
-  } else {
-    HapticFeedback.lightImpact();
-  }
   messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: (error ? brand.danger : brand.gold).withValues(alpha: 0.22),
-              ),
-              child: Icon(
-                icon ?? (error ? AppIcons.circleAlert : AppIcons.circleCheck),
-                color: error
-                    ? (light ? const Color(0xFFFFB4B4) : brand.danger)
-                    : (light ? Brand.goldLight : brand.gold),
-                size: 16,
-              ),
+            Icon(
+              icon ?? (error ? Icons.error_outline : Icons.check_circle_outline),
+              color: context.isDark ? brand.ink : brand.paper,
+              size: 20,
             ),
             const SizedBox(width: Space.sm),
-            Expanded(
-              child: Text(message, style: context.text.bodyMedium?.copyWith(color: foreground)),
-            ),
+            Expanded(child: Text(message)),
           ],
         ),
       ),
     );
 }
 
-/// Asks before a consequential action, as a bottom sheet with the decision
-/// in plain words and two clear buttons.
 Future<bool> confirmDialog(
   BuildContext context, {
   required String title,
   required String body,
   required String confirmLabel,
   bool destructive = false,
-  IconData? icon,
 }) async {
-  final result = await showModalBottomSheet<bool>(
+  final result = await showDialog<bool>(
     context: context,
-    useRootNavigator: true,
-    isScrollControlled: true,
-    builder: (context) {
-      final brand = context.brand;
-      final tone = destructive ? brand.danger : brand.gold;
-      return SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, Space.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: tone.withValues(alpha: 0.12)),
-                child: Icon(icon ?? (destructive ? AppIcons.triangleAlert : AppIcons.circleHelp), color: tone),
-              ),
-              const SizedBox(height: Space.md),
-              Text(title, style: context.text.titleLarge, textAlign: TextAlign.center),
-              const SizedBox(height: Space.xs),
-              Text(
-                body,
-                style: context.text.bodyMedium?.copyWith(color: brand.muted),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Space.xl),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(context.l10n.cancel),
-                    ),
-                  ),
-                  const SizedBox(width: Space.sm),
-                  Expanded(
-                    child: FilledButton(
-                      style: destructive
-                          ? FilledButton.styleFrom(backgroundColor: brand.danger, foregroundColor: Colors.white)
-                          : null,
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Text(confirmLabel, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text(body),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(context.l10n.cancel)),
+        FilledButton(
+          style: destructive ? FilledButton.styleFrom(backgroundColor: context.brand.danger) : null,
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(confirmLabel),
         ),
-      );
-    },
+      ],
+    ),
   );
   return result ?? false;
 }
@@ -581,8 +455,8 @@ class RatingPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(AppIcons.star, size: 13, color: brand.gold),
-            const SizedBox(width: 3),
+            Icon(Icons.star_rounded, size: 14, color: brand.gold),
+            const SizedBox(width: 2),
             Text(rating.toStringAsFixed(1), style: Fonts.figures(context.text.labelMedium).copyWith(color: brand.ink)),
           ],
         ),
@@ -591,8 +465,7 @@ class RatingPill extends StatelessWidget {
   }
 }
 
-/// Midnight panel for the one strong moment on a screen, with a whisper of
-/// gold light in its corner.
+/// Solid ink panel for the one strong moment on a screen. No gradient, no glow.
 class HeroPanel extends StatelessWidget {
   const HeroPanel({super.key, required this.child, this.padding = const EdgeInsets.all(Space.lg)});
   final Widget child;
@@ -601,63 +474,36 @@ class HeroPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Radii.xl),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1A2A4D), Brand.midnight, Color(0xFF0A1020)],
-        ),
-        border: context.isDark ? Border.all(color: brand.line) : null,
-        boxShadow: brand.floatingShadow,
+        color: dark ? brand.surfaceRaised : brand.ink,
+        borderRadius: BorderRadius.circular(Radii.md),
+        border: dark ? Border.all(color: brand.line) : null,
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -40,
-            top: -60,
-            child: IgnorePointer(
-              child: Container(
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [Brand.gold.withValues(alpha: 0.28), Brand.gold.withValues(alpha: 0)],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(padding: padding, child: child),
-        ],
-      ),
+      child: Padding(padding: padding, child: child),
     );
   }
 }
 
 /// Foreground color for content inside a [HeroPanel].
-Color heroForeground(BuildContext context) => Brand.ivory;
+Color heroForeground(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? context.brand.ink : context.brand.paper;
 
-/// Search field decoration used by list screens.
+/// Search field decoration used by list screens used by list screens.
 InputDecoration searchDecoration(BuildContext context, String hint) {
   final brand = context.brand;
   final pill = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(Radii.pill),
+    borderRadius: BorderRadius.circular(Radii.sm),
     borderSide: BorderSide(color: brand.line),
   );
   return InputDecoration(
     hintText: hint,
     isDense: true,
     filled: true,
-    fillColor: brand.surface,
-    prefixIcon: Padding(
-      padding: const EdgeInsets.only(left: Space.md, right: Space.xs),
-      child: Icon(AppIcons.search, color: brand.muted, size: 20),
-    ),
-    prefixIconConstraints: const BoxConstraints(minWidth: 44),
-    contentPadding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 15),
+    fillColor: brand.surfaceRaised,
+    prefixIcon: Icon(Icons.search_rounded, color: brand.muted),
+    contentPadding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: 14),
     border: pill,
     enabledBorder: pill,
     focusedBorder: pill.copyWith(borderSide: BorderSide(color: brand.accent, width: 1.6)),

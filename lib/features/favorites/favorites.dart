@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/preferences.dart';
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/ui.dart';
 
 /// Pieces the user saved, kept on the device (no account needed).
@@ -84,9 +83,8 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> with SingleTick
             child: Transform.scale(
               scale: _burst.isAnimating ? _pop.value : 1,
               child: Icon(
-                // Lucide has no filled heart; Material's rounded one matches its shape.
-                saved ? Icons.favorite_rounded : AppIcons.heart,
-                size: widget.size * (saved ? 0.5 : 0.45),
+                saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                size: widget.size * 0.52,
                 color: saved ? brand.live : idle,
               ),
             ),
@@ -107,9 +105,9 @@ class _FavoriteButtonState extends ConsumerState<FavoriteButton> with SingleTick
           child: widget.onPhoto
               ? DecoratedBox(
                   decoration: BoxDecoration(
-                    color: const Color(0x66000000),
+                    color: const Color(0x59000000),
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0x40FFFFFF)),
+                    border: Border.all(color: const Color(0x33FFFFFF)),
                   ),
                   child: icon,
                 )

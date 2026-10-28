@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
@@ -42,7 +41,7 @@ class ScanHistoryScreen extends ConsumerWidget {
         actions: [
           if (history.isNotEmpty)
             CircleIconButton(
-              icon: AppIcons.trash2,
+              icon: Icons.delete_outline_rounded,
               tooltip: l10n.scanHistoryClear,
               onPressed: () => _clear(context, ref),
             ),
@@ -53,7 +52,7 @@ class ScanHistoryScreen extends ConsumerWidget {
           ? Center(
               child: SingleChildScrollView(
                 child: EmptyState(
-                  icon: AppIcons.history,
+                  icon: Icons.history_rounded,
                   message: l10n.scanHistoryEmpty,
                   body: l10n.scanHistoryEmptyBody,
                   actionLabel: l10n.openCamera,
@@ -87,12 +86,12 @@ class ScanHistoryScreen extends ConsumerWidget {
                               color: context.brand.danger.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(Radii.lg),
                             ),
-                            child: Icon(AppIcons.trash2, color: context.brand.danger),
+                            child: Icon(Icons.delete_outline_rounded, color: context.brand.danger),
                           ),
                           onDismissed: (_) {
                             HapticFeedback.mediumImpact();
                             ref.read(scanHistoryProvider.notifier).remove(record.id);
-                            showToast(context, l10n.scanHistoryRemoved, icon: AppIcons.trash2);
+                            showToast(context, l10n.scanHistoryRemoved, icon: Icons.delete_outline_rounded);
                           },
                           child: _RecordCard(record: record),
                         ),
@@ -114,16 +113,16 @@ class _RecordCard extends StatelessWidget {
     final l10n = context.l10n;
     final brand = context.brand;
     final (label, color, icon) = !record.detected
-        ? (l10n.scanHistoryNotDetected, brand.muted, AppIcons.scanSearch)
+        ? (l10n.scanHistoryNotDetected, brand.muted, Icons.image_search_outlined)
         : switch (record.status) {
-            PurchaseStatus.available => (l10n.statusAvailable, brand.live, AppIcons.gavel),
-            PurchaseStatus.notInCatalog => (l10n.statusNotInCatalog, brand.info, AppIcons.imagePlus),
-            PurchaseStatus.unavailable => (l10n.statusUnavailable, brand.muted, AppIcons.circleX),
-            PurchaseStatus.unsupportedProduct => (l10n.statusUnsupported, brand.muted, AppIcons.circleAlert),
+            PurchaseStatus.available => (l10n.statusAvailable, brand.live, Icons.gavel_outlined),
+            PurchaseStatus.notInCatalog => (l10n.statusNotInCatalog, brand.info, Icons.add_photo_alternate_outlined),
+            PurchaseStatus.unavailable => (l10n.statusUnavailable, brand.muted, Icons.cancel_outlined),
+            PurchaseStatus.unsupportedProduct => (l10n.statusUnsupported, brand.muted, Icons.error_outline_rounded),
             PurchaseStatus.requiresVerification => (
               l10n.statusRequiresVerification,
               brand.warning,
-              AppIcons.circleHelp,
+              Icons.help_outline_rounded,
             ),
           };
     final route = record.auctionOpen && record.auctionId != null
@@ -143,7 +142,7 @@ class _RecordCard extends StatelessWidget {
               child: ColoredBox(
                 color: brand.surfaceMuted,
                 child: record.thumbnail == null
-                    ? Icon(AppIcons.image, color: brand.muted)
+                    ? Icon(Icons.image_outlined, color: brand.muted)
                     : CollectibleImage(record.thumbnail, cacheWidth: 150),
               ),
             ),
@@ -173,7 +172,7 @@ class _RecordCard extends StatelessWidget {
               ],
             ),
           ),
-          if (route != null) Icon(AppIcons.chevronRight, color: brand.muted, size: 20),
+          if (route != null) Icon(Icons.chevron_right_rounded, color: brand.muted, size: 20),
         ],
       ),
     );

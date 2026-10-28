@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
@@ -40,7 +39,7 @@ class WatchlistScreen extends ConsumerWidget {
             return Center(
               child: SingleChildScrollView(
                 child: EmptyState(
-                  icon: AppIcons.bell,
+                  icon: Icons.notifications_none_rounded,
                   message: l10n.watchlistEmpty,
                   body: l10n.watchlistEmptyBody,
                   actionLabel: l10n.navAuctions,

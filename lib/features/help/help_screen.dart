@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
@@ -14,22 +13,22 @@ typedef _Topic = ({IconData icon, String title, List<(String, String)> questions
 
 List<_Topic> _topics(AppLocalizations l10n) => [
   (
-    icon: AppIcons.scanLine,
+    icon: Icons.center_focus_weak_outlined,
     title: l10n.navScan,
     questions: [(l10n.faqScanQ1, l10n.faqScanA1), (l10n.faqScanQ2, l10n.faqScanA2)],
   ),
   (
-    icon: AppIcons.gavel,
+    icon: Icons.gavel_outlined,
     title: l10n.navAuctions,
     questions: [(l10n.faqBidQ1, l10n.faqBidA1), (l10n.faqBidQ2, l10n.faqBidA2), (l10n.faqBidQ3, l10n.faqBidA3)],
   ),
   (
-    icon: AppIcons.imagePlus,
+    icon: Icons.add_photo_alternate_outlined,
     title: l10n.quickPublish,
     questions: [(l10n.faqPublishQ1, l10n.faqPublishA1), (l10n.faqPublishQ2, l10n.faqPublishA2)],
   ),
   (
-    icon: AppIcons.userRound,
+    icon: Icons.person_outline_rounded,
     title: l10n.yourAccount,
     questions: [(l10n.faqAccountQ1, l10n.faqAccountA1), (l10n.faqAccountQ2, l10n.faqAccountA2)],
   ),
@@ -87,7 +86,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 ),
                 const SizedBox(height: Space.lg),
                 if (topics.isEmpty)
-                  EmptyState(icon: AppIcons.circleHelp, message: l10n.helpNoResults)
+                  EmptyState(icon: Icons.help_outline_rounded, message: l10n.helpNoResults)
                 else
                   for (final (index, topic) in topics.indexed) ...[
                     Reveal(
@@ -96,7 +95,7 @@ class _HelpScreenState extends State<HelpScreen> {
                         padding: const EdgeInsets.only(bottom: Space.sm),
                         child: Row(
                           children: [
-                            Icon(topic.icon, size: 18, color: brand.gold),
+                            Icon(topic.icon, size: 18, color: brand.ink),
                             const SizedBox(width: Space.xs),
                             Expanded(child: Text(topic.title, style: context.text.titleMedium)),
                           ],
@@ -121,10 +120,10 @@ class _HelpScreenState extends State<HelpScreen> {
                   ],
                 AppCard(
                   onTap: () => context.push(Routes.howItWorks),
-                  gradient: LinearGradient(colors: [brand.goldSoft, brand.surface]),
+                  color: brand.surfaceMuted,
                   child: Row(
                     children: [
-                      IconBadge(AppIcons.lightbulb, color: brand.gold, solid: true),
+                      IconBadge(Icons.lightbulb_outline_rounded, color: brand.ink, solid: true),
                       const SizedBox(width: Space.sm),
                       Expanded(
                         child: Column(
@@ -135,7 +134,7 @@ class _HelpScreenState extends State<HelpScreen> {
                           ],
                         ),
                       ),
-                      Icon(AppIcons.chevronRight, color: brand.muted, size: 20),
+                      Icon(Icons.chevron_right_rounded, color: brand.muted, size: 20),
                     ],
                   ),
                 ),
@@ -191,7 +190,7 @@ class _QuestionState extends State<_Question> {
                     turns: _open ? 0.5 : 0,
                     duration: Motion.of(context, Motion.base),
                     curve: Motion.standard,
-                    child: Icon(AppIcons.chevronDown, size: 18, color: brand.muted),
+                    child: Icon(Icons.expand_more_rounded, size: 18, color: brand.muted),
                   ),
                 ],
               ),

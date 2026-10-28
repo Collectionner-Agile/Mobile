@@ -8,7 +8,6 @@ import '../../app/preferences.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../core/media/artwork.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/collectible_image.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
@@ -118,7 +117,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             decoration: searchDecoration(context, l10n.searchEverything).copyWith(
               suffixIcon: _term.isEmpty
                   ? null
-                  : IconButton(tooltip: l10n.clear, icon: const Icon(AppIcons.x), onPressed: () => _use('')),
+                  : IconButton(tooltip: l10n.clear, icon: const Icon(Icons.close_rounded), onPressed: () => _use('')),
             ),
           ),
         ),
@@ -146,7 +145,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         index: index,
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: Icon(AppIcons.history, color: brand.muted),
+                          leading: Icon(Icons.history_rounded, color: brand.muted),
                           title: Text(term),
                           trailing: const Icon(Icons.north_west_rounded, size: 18),
                           onTap: () => _use(term),
@@ -175,7 +174,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             : nothing
             ? ListView(
                 key: const ValueKey('none'),
-                children: [EmptyState(message: l10n.searchNoResults(_term), icon: AppIcons.scanSearch)],
+                children: [EmptyState(message: l10n.searchNoResults(_term), icon: Icons.search_off_rounded)],
               )
             : ListView(
                 key: ValueKey('results-$_term'),

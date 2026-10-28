@@ -6,7 +6,6 @@ import '../../app/providers.dart';
 import '../../app/router/app_router.dart';
 import '../../app/theme/tokens.dart';
 import '../../core/utils/formatters.dart';
-import '../../core/widgets/app_icons.dart';
 import '../../core/widgets/kit.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
@@ -73,11 +72,12 @@ class CollectorProfileScreen extends ConsumerWidget {
                         spacing: Space.xs,
                         runSpacing: Space.xxs,
                         children: [
-                          if (user?.location != null) Tag(user!.location!, icon: AppIcons.mapPin, color: brand.muted),
+                          if (user?.location != null)
+                            Tag(user!.location!, icon: Icons.place_outlined, color: brand.muted),
                           if (user?.memberSince != null)
                             Tag(
                               l10n.memberSince(formatDate(user!.memberSince!, context.languageCode)),
-                              icon: AppIcons.calendar,
+                              icon: Icons.event_outlined,
                               color: brand.muted,
                             ),
                         ],
@@ -93,14 +93,14 @@ class CollectorProfileScreen extends ConsumerWidget {
                               child: StatTile(
                                 value: context.money(total),
                                 label: l10n.collectorValue,
-                                icon: AppIcons.gem,
+                                icon: Icons.diamond_outlined,
                               ),
                             ),
                             Expanded(
                               child: StatTile(
                                 value: '${auctions.length}',
                                 label: l10n.liveLabel,
-                                icon: AppIcons.gavel,
+                                icon: Icons.gavel_outlined,
                                 color: brand.live,
                               ),
                             ),
@@ -132,7 +132,7 @@ class CollectorProfileScreen extends ConsumerWidget {
           SliverToBoxAdapter(child: SectionHeader(title: l10n.collectorPieces)),
           if (pieces.isEmpty)
             SliverToBoxAdapter(
-              child: EmptyState(icon: AppIcons.gem, message: l10n.collectorNoPieces),
+              child: EmptyState(icon: Icons.diamond_outlined, message: l10n.collectorNoPieces),
             )
           else
             SliverPadding(

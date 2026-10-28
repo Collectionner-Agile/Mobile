@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/preferences.dart';
 import '../../../app/theme/tokens.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/ui.dart';
 
@@ -42,11 +41,11 @@ class FollowAuctionButton extends ConsumerWidget {
     return Semantics(
       toggled: following,
       child: CircleIconButton(
-        icon: following ? AppIcons.bellRing : AppIcons.bell,
+        icon: following ? Icons.notifications_active_outlined : Icons.notifications_none_rounded,
         tooltip: following ? l10n.unfollowAuction : l10n.followAuction,
         onPhoto: onPhoto,
         size: size,
-        color: following ? (onPhoto ? Brand.goldLight : context.brand.gold) : null,
+        color: following ? (onPhoto ? Brand.chalk : context.brand.live) : null,
         onPressed: () async {
           final now = await ref.read(watchedAuctionsProvider.notifier).toggle(auctionId);
           await HapticFeedback.lightImpact();
@@ -54,7 +53,7 @@ class FollowAuctionButton extends ConsumerWidget {
             showToast(
               context,
               now ? l10n.followingAuction : l10n.unfollowedAuction,
-              icon: now ? AppIcons.bellRing : AppIcons.bell,
+              icon: now ? Icons.notifications_active_outlined : Icons.notifications_none_rounded,
             );
           }
         },

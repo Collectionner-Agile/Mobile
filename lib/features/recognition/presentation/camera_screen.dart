@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
-import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
@@ -262,7 +261,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                 onGallery: () => _pick(ImageSource.gallery),
               )
             else
-              const Center(child: CircularProgressIndicator(color: Brand.gold, strokeWidth: 2.4)),
+              const Center(child: CircularProgressIndicator(color: Brand.chalk, strokeWidth: 2.4)),
             if (ready) ...[
               IgnorePointer(
                 child: AnimatedBuilder(
@@ -288,7 +287,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                               height: 72,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Brand.goldLight, width: 1.5),
+                                border: Border.all(color: Brand.chalk, width: 1.5),
                               ),
                             ),
                           ),
@@ -316,7 +315,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                     child: Row(
                       children: [
                         CircleIconButton(
-                          icon: AppIcons.x,
+                          icon: Icons.close_rounded,
                           tooltip: l10n.close,
                           onPhoto: true,
                           onPressed: () => Navigator.of(context).pop(),
@@ -324,16 +323,16 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                         const Spacer(),
                         if (ready) ...[
                           CircleIconButton(
-                            icon: _flash == FlashMode.off ? AppIcons.zapOff : AppIcons.zap,
+                            icon: _flash == FlashMode.off ? Icons.flash_off_rounded : Icons.flash_on_rounded,
                             tooltip: l10n.cameraFlash,
                             onPhoto: true,
-                            color: _flash == FlashMode.off ? Colors.white : Brand.goldLight,
+                            color: _flash == FlashMode.off ? Colors.white : Brand.chalk,
                             onPressed: _toggleFlash,
                           ),
                           if (_cameras.length > 1) ...[
                             const SizedBox(width: Space.xs),
                             CircleIconButton(
-                              icon: AppIcons.switchCamera,
+                              icon: Icons.cameraswitch_outlined,
                               tooltip: l10n.cameraSwitch,
                               onPhoto: true,
                               onPressed: _switchCamera,
@@ -344,7 +343,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                     ),
                   ),
                   const SizedBox(height: Space.sm),
-                  if (ready) Tag(l10n.cameraHint, icon: AppIcons.focus, onPhoto: true),
+                  if (ready) Tag(l10n.cameraHint, icon: Icons.center_focus_strong_outlined, onPhoto: true),
                   const Spacer(),
                   if (ready && _maxZoom >= 2)
                     Padding(
@@ -369,7 +368,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                     child: Row(
                       children: [
                         CircleIconButton(
-                          icon: AppIcons.images,
+                          icon: Icons.photo_library_outlined,
                           tooltip: l10n.scanGallery,
                           onPhoto: true,
                           size: 52,
@@ -465,17 +464,16 @@ class _FramePainter extends CustomPainter {
       Paint()
         ..shader = LinearGradient(
           colors: [
-            Brand.gold.withValues(alpha: 0),
-            Brand.gold.withValues(alpha: 0.28),
-            Brand.gold.withValues(alpha: 0),
+            Brand.chalk.withValues(alpha: 0),
+            Brand.chalk.withValues(alpha: 0.28),
+            Brand.chalk.withValues(alpha: 0),
           ],
         ).createShader(beam.inflate(10)),
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(beam, const Radius.circular(2)),
       Paint()
-        ..shader = const LinearGradient(colors: [Color(0x00F3DCA2), Brand.goldLight, Color(0x00F3DCA2)])
-            .createShader(beam),
+        ..shader = const LinearGradient(colors: [Color(0x00F3DCA2), Brand.chalk, Color(0x00F3DCA2)]).createShader(beam),
     );
   }
 
@@ -512,7 +510,7 @@ class _Shutter extends StatelessWidget {
               duration: Motion.of(context, Motion.fast),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: busy ? Brand.gold : Colors.white.withValues(alpha: enabled ? 1 : 0.4),
+                color: busy ? Brand.live : Colors.white.withValues(alpha: enabled ? 1 : 0.4),
               ),
               child: busy
                   ? const Padding(
@@ -545,14 +543,14 @@ class _ZoomChip extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: selected ? const Color(0xCC000000) : const Color(0x66000000),
-        border: Border.all(color: selected ? Brand.goldLight : const Color(0x33FFFFFF)),
+        border: Border.all(color: selected ? Brand.chalk : const Color(0x33FFFFFF)),
       ),
       child: Text(
         label,
         style: Fonts.label(
           context.text.labelMedium,
           weight: 700,
-        ).copyWith(color: selected ? Brand.goldLight : Colors.white),
+        ).copyWith(color: selected ? Brand.chalk : Colors.white),
       ),
     ),
   );
@@ -578,7 +576,7 @@ class _CameraProblem extends StatelessWidget {
       data: Theme.of(context).copyWith(extensions: [BrandColors.dark]),
       child: Builder(
         builder: (context) => ColoredBox(
-          color: Brand.midnight,
+          color: Brand.ink,
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(Space.xl),
@@ -586,37 +584,34 @@ class _CameraProblem extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   StateMessage(
-                    icon: denied ? AppIcons.lock : AppIcons.camera,
-                    tone: Brand.gold,
+                    icon: denied ? Icons.lock_outline_rounded : Icons.photo_camera_outlined,
+                    tone: Brand.chalk,
                     title: denied ? l10n.cameraDeniedTitle : l10n.cameraUnavailableTitle,
                     body: denied ? l10n.cameraDeniedBody : l10n.cameraUnavailableBody,
                   ),
                   FilledButton.icon(
                     onPressed: onSystemCamera,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Brand.gold,
-                      foregroundColor: const Color(0xFF1A1305),
-                    ),
-                    icon: const Icon(AppIcons.camera, size: 18),
+                    style: FilledButton.styleFrom(backgroundColor: Brand.chalk, foregroundColor: Brand.ink),
+                    icon: const Icon(Icons.photo_camera_outlined, size: 18),
                     label: Text(l10n.cameraUseSystem),
                   ),
                   const SizedBox(height: Space.sm),
                   OutlinedButton.icon(
                     onPressed: onGallery,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Brand.ivory,
+                      foregroundColor: Brand.chalk,
                       backgroundColor: Colors.transparent,
                       side: const BorderSide(color: Color(0x40F5F1E7)),
                     ),
-                    icon: const Icon(AppIcons.images, size: 18),
+                    icon: const Icon(Icons.photo_library_outlined, size: 18),
                     label: Text(l10n.scanGallery),
                   ),
                   if (denied) ...[
                     const SizedBox(height: Space.sm),
                     TextButton.icon(
                       onPressed: onRetry,
-                      style: TextButton.styleFrom(foregroundColor: Brand.goldLight),
-                      icon: const Icon(AppIcons.refreshCw, size: 16),
+                      style: TextButton.styleFrom(foregroundColor: Brand.chalk),
+                      icon: const Icon(Icons.refresh_rounded, size: 16),
                       label: Text(l10n.retry),
                     ),
                   ],
