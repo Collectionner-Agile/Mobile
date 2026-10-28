@@ -1,7 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Only network access is declared up front. Camera and photo access go
-         through system pickers, so no runtime permission is held by the app. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Network, and the camera for the in-app scanner (asked the first time
+         the camera opens). Photos still come from the system picker, so no
+         storage permission is held. The camera plugin also requests the
+         microphone, which the app never uses: removed here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
+    <!-- Phones without a camera can still install the app and use the gallery. -->
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" tools:replace="android:required"/>
 
     <application
         android:label="Collectionner"

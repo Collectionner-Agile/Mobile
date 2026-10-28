@@ -9,6 +9,7 @@ import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
+import 'package:collectionner/features/recognition/presentation/camera_screen.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
 import 'package:collectionner/features/search/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -189,6 +190,21 @@ void main() {
     await tester.tap(find.byTooltip('Escanear'));
     await settle(tester);
     expect(find.text('Inicia sesión para escanear'), findsOneWidget);
+  });
+
+  testWidgets('scan opens the in-app camera, which offers other ways in when there is no camera', (tester) async {
+    await pumpApp(
+      tester,
+      signedIn: true,
+      overrides: [availableCamerasProvider.overrideWithValue(() async => const [])],
+    );
+    await tester.tap(find.byTooltip('Escanear'));
+    await settle(tester);
+    await tester.tap(find.text('Abrir cámara'));
+    await settle(tester);
+    expect(find.byType(CameraScreen), findsOneWidget);
+    expect(find.text('Cámara no disponible'), findsOneWidget);
+    expect(find.text('Usar cámara del sistema'), findsOneWidget);
   });
 
   group('scan result', () {

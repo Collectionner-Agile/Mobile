@@ -19,6 +19,7 @@ import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/insights_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
 import '../../features/profile/presentation/settings_screen.dart';
+import '../../features/recognition/presentation/camera_screen.dart';
 import '../../features/recognition/presentation/scan_result_screen.dart';
 import '../../features/recognition/presentation/scan_screen.dart';
 import '../../features/search/search_screen.dart';
@@ -35,6 +36,7 @@ abstract final class Routes {
   static const catalog = '/catalog';
   static const scan = '/scan';
   static const scanResult = '/scan/result';
+  static const camera = '/scan/camera';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -99,6 +101,26 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: Routes.camera,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          fullscreenDialog: true,
+          transitionDuration: const Duration(milliseconds: 320),
+          child: const CameraScreen(),
+          transitionsBuilder: (_, animation, _, child) => FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 1.06,
+                end: 1,
+              ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+              child: child,
+            ),
+          ),
+        ),
+      ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: Routes.publishCollectible,
