@@ -10,6 +10,7 @@ import 'package:collectionner/features/catalog/presentation/widgets/collectible_
 import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:collectionner/features/notifications/notices.dart';
+import 'package:collectionner/features/profile/presentation/achievements_screen.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/camera_screen.dart';
@@ -278,6 +279,18 @@ void main() {
     await tester.tap(find.text('Más pujadas'));
     await settle(tester, 6);
     expect(find.text('Lego Millennium Falcon 75192'), findsOneWidget);
+  });
+
+  testWidgets('achievements count what the user did and explain each badge', (tester) async {
+    final app = await pumpApp(tester, signedIn: true);
+    app.container.read(routerProvider).go(Routes.achievements);
+    await settle(tester);
+    // The fixture user leads auction 7, so "Primera puja" is earned.
+    final firstBid = app.container.read(achievementsProvider).firstWhere((a) => a.id == AchievementId.firstBid);
+    expect(firstBid.unlocked, isTrue);
+    await tester.tap(find.text('Primera puja'));
+    await settle(tester, 4);
+    expect(find.text('Conseguido'), findsOneWidget);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {

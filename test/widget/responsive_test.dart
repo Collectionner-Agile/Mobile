@@ -50,6 +50,7 @@ void main() {
     Routes.appearance,
     Routes.about,
     Routes.trending,
+    Routes.achievements,
   ];
 
   for (final entry in sizes.entries) {

@@ -22,6 +22,7 @@ import '../../communities/presentation/widgets/community_tile.dart';
 import '../../favorites/favorites.dart';
 import '../../launch/launch_scene.dart';
 import '../../notifications/notices.dart';
+import 'achievements_screen.dart';
 
 /// The Profile tab: who you are, what your collection is worth, shortcuts to
 /// everything that is yours, and the account settings, in that order.
@@ -133,6 +134,48 @@ class ProfileScreen extends ConsumerWidget {
                       onTap: () => context.push(Routes.notifications),
                     ),
                   ],
+                ),
+              ),
+            ),
+            ContentWidth(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(Space.gutter, Space.md, Space.gutter, 0),
+                child: Builder(
+                  builder: (context) {
+                    final achievements = ref.watch(achievementsProvider);
+                    final unlocked = achievements.where((a) => a.unlocked).length;
+                    return AppCard(
+                      onTap: () => context.push(Routes.achievements),
+                      child: Row(
+                        children: [
+                          ProgressRing(
+                            value: unlocked / achievements.length,
+                            size: 48,
+                            stroke: 4,
+                            child: Icon(AppIcons.trophy, size: 18, color: brand.gold),
+                          ),
+                          const SizedBox(width: Space.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(l10n.achievementsTitle, style: context.text.titleSmall),
+                                Text(
+                                  l10n.achievementsSummary(
+                                    unlocked,
+                                    achievements.length,
+                                    achievementLevel(l10n, unlocked),
+                                  ),
+                                  style: context.text.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(AppIcons.chevronRight, color: brand.muted, size: 20),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
