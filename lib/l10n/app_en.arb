@@ -685,5 +685,10 @@
   "collectionValue": "Your collection's value",
   "guestPerkCollection": "Keep your pieces with photos and their value.",
   "guestPerkBids": "Bid in live auctions.",
-  "guestPerkFollow": "Follow auctions and get notices."
+  "guestPerkFollow": "Follow auctions and get notices.",
+  "myCollectionTitle": "My collection",
+  "myCollectionEmptyBody": "Publish your first piece to start your collection.",
+  "myCollectionSearch": "Search my collection",
+  "viewAsGrid": "Show as grid",
+  "viewAsList": "Show as list"
 }

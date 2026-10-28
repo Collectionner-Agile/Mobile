@@ -139,8 +139,8 @@ class ProfileScreen extends ConsumerWidget {
             ContentWidth(
               child: SectionHeader(
                 title: l10n.myPieces,
-                actionLabel: l10n.publishItem,
-                onAction: () => context.push(Routes.publishCollectible),
+                actionLabel: l10n.seeAll,
+                onAction: () => context.push(Routes.myCollection),
               ),
             ),
             ContentWidth(

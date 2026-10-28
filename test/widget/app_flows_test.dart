@@ -221,6 +221,23 @@ void main() {
     expect(app.container.read(unreadNoticesProvider), 0);
   });
 
+  testWidgets('my collection totals the member pieces and switches to a list', (tester) async {
+    final backend = Fixtures.standardBackend()
+      ..json('GET', '/api/v1/collectibles', [
+        Fixtures.collectible(ownerId: 1),
+        Fixtures.collectible(id: 2, name: 'Charizard Holo Base Set', category: 'TCG & Cartas', value: 2310, ownerId: 1),
+        Fixtures.collectible(id: 3, name: 'Reloj Omega Seamaster 1968', category: 'Relojería Vintage', value: 640),
+      ]);
+    final app = await pumpApp(tester, backend: backend, signedIn: true);
+    app.container.read(routerProvider).go(Routes.myCollection);
+    await settle(tester, 14);
+    expect(find.text('S/ 3.730'), findsOneWidget);
+    expect(find.text('Reloj Omega Seamaster 1968'), findsNothing);
+    await tester.tap(find.byTooltip('Ver en lista'));
+    await settle(tester, 4);
+    expect(find.text('Charizard Holo Base Set'), findsOneWidget);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

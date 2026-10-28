@@ -695,5 +695,10 @@
   "collectionValue": "Valor de tu colección",
   "guestPerkCollection": "Guarda tus piezas con fotos y su valor.",
   "guestPerkBids": "Puja en subastas en vivo.",
-  "guestPerkFollow": "Sigue subastas y recibe avisos."
+  "guestPerkFollow": "Sigue subastas y recibe avisos.",
+  "myCollectionTitle": "Mi colección",
+  "myCollectionEmptyBody": "Publica tu primera pieza y empieza tu colección.",
+  "myCollectionSearch": "Buscar en mi colección",
+  "viewAsGrid": "Ver en cuadrícula",
+  "viewAsList": "Ver en lista"
 }

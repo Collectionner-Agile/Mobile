@@ -22,6 +22,7 @@ import '../../features/home/home_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/insights_screen.dart';
+import '../../features/profile/presentation/my_collection_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
 import '../../features/profile/presentation/settings_screen.dart';
 import '../../features/recognition/presentation/camera_screen.dart';
@@ -49,6 +50,7 @@ abstract final class Routes {
   static const auctionCalendar = '/auctions/calendar';
   static const auctionResults = '/auctions/results';
   static const notifications = '/notifications';
+  static const myCollection = '/profile/collection';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -206,6 +208,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.editProfile, builder: (_, _) => const EditProfileScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.insights, builder: (_, _) => const InsightsScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.myBids, builder: (_, _) => const MyBidsScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.myCollection, builder: (_, _) => const MyCollectionScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.settings, builder: (_, _) => const SettingsScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
