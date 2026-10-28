@@ -5,6 +5,7 @@
 //
 // Credentials are the development seed account documented in backend/README.md.
 import 'package:collectionner/app/router/app_router.dart';
+import 'package:collectionner/core/widgets/app_icons.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/communities/presentation/widgets/community_tile.dart';
 import 'package:collectionner/features/profile/presentation/insights_screen.dart';
@@ -61,21 +62,22 @@ void main() {
     await tester.tap(find.byType(FilledButton).last);
     await waitFor(tester, find.byType(InsightsScreen));
 
-    // Preferences apply live.
-    router.go(Routes.settings);
-    await pumpFor(tester, const Duration(seconds: 1));
-    await tester.tap(find.byIcon(Icons.dark_mode_outlined));
+    // Preferences apply live from the Appearance screen.
+    router.go(Routes.appearance);
     await pumpFor(tester, const Duration(seconds: 1));
     await tester.tap(find.text('English'));
     await pumpFor(tester, const Duration(seconds: 1));
     expect(find.text('Appearance'), findsOneWidget);
+    await tester.tap(find.text('Dark'));
+    await pumpFor(tester, const Duration(seconds: 1));
     await tester.tap(find.text('Español'));
-    await tester.tap(find.byIcon(Icons.brightness_auto_outlined));
+    await pumpFor(tester, const Duration(seconds: 1));
+    await tester.tap(find.text('Sistema'));
     await pumpFor(tester, const Duration(seconds: 1));
 
-    // Scan tab is reachable when signed in; analysis availability is reported by the server.
+    // Scan tab is reachable when signed in and offers the in-app camera.
     router.go(Routes.scan);
     await pumpFor(tester);
-    expect(find.byIcon(Icons.photo_camera_outlined), findsWidgets);
+    expect(find.byIcon(AppIcons.camera), findsWidgets);
   });
 }
