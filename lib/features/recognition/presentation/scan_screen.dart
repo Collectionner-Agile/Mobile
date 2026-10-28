@@ -16,6 +16,7 @@ import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../application/scan_controller.dart';
+import '../application/scan_history.dart';
 
 /// The Scan tab: open the camera (or pick a photo), check the shot, and send
 /// it for identification with each step shown as it happens.
@@ -90,6 +91,13 @@ class ScanScreen extends ConsumerWidget {
                 title: l10n.navScan,
                 subtitle: scan.imagePath == null ? l10n.scanSubtitle : l10n.scanPreviewTitle,
                 actions: [
+                  if (scan.imagePath == null && user != null)
+                    CircleIconButton(
+                      icon: AppIcons.history,
+                      tooltip: l10n.scanHistoryTitle,
+                      badge: ref.watch(scanHistoryProvider).isNotEmpty,
+                      onPressed: () => context.push(Routes.scanHistory),
+                    ),
                   if (scan.imagePath != null && !scan.isBusy)
                     CircleIconButton(
                       icon: AppIcons.x,

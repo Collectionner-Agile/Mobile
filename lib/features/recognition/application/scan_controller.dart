@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
@@ -7,6 +8,7 @@ import '../../../app/providers.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/network/api_exception.dart';
 import '../domain/recognition_models.dart';
+import 'scan_history.dart';
 
 enum ScanStage { idle, preview, preparing, uploading, analyzing, done, failed }
 
@@ -117,6 +119,13 @@ class ScanController extends Notifier<ScanState> {
             },
           );
       state = state.copyWith(stage: ScanStage.done, result: result);
+      // Keep it in the on-device history; a failure there never affects the result.
+      unawaited(
+        ref
+            .read(scanHistoryProvider.notifier)
+            .record(result, photoPath: path, quarterTurns: state.quarterTurns)
+            .catchError((Object _) {}),
+      );
     } on ApiException catch (error) {
       if (error.kind == ApiErrorKind.cancelled) return;
       state = state.copyWith(stage: ScanStage.failed, error: error);

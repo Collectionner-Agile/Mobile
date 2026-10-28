@@ -813,5 +813,15 @@
   "compareHint": "Elige otra pieza para ver la comparación.",
   "compareRating": "Valoración",
   "yes": "Sí",
-  "no": "No"
+  "no": "No",
+  "scanHistoryTitle": "Historial de escaneos",
+  "scanHistoryEmpty": "Aún no escaneaste piezas",
+  "scanHistoryEmptyBody": "Cada pieza que identifiques quedará aquí, solo en este teléfono.",
+  "scanHistoryNote": "{count, plural, =1{1 escaneo guardado en este teléfono.} other{{count} escaneos guardados en este teléfono.}} Desliza uno para olvidarlo.",
+  "@scanHistoryNote": {"placeholders": {"count": {"type": "int"}}},
+  "scanHistoryClear": "Borrar historial",
+  "scanHistoryClearBody": "Se borrarán todos los escaneos guardados en este teléfono.",
+  "scanHistoryRemoved": "Escaneo borrado.",
+  "scanHistoryNotDetected": "No se reconoció",
+  "scanHistoryUnknown": "Pieza sin identificar"
 }

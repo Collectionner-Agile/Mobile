@@ -53,6 +53,7 @@ void main() {
     Routes.achievements,
     '/collectors/1',
     Routes.compare,
+    Routes.scanHistory,
   ];
 
   for (final entry in sizes.entries) {

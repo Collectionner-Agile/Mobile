@@ -34,6 +34,7 @@ import '../../features/profile/presentation/my_collection_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
 import '../../features/profile/presentation/settings_screen.dart';
 import '../../features/recognition/presentation/camera_screen.dart';
+import '../../features/recognition/presentation/scan_history_screen.dart';
 import '../../features/recognition/presentation/scan_result_screen.dart';
 import '../../features/recognition/presentation/scan_screen.dart';
 import '../../features/search/search_screen.dart';
@@ -68,6 +69,7 @@ abstract final class Routes {
   static const trending = '/trending';
   static const achievements = '/profile/achievements';
   static const compare = '/compare';
+  static const scanHistory = '/scan/history';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -139,6 +141,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.about, builder: (_, _) => const AboutScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.trending, builder: (_, _) => const TrendingScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.compare, builder: (_, _) => const CompareScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanHistory, builder: (_, _) => const ScanHistoryScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/collectors/:id',

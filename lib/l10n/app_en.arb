@@ -800,5 +800,14 @@
   "compareHint": "Pick another piece to see the comparison.",
   "compareRating": "Rating",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "scanHistoryTitle": "Scan history",
+  "scanHistoryEmpty": "No scans yet",
+  "scanHistoryEmptyBody": "Every piece you identify stays here, only on this phone.",
+  "scanHistoryNote": "{count, plural, =1{1 scan kept on this phone.} other{{count} scans kept on this phone.}} Swipe one away to forget it.",
+  "scanHistoryClear": "Clear history",
+  "scanHistoryClearBody": "All scans kept on this phone will be removed.",
+  "scanHistoryRemoved": "Scan removed.",
+  "scanHistoryNotDetected": "Not recognised",
+  "scanHistoryUnknown": "Unidentified piece"
 }

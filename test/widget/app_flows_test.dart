@@ -15,6 +15,7 @@ import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:collectionner/features/notifications/notices.dart';
 import 'package:collectionner/features/profile/presentation/achievements_screen.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
+import 'package:collectionner/features/recognition/application/scan_history.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/camera_screen.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
@@ -323,6 +324,19 @@ void main() {
     expect(app.container.read(compareProvider), [2, 3]);
     expect(find.text('S/ 2.310'), findsOneWidget);
     expect(find.text('S/ 640'), findsOneWidget);
+  });
+
+  testWidgets('scan history lists past identifications and forgets one on swipe', (tester) async {
+    final app = await pumpApp(tester, signedIn: true);
+    await app.container.read(scanHistoryProvider.notifier).record(RecognitionResult.fromJson(Fixtures.recognition()));
+    await tester.tap(find.byTooltip('Escanear'));
+    await settle(tester);
+    await tester.tap(find.byTooltip('Historial de escaneos'));
+    await settle(tester);
+    expect(find.text('Disponible en subasta'), findsOneWidget);
+    await tester.drag(find.byType(Dismissible).first, const Offset(-500, 0));
+    await settle(tester, 8);
+    expect(app.container.read(scanHistoryProvider), isEmpty);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
