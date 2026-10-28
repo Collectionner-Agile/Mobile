@@ -645,5 +645,10 @@
   "myBidWon": "¡Ganaste!",
   "myBidLost": "No ganaste",
   "myBestBid": "Tu mejor puja",
-  "bidAgain": "Volver a pujar"
+  "bidAgain": "Volver a pujar",
+  "calendarTitle": "Agenda de subastas",
+  "calendarEmptyDay": "Ese día no cierra ninguna subasta.",
+  "calendarClosingThatDay": "{count, plural, =1{1 subasta cierra este día} other{{count} subastas cierran este día}}",
+  "@calendarClosingThatDay": {"placeholders": {"count": {"type": "int"}}},
+  "calendarShort": "Agenda"
 }

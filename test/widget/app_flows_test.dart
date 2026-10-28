@@ -168,6 +168,18 @@ void main() {
     expect(find.text('Lego Millennium Falcon 75192'), findsOneWidget);
   });
 
+  testWidgets('auction calendar opens from the auctions tab', (tester) async {
+    final backend = Fixtures.standardBackend()
+      ..json('GET', '/api/v1/auctions', [Fixtures.auction(), Fixtures.auction(id: 8, open: false)]);
+    final app = await pumpApp(tester, backend: backend);
+    await tester.tap(find.byTooltip('Subastas'));
+    await settle(tester);
+    await tester.tap(find.text('Agenda'));
+    await settle(tester);
+    expect(find.text('Agenda de subastas'), findsOneWidget);
+    expect(find.textContaining('cierra este día'), findsOneWidget);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

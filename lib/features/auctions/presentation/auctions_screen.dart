@@ -69,6 +69,27 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
               ),
             ),
             SliverToBoxAdapter(
+              child: SizedBox(
+                height: 44 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.4),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.xxs),
+                  children: [
+                    _Shortcut(
+                      icon: AppIcons.calendarDays,
+                      label: l10n.calendarShort,
+                      onTap: () => context.push(Routes.auctionCalendar),
+                    ),
+                    _Shortcut(
+                      icon: AppIcons.handCoins,
+                      label: l10n.myBidsTitle,
+                      onTap: () => context.push(Routes.myBids),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xxs, Space.gutter, Space.md),
                 child: ContentWidth(
@@ -139,6 +160,42 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
             },
             SliverToBoxAdapter(child: SizedBox(height: Space.xxl + bottom)),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Shortcut extends StatelessWidget {
+  const _Shortcut({required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Padding(
+      padding: const EdgeInsets.only(right: Space.xs),
+      child: TapScale(
+        child: Material(
+          color: brand.surface,
+          shape: StadiumBorder(side: BorderSide(color: brand.line)),
+          child: InkWell(
+            customBorder: const StadiumBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.md),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 16, color: brand.gold),
+                  const SizedBox(width: 6),
+                  Text(label, style: context.text.labelMedium),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

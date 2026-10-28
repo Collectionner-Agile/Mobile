@@ -644,5 +644,9 @@
   "myBidWon": "You won!",
   "myBidLost": "You didn't win",
   "myBestBid": "Your best bid",
-  "bidAgain": "Bid again"
+  "bidAgain": "Bid again",
+  "calendarTitle": "Auction calendar",
+  "calendarEmptyDay": "No auction closes that day.",
+  "calendarClosingThatDay": "{count, plural, =1{1 auction closes this day} other{{count} auctions close this day}}",
+  "calendarShort": "Calendar"
 }
