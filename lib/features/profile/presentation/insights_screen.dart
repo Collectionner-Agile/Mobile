@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
+import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
@@ -34,7 +35,7 @@ class InsightsScreen extends ConsumerWidget {
               children: [
                 EmptyState(
                   message: l10n.noItemsYet,
-                  icon: Icons.insights_rounded,
+                  icon: AppIcons.chartLine,
                   actionLabel: l10n.publishItem,
                   onAction: () => context.push(Routes.publishCollectible),
                 ),
@@ -116,7 +117,7 @@ class _TotalCard extends StatelessWidget {
           const SizedBox(height: Space.md),
           Row(
             children: [
-              _Pill(icon: Icons.inventory_2_outlined, label: l10n.piecesCount(pieces)),
+              _Pill(icon: AppIcons.package, label: l10n.piecesCount(pieces)),
               if (rating != null) ...[
                 const SizedBox(width: Space.xs),
                 _Pill(icon: Icons.star_rounded, label: rating!.toStringAsFixed(1), tint: brand.gold),

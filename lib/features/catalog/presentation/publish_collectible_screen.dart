@@ -12,6 +12,7 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/media/image_pipeline.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/ui.dart';
 import '../../communities/application/community_providers.dart';
 import '../application/catalog_providers.dart';
@@ -184,7 +185,7 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
                                       tooltip: l10n.delete,
                                       iconSize: 16,
                                       onPressed: _busy ? null : () => setState(() => _photos.removeAt(i)),
-                                      icon: const Icon(Icons.close),
+                                      icon: const Icon(AppIcons.x),
                                     ),
                                   ),
                                 ],
@@ -192,13 +193,13 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
                             ),
                           if (_photos.length < _maxPhotos) ...[
                             _AddTile(
-                              icon: Icons.photo_camera_outlined,
+                              icon: AppIcons.camera,
                               label: l10n.scanCamera,
                               onTap: _busy ? null : () => _addPhotos(ImageSource.camera),
                             ),
                             const SizedBox(width: Space.xs),
                             _AddTile(
-                              icon: Icons.photo_library_outlined,
+                              icon: AppIcons.images,
                               label: l10n.scanGallery,
                               onTap: _busy ? null : () => _addPhotos(ImageSource.gallery),
                             ),
@@ -318,12 +319,7 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
                       Text(_progress!, style: context.text.bodySmall?.copyWith(color: brand.muted)),
                       const SizedBox(height: Space.xs),
                     ],
-                    BusyButton(
-                      label: l10n.publishSubmit,
-                      icon: Icons.inventory_2_outlined,
-                      busy: _busy,
-                      onPressed: _submit,
-                    ),
+                    BusyButton(label: l10n.publishSubmit, icon: AppIcons.package, busy: _busy, onPressed: _submit),
                   ],
                 ),
               ),

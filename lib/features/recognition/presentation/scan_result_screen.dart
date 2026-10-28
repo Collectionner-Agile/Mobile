@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/media/artwork.dart';
+import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
+import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/ui.dart';
 import '../../catalog/presentation/publish_collectible_screen.dart';
@@ -150,32 +152,32 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
     final primary = switch (result.suggestedAction) {
       SuggestedAction.placeBid when result.catalogMatch != null => BusyButton(
         label: l10n.actionPlaceBid,
-        icon: Icons.gavel,
+        icon: AppIcons.gavel,
         onPressed: () => _openMatch(result.catalogMatch!),
       ),
       SuggestedAction.viewRecord when result.catalogMatch != null => BusyButton(
         label: l10n.actionViewRecord,
-        icon: Icons.inventory_2_outlined,
+        icon: AppIcons.package,
         onPressed: () => _openMatch(result.catalogMatch!),
       ),
       SuggestedAction.reviewMatches when requiresChoice => BusyButton(
         label: selected?.auctionOpen == true ? l10n.actionPlaceBid : l10n.actionViewRecord,
-        icon: Icons.arrow_forward,
+        icon: AppIcons.arrowRight,
         onPressed: selected == null ? null : () => _openMatch(selected),
       ),
       SuggestedAction.registerItem => BusyButton(
         label: l10n.actionRegister,
-        icon: Icons.add,
+        icon: AppIcons.plus,
         onPressed: () => _register(result),
       ),
-      _ => BusyButton(label: l10n.actionRetake, icon: Icons.photo_camera_outlined, onPressed: _retake),
+      _ => BusyButton(label: l10n.actionRetake, icon: AppIcons.camera, onPressed: _retake),
     };
     return [
       primary,
       const SizedBox(height: Space.xs),
       if (result.suggestedAction != SuggestedAction.retakePhoto)
-        OutlinedButton.icon(onPressed: _retake, icon: const Icon(Icons.crop_rotate), label: Text(l10n.actionRetake)),
-      TextButton.icon(onPressed: _newScan, icon: const Icon(Icons.refresh), label: Text(l10n.newScan)),
+        OutlinedButton.icon(onPressed: _retake, icon: const Icon(AppIcons.crop), label: Text(l10n.actionRetake)),
+      TextButton.icon(onPressed: _newScan, icon: const Icon(AppIcons.refreshCw), label: Text(l10n.newScan)),
     ];
   }
 }
@@ -189,13 +191,13 @@ class StatusBadge extends StatelessWidget {
     final l10n = context.l10n;
     final brand = context.brand;
     final (label, icon, color) = switch (status) {
-      PurchaseStatus.available => (l10n.statusAvailable, Icons.gavel, brand.success),
-      PurchaseStatus.unavailable => (l10n.statusUnavailable, Icons.inventory_2_outlined, brand.info),
-      PurchaseStatus.notInCatalog => (l10n.statusNotInCatalog, Icons.search_off, brand.muted),
-      PurchaseStatus.requiresVerification => (l10n.statusRequiresVerification, Icons.help_outline, brand.warning),
-      PurchaseStatus.unsupportedProduct => (l10n.statusUnsupported, Icons.block, brand.danger),
+      PurchaseStatus.available => (l10n.statusAvailable, AppIcons.gavel, brand.success),
+      PurchaseStatus.unavailable => (l10n.statusUnavailable, AppIcons.package, brand.info),
+      PurchaseStatus.notInCatalog => (l10n.statusNotInCatalog, AppIcons.scanSearch, brand.muted),
+      PurchaseStatus.requiresVerification => (l10n.statusRequiresVerification, AppIcons.circleHelp, brand.warning),
+      PurchaseStatus.unsupportedProduct => (l10n.statusUnsupported, AppIcons.circleX, brand.danger),
     };
-    return InfoChip(label: label, icon: icon, color: color);
+    return Tag(label, icon: icon, color: color);
   }
 }
 
@@ -328,7 +330,7 @@ class _MatchCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: brand.surfaceRaised,
           borderRadius: BorderRadius.circular(Radii.md),
-          border: Border.all(color: selected ? brand.accent : brand.line, width: selected ? 2 : 1),
+          border: Border.all(color: selected ? brand.gold : brand.line, width: selected ? 2 : 1),
         ),
         padding: const EdgeInsets.all(Space.sm),
         child: ExcludeSemantics(
@@ -358,16 +360,13 @@ class _MatchCard extends StatelessWidget {
                       children: [
                         InfoChip(label: l10n.matchScore((match.score * 100).round())),
                         if (match.auctionOpen)
-                          InfoChip(label: l10n.openAuctionTag, icon: Icons.gavel, color: brand.success),
+                          InfoChip(label: l10n.openAuctionTag, icon: AppIcons.gavel, color: brand.success),
                       ],
                     ),
                   ],
                 ),
               ),
-              Icon(
-                selected ? Icons.radio_button_checked : Icons.chevron_right,
-                color: selected ? brand.accent : brand.muted,
-              ),
+              Icon(selected ? AppIcons.circleCheck : AppIcons.chevronRight, color: selected ? brand.gold : brand.muted),
             ],
           ),
         ),

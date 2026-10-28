@@ -8,6 +8,7 @@ import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/tokens.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/app_icons.dart';
 import '../../../../core/widgets/ui.dart';
 import '../../../auth/application/session_controller.dart';
 import '../../../communities/application/community_providers.dart';
@@ -240,7 +241,7 @@ class CommentsSection extends ConsumerWidget {
               if (user == null)
                 OutlinedButton.icon(
                   onPressed: () => context.push(Routes.login),
-                  icon: const Icon(Icons.login),
+                  icon: const Icon(AppIcons.logIn),
                   label: Text(l10n.signInToParticipate),
                 )
               else
@@ -360,7 +361,7 @@ class _CommentComposerState extends State<_CommentComposer> {
                 padding: EdgeInsets.all(14),
                 child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
               )
-            : IconButton(tooltip: l10n.send, icon: const Icon(Icons.send_rounded), onPressed: _send),
+            : IconButton(tooltip: l10n.send, icon: const Icon(AppIcons.send), onPressed: _send),
       ),
     );
   }
