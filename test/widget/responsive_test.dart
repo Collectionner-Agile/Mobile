@@ -49,6 +49,7 @@ void main() {
     Routes.howItWorks,
     Routes.appearance,
     Routes.about,
+    Routes.trending,
   ];
 
   for (final entry in sizes.entries) {

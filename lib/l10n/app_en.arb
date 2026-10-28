@@ -754,5 +754,11 @@
   "creditsDesign": "Design inspiration",
   "creditsIcons": "Icons",
   "creditsFonts": "Typefaces",
-  "aboutFooter": "Made with care for collectors."
+  "aboutFooter": "Made with care for collectors.",
+  "trendingTitle": "Trending",
+  "trendingValuable": "Most valuable",
+  "trendingRated": "Best rated",
+  "trendingBidded": "Most bid on",
+  "trendingNewest": "Newest",
+  "trendingTeaser": "Top 10s: most valuable, best rated and most bid on."
 }

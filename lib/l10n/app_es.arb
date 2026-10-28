@@ -765,5 +765,11 @@
   "creditsDesign": "Inspiración de diseño",
   "creditsIcons": "Íconos",
   "creditsFonts": "Tipografías",
-  "aboutFooter": "Hecho con cariño para coleccionistas."
+  "aboutFooter": "Hecho con cariño para coleccionistas.",
+  "trendingTitle": "Tendencias",
+  "trendingValuable": "Más valiosas",
+  "trendingRated": "Mejor valoradas",
+  "trendingBidded": "Más pujadas",
+  "trendingNewest": "Recién llegadas",
+  "trendingTeaser": "Los top 10: más valiosas, mejor valoradas y más pujadas."
 }

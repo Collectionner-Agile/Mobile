@@ -268,6 +268,18 @@ void main() {
     expect(find.text('Haz tu oferta'), findsOneWidget);
   });
 
+  testWidgets('trending ranks the most valuable pieces first and switches boards', (tester) async {
+    final app = await pumpApp(tester);
+    unawaited(app.container.read(routerProvider).push(Routes.trending));
+    await settle(tester);
+    final charizard = tester.getTopLeft(find.text('Charizard Holo Base Set'));
+    final omega = tester.getTopLeft(find.text('Reloj Omega Seamaster 1968'));
+    expect(charizard.dy, lessThan(omega.dy), reason: 'S/ 2310 ranks above S/ 640');
+    await tester.tap(find.text('Más pujadas'));
+    await settle(tester, 6);
+    expect(find.text('Lego Millennium Falcon 75192'), findsOneWidget);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

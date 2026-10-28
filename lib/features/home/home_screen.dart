@@ -122,6 +122,33 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
             SliverToBoxAdapter(
+              child: ContentWidth(
+                maxWidth: 900,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(Space.gutter, Space.xl, Space.gutter, 0),
+                  child: AppCard(
+                    onTap: () => context.push(Routes.trending),
+                    child: Row(
+                      children: [
+                        IconBadge(AppIcons.flame, color: context.brand.live, solid: true),
+                        const SizedBox(width: Space.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(l10n.trendingTitle, style: context.text.titleMedium),
+                              Text(l10n.trendingTeaser, style: context.text.bodySmall),
+                            ],
+                          ),
+                        ),
+                        Icon(AppIcons.chevronRight, color: context.brand.muted, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
               child: SectionHeader(
                 title: l10n.recentlyCatalogued,
                 actionLabel: l10n.seeAll,

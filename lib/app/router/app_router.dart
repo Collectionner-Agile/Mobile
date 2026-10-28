@@ -35,6 +35,7 @@ import '../../features/recognition/presentation/scan_result_screen.dart';
 import '../../features/recognition/presentation/scan_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/success/success_screen.dart';
+import '../../features/trending/trending_screen.dart';
 import '../preferences.dart';
 import 'app_shell.dart';
 
@@ -61,6 +62,7 @@ abstract final class Routes {
   static const howItWorks = '/help/how-it-works';
   static const appearance = '/settings/appearance';
   static const about = '/about';
+  static const trending = '/trending';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -128,6 +130,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.howItWorks, builder: (_, _) => const HowItWorksScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.appearance, builder: (_, _) => const AppearanceScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.about, builder: (_, _) => const AboutScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.trending, builder: (_, _) => const TrendingScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/categories/:name',
