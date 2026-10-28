@@ -626,5 +626,9 @@
   "followAuction": "Follow auction",
   "unfollowAuction": "Unfollow",
   "followingAuction": "You follow this auction. You'll see it in your notices.",
-  "unfollowedAuction": "You unfollowed this auction."
+  "unfollowedAuction": "You unfollowed this auction.",
+  "bidSuccessTitle": "Bid placed!",
+  "bidSuccessBody": "You offered {amount} for {piece}. If someone outbids you, you'll see it in your notices.",
+  "backToAuction": "See the auction",
+  "keepExploring": "Keep exploring"
 }

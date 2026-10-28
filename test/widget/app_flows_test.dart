@@ -14,6 +14,7 @@ import 'package:collectionner/features/recognition/domain/recognition_models.dar
 import 'package:collectionner/features/recognition/presentation/camera_screen.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
 import 'package:collectionner/features/search/search_screen.dart';
+import 'package:collectionner/features/success/success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -133,6 +134,29 @@ void main() {
     expect(find.byTooltip('Dejar de seguir'), findsOneWidget);
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getStringList('pref.watchedAuctions'), ['7']);
+  });
+
+  testWidgets('success screen celebrates and its button leads on', (tester) async {
+    final app = await pumpApp(tester);
+    unawaited(
+      app.container
+          .read(routerProvider)
+          .push(
+            Routes.success,
+            extra: const SuccessArgs(
+              title: '¡Puja realizada!',
+              message: 'Listo.',
+              primaryLabel: 'Ver la subasta',
+              primaryRoute: '/auctions/7',
+            ),
+          ),
+    );
+    await settle(tester, 20);
+    expect(find.text('¡Puja realizada!'), findsOneWidget);
+    await tester.tap(find.text('Ver la subasta'));
+    await settle(tester);
+    expect(find.byType(SuccessScreen), findsNothing);
+    expect(app.container.read(routerProvider).state.matchedLocation, '/auctions/7');
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {

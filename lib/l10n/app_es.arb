@@ -626,5 +626,10 @@
   "followAuction": "Seguir subasta",
   "unfollowAuction": "Dejar de seguir",
   "followingAuction": "Sigues esta subasta. La verás en tus avisos.",
-  "unfollowedAuction": "Dejaste de seguir esta subasta."
+  "unfollowedAuction": "Dejaste de seguir esta subasta.",
+  "bidSuccessTitle": "¡Puja realizada!",
+  "bidSuccessBody": "Ofreciste {amount} por {piece}. Si alguien te supera, lo verás en tus avisos.",
+  "@bidSuccessBody": {"placeholders": {"amount": {"type": "String"}, "piece": {"type": "String"}}},
+  "backToAuction": "Ver la subasta",
+  "keepExploring": "Seguir explorando"
 }

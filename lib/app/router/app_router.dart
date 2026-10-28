@@ -24,6 +24,7 @@ import '../../features/recognition/presentation/camera_screen.dart';
 import '../../features/recognition/presentation/scan_result_screen.dart';
 import '../../features/recognition/presentation/scan_screen.dart';
 import '../../features/search/search_screen.dart';
+import '../../features/success/success_screen.dart';
 import '../preferences.dart';
 import 'app_shell.dart';
 
@@ -39,6 +40,7 @@ abstract final class Routes {
   static const scanResult = '/scan/result';
   static const camera = '/scan/camera';
   static const watchlist = '/auctions/watching';
+  static const success = '/success';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -105,6 +107,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),
       // Literal /auctions/… paths sit above the shell so they win over /auctions/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.watchlist, builder: (_, _) => const WatchlistScreen()),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: Routes.success,
+        // Without arguments (e.g. a restored deep link) there is nothing to
+        // celebrate: go home.
+        redirect: (_, state) => state.extra is SuccessArgs ? null : Routes.home,
+        pageBuilder: (_, state) => CustomTransitionPage(
+          key: state.pageKey,
+          transitionDuration: const Duration(milliseconds: 380),
+          child: SuccessScreen(args: state.extra! as SuccessArgs),
+          transitionsBuilder: (_, animation, _, child) => FadeTransition(opacity: animation, child: child),
+        ),
+      ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: Routes.camera,

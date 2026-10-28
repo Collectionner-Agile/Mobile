@@ -17,6 +17,7 @@ import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../../catalog/application/catalog_providers.dart';
+import '../../success/success_screen.dart';
 import '../application/auction_providers.dart';
 import '../application/bid_events.dart';
 import '../application/watchlist.dart';
@@ -115,8 +116,21 @@ class _AuctionBodyState extends ConsumerState<_AuctionBody> {
       ref
         ..invalidate(auctionProvider(auction.id))
         ..invalidate(auctionsProvider);
-      unawaited(HapticFeedback.mediumImpact());
-      showToast(context, context.l10n.bidPlaced, icon: AppIcons.gavel);
+      final l10n = context.l10n;
+      unawaited(
+        context.push(
+          Routes.success,
+          extra: SuccessArgs(
+            title: l10n.bidSuccessTitle,
+            message: l10n.bidSuccessBody(context.money(placed), auction.collectibleName ?? l10n.lotNumber(auction.id)),
+            icon: AppIcons.gavel,
+            primaryLabel: l10n.backToAuction,
+            primaryRoute: Routes.auction(auction.id),
+            secondaryLabel: l10n.keepExploring,
+            secondaryRoute: Routes.home,
+          ),
+        ),
+      );
     }
   }
 
