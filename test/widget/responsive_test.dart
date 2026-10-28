@@ -37,6 +37,14 @@ void main() {
     '/communities/1',
     // Full-screen route opened over a tab whose stack holds grid + detail.
     Routes.scanResult,
+    Routes.notifications,
+    Routes.watchlist,
+    Routes.myBids,
+    Routes.myCollection,
+    Routes.auctionCalendar,
+    Routes.auctionResults,
+    Routes.categories,
+    '/categories/Relojer%C3%ADa%20Vintage',
   ];
 
   for (final entry in sizes.entries) {
