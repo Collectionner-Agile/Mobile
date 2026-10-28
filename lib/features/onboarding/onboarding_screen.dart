@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,8 +10,9 @@ import '../../core/widgets/glass.dart';
 import '../../core/widgets/motion.dart';
 import '../../core/widgets/ui.dart';
 
-/// First-run introduction: three full-bleed pages with parallax photography,
-/// copy on glass, animated progress pills and a skip action.
+/// First-run introduction: three full-bleed pages with parallax photography
+/// that slowly drifts closer, copy on glass that rises line by line,
+/// progress pills that follow the finger and a skip action.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -18,9 +20,12 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with SingleTickerProviderStateMixin {
   final _pages = PageController();
   int _index = 0;
+
+  /// Slow push-in on the photos, back and forth.
+  late final AnimationController _drift = AnimationController(vsync: this, duration: const Duration(seconds: 9));
 
   static const _images = [
     'assets/images/collectibles/records/star-destroyer-model.webp',
@@ -29,10 +34,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   ];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (Motion.reduced(context)) {
+      _drift.stop();
+    } else if (!_drift.isAnimating) {
+      _drift.repeat(reverse: true);
+    }
+  }
+
+  @override
   void dispose() {
+    _drift.dispose();
     _pages.dispose();
     super.dispose();
   }
+
+  /// Fractional page position, for animations that follow the finger.
+  double get _page =>
+      _pages.hasClients && _pages.position.haveDimensions ? _pages.page ?? _index.toDouble() : _index.toDouble();
 
   Future<void> _finish() async {
     await ref.read(onboardedProvider.notifier).complete();
@@ -64,19 +84,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           PageView.builder(
             controller: _pages,
             itemCount: _images.length,
-            onPageChanged: (value) => setState(() => _index = value),
+            onPageChanged: (value) {
+              HapticFeedback.selectionClick();
+              setState(() => _index = value);
+            },
             itemBuilder: (context, index) => AnimatedBuilder(
-              animation: _pages,
+              animation: Listenable.merge([_pages, _drift]),
               builder: (context, child) {
-                final page = _pages.hasClients && _pages.position.haveDimensions
-                    ? _pages.page ?? _index.toDouble()
-                    : _index.toDouble();
-                final delta = index - page;
-                // Photo moves slower than the page for depth.
+                final delta = index - _page;
+                // Photo moves slower than the page for depth, and every photo
+                // drifts in the same slow push-in so nothing jumps on swipe.
+                final drift = Curves.easeInOut.transform(_drift.value);
                 return ClipRect(
                   child: Transform.translate(
                     offset: Offset(-delta * MediaQuery.sizeOf(context).width * 0.35, 0),
-                    child: Transform.scale(scale: 1.08, child: child),
+                    child: Transform.scale(scale: 1.08 + 0.07 * drift, child: child),
                   ),
                 );
               },
@@ -138,95 +160,121 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       alignment: Alignment.bottomCenter,
                       child: SingleChildScrollView(
                         reverse: true,
-                        child: GlassPanel(
-                          padding: const EdgeInsets.all(Space.lg),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnimatedSwitcher(
-                                duration: Motion.of(context, Motion.base),
-                                transitionBuilder: (child, animation) => FadeTransition(
-                                  opacity: animation,
-                                  child: SlideTransition(
-                                    position: Tween(
-                                      begin: const Offset(0, 0.15),
-                                      end: Offset.zero,
-                                    ).animate(CurvedAnimation(parent: animation, curve: Motion.enter)),
-                                    child: child,
+                        child: Reveal(
+                          offset: 40,
+                          child: GlassPanel(
+                            padding: const EdgeInsets.all(Space.lg),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AnimatedSwitcher(
+                                  duration: Motion.of(context, Motion.base),
+                                  transitionBuilder: (child, animation) => FadeTransition(
+                                    opacity: animation,
+                                    child: SlideTransition(
+                                      position: Tween(
+                                        begin: const Offset(0, 0.15),
+                                        end: Offset.zero,
+                                      ).animate(CurvedAnimation(parent: animation, curve: Motion.enter)),
+                                      child: child,
+                                    ),
+                                  ),
+                                  layoutBuilder: (current, previous) =>
+                                      Stack(alignment: Alignment.topLeft, children: [...previous, ?current]),
+                                  child: Column(
+                                    key: ValueKey(_index),
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Reveal(
+                                        offset: 14,
+                                        child: Semantics(
+                                          header: true,
+                                          liveRegion: true,
+                                          child: Text(
+                                            copy[_index].$1,
+                                            style: context.text.headlineMedium?.copyWith(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: Space.xs),
+                                      Reveal(
+                                        index: 2,
+                                        offset: 14,
+                                        child: Text(
+                                          copy[_index].$2,
+                                          style: context.text.bodyLarge?.copyWith(color: const Color(0xD9FFFFFF)),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                layoutBuilder: (current, previous) =>
-                                    Stack(alignment: Alignment.topLeft, children: [...previous, ?current]),
-                                child: Column(
-                                  key: ValueKey(_index),
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                const SizedBox(height: Space.lg),
+                                Row(
                                   children: [
-                                    Semantics(
-                                      header: true,
-                                      liveRegion: true,
-                                      child: Text(
-                                        copy[_index].$1,
-                                        style: context.text.headlineMedium?.copyWith(color: Colors.white),
-                                      ),
+                                    // Pills stretch and fill as the finger drags between pages.
+                                    AnimatedBuilder(
+                                      animation: _pages,
+                                      builder: (context, _) {
+                                        final page = _page;
+                                        return Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            for (var i = 0; i < _images.length; i++)
+                                              () {
+                                                final near = (1 - (page - i).abs()).clamp(0.0, 1.0);
+                                                return Container(
+                                                  margin: const EdgeInsets.only(right: 6),
+                                                  width: 8 + 20 * near,
+                                                  height: 8,
+                                                  decoration: BoxDecoration(
+                                                    color: Color.lerp(const Color(0x66FFFFFF), Colors.white, near),
+                                                    borderRadius: BorderRadius.circular(Radii.pill),
+                                                  ),
+                                                );
+                                              }(),
+                                          ],
+                                        );
+                                      },
                                     ),
-                                    const SizedBox(height: Space.xs),
-                                    Text(
-                                      copy[_index].$2,
-                                      style: context.text.bodyLarge?.copyWith(color: const Color(0xD9FFFFFF)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: Space.lg),
-                              Row(
-                                children: [
-                                  for (var i = 0; i < _images.length; i++)
-                                    AnimatedContainer(
-                                      duration: Motion.of(context, Motion.base),
-                                      curve: Motion.enter,
-                                      margin: const EdgeInsets.only(right: 6),
-                                      width: i == _index ? 28 : 8,
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        color: i == _index ? Colors.white : const Color(0x66FFFFFF),
-                                        borderRadius: BorderRadius.circular(Radii.pill),
-                                      ),
-                                    ),
-                                  const Spacer(),
-                                  Flexible(
-                                    child: TapScale(
-                                      child: FilledButton(
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor: Colors.white,
-                                          foregroundColor: BrandColors.light.ink,
-                                          shape: const StadiumBorder(),
-                                          padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-                                        ),
-                                        onPressed: _next,
-                                        child: AnimatedSwitcher(
-                                          duration: Motion.of(context, Motion.fast),
-                                          child: Row(
-                                            key: ValueKey(last),
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  last ? l10n.onboardingStart : l10n.onboardingNext,
-                                                  overflow: TextOverflow.ellipsis,
+                                    const Spacer(),
+                                    Flexible(
+                                      child: TapScale(
+                                        child: FilledButton(
+                                          style: FilledButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            foregroundColor: BrandColors.light.ink,
+                                            shape: const StadiumBorder(),
+                                            padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+                                          ),
+                                          onPressed: _next,
+                                          child: AnimatedSwitcher(
+                                            duration: Motion.of(context, Motion.fast),
+                                            child: Row(
+                                              key: ValueKey(last),
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Flexible(
+                                                  child: Text(
+                                                    last ? l10n.onboardingStart : l10n.onboardingNext,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
                                                 ),
-                                              ),
-                                              const SizedBox(width: Space.xs),
-                                              Icon(last ? Icons.check_rounded : Icons.arrow_forward_rounded, size: 18),
-                                            ],
+                                                const SizedBox(width: Space.xs),
+                                                Icon(
+                                                  last ? Icons.check_rounded : Icons.arrow_forward_rounded,
+                                                  size: 18,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
