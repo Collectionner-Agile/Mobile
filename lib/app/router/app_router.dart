@@ -19,6 +19,7 @@ import '../../features/communities/presentation/post_detail_screen.dart';
 import '../../features/explore/explore_screen.dart';
 import '../../features/favorites/favorites_screen.dart';
 import '../../features/home/home_screen.dart';
+import '../../features/notifications/notifications_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/profile/presentation/insights_screen.dart';
 import '../../features/profile/presentation/profile_screens.dart';
@@ -47,6 +48,7 @@ abstract final class Routes {
   static const myBids = '/profile/bids';
   static const auctionCalendar = '/auctions/calendar';
   static const auctionResults = '/auctions/results';
+  static const notifications = '/notifications';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -108,6 +110,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.favorites, builder: (_, _) => const FavoritesScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.activity, builder: (_, _) => const ActivityScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.search, builder: (_, _) => const SearchScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),

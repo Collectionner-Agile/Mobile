@@ -20,6 +20,7 @@ import '../catalog/domain/catalog_models.dart';
 import '../catalog/presentation/widgets/collectible_card.dart';
 import '../communities/application/community_providers.dart';
 import '../communities/presentation/widgets/community_tile.dart';
+import '../notifications/notices.dart';
 
 /// Home: a greeting, four plain shortcuts, the live auctions as a swipeable
 /// showcase, categories, the newest pieces and the communities. One idea per
@@ -237,6 +238,13 @@ class _Header extends ConsumerWidget {
                 Tag(l10n.demoBadge, icon: AppIcons.sparkles, color: brand.gold),
                 const SizedBox(width: Space.xs),
               ],
+              CircleIconButton(
+                icon: AppIcons.bell,
+                tooltip: l10n.noticesTitle,
+                badge: ref.watch(unreadNoticesProvider) > 0,
+                onPressed: () => context.push(Routes.notifications),
+              ),
+              const SizedBox(width: Space.xs),
               CircleIconButton(
                 icon: AppIcons.heart,
                 tooltip: l10n.favoritesTitle,

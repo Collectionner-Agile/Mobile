@@ -9,6 +9,7 @@ import 'package:collectionner/features/catalog/presentation/photo_viewer_screen.
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/launch/launch_scene.dart';
+import 'package:collectionner/features/notifications/notices.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/camera_screen.dart';
@@ -183,6 +184,41 @@ void main() {
     await tester.tap(find.text('Resultados'));
     await settle(tester);
     expect(find.text('Vendido en total'.toUpperCase()), findsOneWidget);
+  });
+
+  testWidgets('notices tell the user where they stand and can all be marked read', (tester) async {
+    final backend = Fixtures.standardBackend()
+      ..json('GET', '/api/v1/auctions', [
+        {
+          ...Fixtures.auction(),
+          'bids': [
+            {
+              'id': 3,
+              'auctionId': 7,
+              'amount': 900,
+              'bidderId': 3,
+              'bidderName': 'poke_vault',
+              'createdAt': '2026-10-04T10:00:00Z',
+            },
+            {
+              'id': 2,
+              'auctionId': 7,
+              'amount': 780,
+              'bidderId': 1,
+              'bidderName': 'collector_prime',
+              'createdAt': '2026-10-03T10:00:00Z',
+            },
+          ],
+        },
+      ]);
+    final app = await pumpApp(tester, backend: backend, signedIn: true);
+    await tester.tap(find.byTooltip('Avisos'));
+    await settle(tester);
+    expect(find.text('Te superaron'), findsOneWidget);
+    expect(app.container.read(unreadNoticesProvider), greaterThan(0));
+    await tester.tap(find.text('Marcar leídos'));
+    await settle(tester, 3);
+    expect(app.container.read(unreadNoticesProvider), 0);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
