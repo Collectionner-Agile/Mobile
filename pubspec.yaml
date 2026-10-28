@@ -79,18 +79,18 @@ flutter_launcher_icons:
   adaptive_icon_monochrome: tool/branding/adaptive-foreground.png
   min_sdk_android: 24
 
-# Always midnight, in light and dark mode: the Flutter launch scene
+# The page ground of the app (light and dark): the Flutter launch scene
 # (lib/features/launch) starts on the same colour and mark, so the native
 # splash flows straight into the animation.
 flutter_native_splash:
-  color: "#0B1222"
+  color: "#F1F2F4"
   image: tool/branding/splash-logo.png
-  color_dark: "#0B1222"
+  color_dark: "#0E0F11"
   image_dark: tool/branding/splash-logo.png
   android_12:
-    color: "#0B1222"
+    color: "#F1F2F4"
     image: tool/branding/splash-icon-android12.png
-    color_dark: "#0B1222"
+    color_dark: "#0E0F11"
     image_dark: tool/branding/splash-icon-android12.png
   ios: true
   android: true
