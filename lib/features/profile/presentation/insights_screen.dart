@@ -6,6 +6,7 @@ import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/widgets/app_icons.dart';
 import '../../../core/widgets/collectible_image.dart';
+import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
@@ -62,6 +63,17 @@ class InsightsScreen extends ConsumerWidget {
               Reveal(
                 child: _TotalCard(total: total, pieces: mine.length, rating: rating),
               ),
+              if (mine.length > 1) ...[
+                const SizedBox(height: Space.xl),
+                Text(l10n.valueOverTime, style: context.text.titleLarge),
+                const SizedBox(height: Space.xxs),
+                Text(l10n.valueOverTimeNote, style: context.text.bodySmall),
+                const SizedBox(height: Space.md),
+                Reveal(
+                  index: 1,
+                  child: AppCard(child: AreaChart(values: _growth(mine))),
+                ),
+              ],
               const SizedBox(height: Space.xl),
               Text(l10n.valueByCategory, style: context.text.titleLarge),
               const SizedBox(height: Space.md),
@@ -86,6 +98,14 @@ class InsightsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Running total of declared value as pieces were added, oldest first, so
+/// the chart reads as the collection growing.
+List<double> _growth(List<Collectible> pieces) {
+  final ordered = [...pieces]..sort((a, b) => (a.createdAt ?? DateTime(0)).compareTo(b.createdAt ?? DateTime(0)));
+  var running = 0.0;
+  return [0, for (final piece in ordered) running += piece.value];
 }
 
 class _TotalCard extends StatelessWidget {

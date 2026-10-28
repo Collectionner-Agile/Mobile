@@ -833,5 +833,7 @@
   "shareStyleIvory": "Marfil",
   "shareImage": "Compartir imagen",
   "copyLink": "Copiar enlace",
-  "shareText": "Compartir texto"
+  "shareText": "Compartir texto",
+  "valueOverTime": "Cómo creció tu colección",
+  "valueOverTimeNote": "Valor declarado sumado pieza a pieza, de la primera a la última."
 }

@@ -819,5 +819,7 @@
   "shareStyleIvory": "Ivory",
   "shareImage": "Share image",
   "copyLink": "Copy link",
-  "shareText": "Share text"
+  "shareText": "Share text",
+  "valueOverTime": "How your collection grew",
+  "valueOverTimeNote": "Declared value added up piece by piece, from first to latest."
 }
