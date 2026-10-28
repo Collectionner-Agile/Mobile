@@ -159,6 +159,15 @@ void main() {
     expect(app.container.read(routerProvider).state.matchedLocation, '/auctions/7');
   });
 
+  testWidgets('my bids shows where the user stands in each auction', (tester) async {
+    final app = await pumpApp(tester, signedIn: true);
+    app.container.read(routerProvider).go(Routes.myBids);
+    await settle(tester);
+    expect(find.text('Mis pujas'), findsOneWidget);
+    expect(find.text('Vas ganando'), findsOneWidget);
+    expect(find.text('Lego Millennium Falcon 75192'), findsOneWidget);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

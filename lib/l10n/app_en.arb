@@ -630,5 +630,19 @@
   "bidSuccessTitle": "Bid placed!",
   "bidSuccessBody": "You offered {amount} for {piece}. If someone outbids you, you'll see it in your notices.",
   "backToAuction": "See the auction",
-  "keepExploring": "Keep exploring"
+  "keepExploring": "Keep exploring",
+  "myBidsTitle": "My bids",
+  "myBidsEmpty": "You haven't bid yet",
+  "myBidsEmptyBody": "When you bid in an auction, you'll see here whether you're winning.",
+  "myBidsActive": "Active",
+  "myBidsLeading": "Winning",
+  "myBidsWon": "Won",
+  "myBidsNoneActive": "You have no active bids.",
+  "myBidsNoneFinished": "None of your auctions has finished yet.",
+  "myBidLeading": "You're winning",
+  "myBidOutbid": "You were outbid",
+  "myBidWon": "You won!",
+  "myBidLost": "You didn't win",
+  "myBestBid": "Your best bid",
+  "bidAgain": "Bid again"
 }

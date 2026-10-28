@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/activity/activity_screen.dart';
 import '../../features/auctions/presentation/auction_detail_screen.dart';
 import '../../features/auctions/presentation/auctions_screen.dart';
+import '../../features/auctions/presentation/my_bids_screen.dart';
 import '../../features/auctions/presentation/watchlist_screen.dart';
 import '../../features/auth/application/session_controller.dart';
 import '../../features/auth/presentation/auth_screens.dart';
@@ -41,6 +42,7 @@ abstract final class Routes {
   static const camera = '/scan/camera';
   static const watchlist = '/auctions/watching';
   static const success = '/success';
+  static const myBids = '/profile/bids';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -186,6 +188,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.resetPassword, builder: (_, _) => const ResetPasswordScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.editProfile, builder: (_, _) => const EditProfileScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.insights, builder: (_, _) => const InsightsScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.myBids, builder: (_, _) => const MyBidsScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.settings, builder: (_, _) => const SettingsScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,

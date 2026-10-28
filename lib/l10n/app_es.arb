@@ -631,5 +631,19 @@
   "bidSuccessBody": "Ofreciste {amount} por {piece}. Si alguien te supera, lo verás en tus avisos.",
   "@bidSuccessBody": {"placeholders": {"amount": {"type": "String"}, "piece": {"type": "String"}}},
   "backToAuction": "Ver la subasta",
-  "keepExploring": "Seguir explorando"
+  "keepExploring": "Seguir explorando",
+  "myBidsTitle": "Mis pujas",
+  "myBidsEmpty": "Aún no pujaste",
+  "myBidsEmptyBody": "Cuando pujes en una subasta, aquí verás si vas ganando.",
+  "myBidsActive": "Activas",
+  "myBidsLeading": "Ganando",
+  "myBidsWon": "Ganadas",
+  "myBidsNoneActive": "No tienes pujas activas.",
+  "myBidsNoneFinished": "Aún no terminó ninguna subasta en la que pujaste.",
+  "myBidLeading": "Vas ganando",
+  "myBidOutbid": "Te superaron",
+  "myBidWon": "¡Ganaste!",
+  "myBidLost": "No ganaste",
+  "myBestBid": "Tu mejor puja",
+  "bidAgain": "Volver a pujar"
 }
