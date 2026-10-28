@@ -618,5 +618,13 @@
   "cameraDeniedBody": "Turn it on in your phone's Settings, or use the system camera or a photo from your gallery.",
   "cameraUnavailableTitle": "Camera unavailable",
   "cameraUnavailableBody": "You can use the system camera or pick a photo from your gallery.",
-  "cameraUseSystem": "Use system camera"
+  "cameraUseSystem": "Use system camera",
+  "watchlistTitle": "Auctions you follow",
+  "watchlistEmpty": "You don't follow any auction yet",
+  "watchlistEmptyBody": "Tap the bell on an auction to follow it and keep it here.",
+  "watchlistFollowing": "Following",
+  "followAuction": "Follow auction",
+  "unfollowAuction": "Unfollow",
+  "followingAuction": "You follow this auction. You'll see it in your notices.",
+  "unfollowedAuction": "You unfollowed this auction."
 }

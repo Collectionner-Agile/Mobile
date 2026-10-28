@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/activity/activity_screen.dart';
 import '../../features/auctions/presentation/auction_detail_screen.dart';
 import '../../features/auctions/presentation/auctions_screen.dart';
+import '../../features/auctions/presentation/watchlist_screen.dart';
 import '../../features/auth/application/session_controller.dart';
 import '../../features/auth/presentation/auth_screens.dart';
 import '../../features/catalog/presentation/collectible_detail_screen.dart';
@@ -37,6 +38,7 @@ abstract final class Routes {
   static const scan = '/scan';
   static const scanResult = '/scan/result';
   static const camera = '/scan/camera';
+  static const watchlist = '/auctions/watching';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -101,6 +103,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Full-screen flows above the tab bar. Declared before the shell so that
       // literal paths such as /communities/new win over /communities/:id.
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanResult, builder: (_, _) => const ScanResultScreen()),
+      // Literal /auctions/… paths sit above the shell so they win over /auctions/:id.
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.watchlist, builder: (_, _) => const WatchlistScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: Routes.camera,

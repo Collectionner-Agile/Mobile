@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:collectionner/app/preferences.dart';
 import 'package:collectionner/app/router/app_router.dart';
+import 'package:collectionner/features/auctions/application/watchlist.dart';
+import 'package:collectionner/features/auctions/presentation/watchlist_screen.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
 import 'package:collectionner/features/catalog/presentation/photo_viewer_screen.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
@@ -116,6 +118,21 @@ void main() {
     await tester.drag(find.byType(PhotoViewerScreen), const Offset(0, 420));
     await settle(tester, 5);
     expect(find.byType(PhotoViewerScreen), findsNothing);
+  });
+
+  testWidgets('following an auction lists it under the auctions you follow', (tester) async {
+    final app = await pumpApp(tester);
+    app.container.read(routerProvider).go(Routes.auction(7));
+    await settle(tester);
+    await tester.tap(find.byTooltip('Seguir subasta'));
+    await settle(tester, 4);
+    expect(app.container.read(watchedAuctionsProvider), {7});
+    unawaited(app.container.read(routerProvider).push(Routes.watchlist));
+    await settle(tester);
+    expect(find.byType(WatchlistScreen), findsOneWidget);
+    expect(find.byTooltip('Dejar de seguir'), findsOneWidget);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getStringList('pref.watchedAuctions'), ['7']);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {

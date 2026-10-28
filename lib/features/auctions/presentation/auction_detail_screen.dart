@@ -19,6 +19,7 @@ import '../../auth/application/session_controller.dart';
 import '../../catalog/application/catalog_providers.dart';
 import '../application/auction_providers.dart';
 import '../application/bid_events.dart';
+import '../application/watchlist.dart';
 import '../domain/auction_models.dart';
 
 /// One auction: the piece large, the countdown in tiles, the current bid in
@@ -178,6 +179,10 @@ class _AuctionBodyState extends ConsumerState<_AuctionBody> {
                     ),
                   ),
                   leadingWidth: 60,
+                  actions: [
+                    FollowAuctionButton(auctionId: auction.id, onPhoto: true, size: 44),
+                    const SizedBox(width: Space.sm),
+                  ],
                   flexibleSpace: FlexibleSpaceBar(
                     stretchModes: const [StretchMode.zoomBackground],
                     background: Stack(

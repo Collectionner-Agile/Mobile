@@ -9,6 +9,7 @@ import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
 import '../application/auction_providers.dart';
+import '../application/watchlist.dart';
 import '../domain/auction_models.dart';
 import 'widgets/auction_card.dart';
 
@@ -53,7 +54,18 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
             SliverToBoxAdapter(
               child: SafeArea(
                 bottom: false,
-                child: PageTitle(title: l10n.auctionsTitle, subtitle: l10n.auctionsIntro),
+                child: PageTitle(
+                  title: l10n.auctionsTitle,
+                  subtitle: l10n.auctionsIntro,
+                  actions: [
+                    CircleIconButton(
+                      icon: AppIcons.bellRing,
+                      tooltip: l10n.watchlistTitle,
+                      badge: ref.watch(watchedAuctionsProvider).isNotEmpty,
+                      onPressed: () => context.push(Routes.watchlist),
+                    ),
+                  ],
+                ),
               ),
             ),
             SliverToBoxAdapter(
@@ -98,6 +110,7 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
                           child: ContentWidth(
                             child: AuctionCard(
                               auction: items[index],
+                              trailing: FollowAuctionButton(auctionId: items[index].id, size: 36),
                               onTap: () => context.go(Routes.auction(items[index].id)),
                             ),
                           ),

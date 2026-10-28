@@ -618,5 +618,13 @@
   "cameraDeniedBody": "Actívalo en Ajustes del teléfono, o usa la cámara del sistema o una foto de tu galería.",
   "cameraUnavailableTitle": "Cámara no disponible",
   "cameraUnavailableBody": "Puedes usar la cámara del sistema o elegir una foto de tu galería.",
-  "cameraUseSystem": "Usar cámara del sistema"
+  "cameraUseSystem": "Usar cámara del sistema",
+  "watchlistTitle": "Subastas que sigues",
+  "watchlistEmpty": "Aún no sigues ninguna subasta",
+  "watchlistEmptyBody": "Toca la campana de una subasta para seguirla y tenerla aquí.",
+  "watchlistFollowing": "Siguiendo",
+  "followAuction": "Seguir subasta",
+  "unfollowAuction": "Dejar de seguir",
+  "followingAuction": "Sigues esta subasta. La verás en tus avisos.",
+  "unfollowedAuction": "Dejaste de seguir esta subasta."
 }
