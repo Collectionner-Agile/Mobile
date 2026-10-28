@@ -339,6 +339,27 @@ void main() {
     expect(app.container.read(scanHistoryProvider), isEmpty);
   });
 
+  testWidgets('a piece can be shared as a card or as its link', (tester) async {
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') copied = (call.arguments as Map)['text'] as String?;
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    final app = await pumpApp(tester);
+    app.container.read(routerProvider).go(Routes.collectible(1));
+    await settle(tester);
+    await tester.tap(find.byTooltip('Compartir'));
+    await settle(tester);
+    expect(find.text('Compartir pieza'), findsOneWidget);
+    await tester.tap(find.text('Marfil'));
+    await settle(tester, 4);
+    await tester.tap(find.text('Copiar enlace'));
+    await settle(tester, 3);
+    expect(copied, 'collectionner://app/catalog/item/1');
+    expect(find.text('Enlace copiado'), findsOneWidget);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

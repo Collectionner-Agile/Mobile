@@ -54,6 +54,7 @@ void main() {
     '/collectors/1',
     Routes.compare,
     Routes.scanHistory,
+    '/share/1',
   ];
 
   for (final entry in sizes.entries) {

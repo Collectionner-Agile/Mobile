@@ -823,5 +823,15 @@
   "scanHistoryClearBody": "Se borrarán todos los escaneos guardados en este teléfono.",
   "scanHistoryRemoved": "Escaneo borrado.",
   "scanHistoryNotDetected": "No se reconoció",
-  "scanHistoryUnknown": "Pieza sin identificar"
+  "scanHistoryUnknown": "Pieza sin identificar",
+  "share": "Compartir",
+  "shareTitle": "Compartir pieza",
+  "shareFoundOn": "La encontré en Collectionner:",
+  "shareFailed": "No se pudo compartir. Inténtalo otra vez.",
+  "linkCopied": "Enlace copiado",
+  "shareStyleMidnight": "Medianoche",
+  "shareStyleIvory": "Marfil",
+  "shareImage": "Compartir imagen",
+  "copyLink": "Copiar enlace",
+  "shareText": "Compartir texto"
 }

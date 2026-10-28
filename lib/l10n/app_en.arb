@@ -809,5 +809,15 @@
   "scanHistoryClearBody": "All scans kept on this phone will be removed.",
   "scanHistoryRemoved": "Scan removed.",
   "scanHistoryNotDetected": "Not recognised",
-  "scanHistoryUnknown": "Unidentified piece"
+  "scanHistoryUnknown": "Unidentified piece",
+  "share": "Share",
+  "shareTitle": "Share piece",
+  "shareFoundOn": "Found it on Collectionner:",
+  "shareFailed": "Couldn't share. Try again.",
+  "linkCopied": "Link copied",
+  "shareStyleMidnight": "Midnight",
+  "shareStyleIvory": "Ivory",
+  "shareImage": "Share image",
+  "copyLink": "Copy link",
+  "shareText": "Share text"
 }

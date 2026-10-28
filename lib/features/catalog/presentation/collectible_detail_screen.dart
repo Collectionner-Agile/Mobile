@@ -240,6 +240,13 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                   ),
                   actions: [
                     FavoriteButton(id: item.id, size: 44),
+                    const SizedBox(width: Space.xs),
+                    CircleIconButton(
+                      icon: AppIcons.share2,
+                      tooltip: l10n.share,
+                      onPhoto: true,
+                      onPressed: () => context.push(Routes.sharePiece(item.id)),
+                    ),
                     if (isOwner) ...[
                       const SizedBox(width: Space.xs),
                       _uploading

@@ -13,6 +13,7 @@ import '../../features/auth/application/session_controller.dart';
 import '../../features/auth/presentation/auth_screens.dart';
 import '../../features/catalog/presentation/collectible_detail_screen.dart';
 import '../../features/catalog/presentation/publish_collectible_screen.dart';
+import '../../features/catalog/presentation/share_piece_screen.dart';
 import '../../features/categories/categories_screen.dart';
 import '../../features/collectors/collector_profile_screen.dart';
 import '../../features/communities/presentation/community_detail_screen.dart';
@@ -85,6 +86,7 @@ abstract final class Routes {
 
   static String collectible(int id) => '/catalog/item/$id';
   static String category(String name) => '/categories/${Uri.encodeComponent(name)}';
+  static String sharePiece(int id) => '/share/$id';
   static String collector(int id, {String? name}) =>
       Uri(path: '/collectors/$id', queryParameters: name == null ? null : {'name': name}).toString();
   static String auction(int id) => '/auctions/$id';
@@ -141,6 +143,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.about, builder: (_, _) => const AboutScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.trending, builder: (_, _) => const TrendingScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.compare, builder: (_, _) => const CompareScreen()),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/share/:id',
+        builder: (_, state) => SharePieceScreen(id: _id(state)),
+      ),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.scanHistory, builder: (_, _) => const ScanHistoryScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
