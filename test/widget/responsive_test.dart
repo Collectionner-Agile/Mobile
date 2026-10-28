@@ -52,6 +52,7 @@ void main() {
     Routes.trending,
     Routes.achievements,
     '/collectors/1',
+    Routes.compare,
   ];
 
   for (final entry in sizes.entries) {

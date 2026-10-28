@@ -9,6 +9,7 @@ import 'package:collectionner/features/auth/application/session_controller.dart'
 import 'package:collectionner/features/catalog/presentation/photo_viewer_screen.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/collectors/collector_profile_screen.dart';
+import 'package:collectionner/features/compare/compare_screen.dart';
 import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:collectionner/features/notifications/notices.dart';
@@ -306,6 +307,22 @@ void main() {
     expect(find.byType(CollectorProfileScreen), findsOneWidget);
     expect(find.text('Diego Collector'), findsOneWidget);
     expect(find.text('Sus piezas'), findsOneWidget);
+  });
+
+  testWidgets('compare puts two pieces side by side and marks the stronger value', (tester) async {
+    final app = await pumpApp(tester);
+    app.container.read(routerProvider).go(Routes.collectible(2));
+    await settle(tester);
+    await tester.tap(find.text('Comparar'));
+    await settle(tester);
+    expect(find.text('Comparar piezas'), findsOneWidget);
+    await tester.tap(find.text('Elegir una pieza'));
+    await settle(tester, 6);
+    await tester.tap(find.text('Reloj Omega Seamaster 1968').last);
+    await settle(tester, 6);
+    expect(app.container.read(compareProvider), [2, 3]);
+    expect(find.text('S/ 2.310'), findsOneWidget);
+    expect(find.text('S/ 640'), findsOneWidget);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {

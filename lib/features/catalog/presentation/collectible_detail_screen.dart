@@ -17,6 +17,7 @@ import '../../../core/widgets/ui.dart';
 import '../../auctions/application/auction_providers.dart';
 import '../../auctions/presentation/create_auction_sheet.dart';
 import '../../auth/application/session_controller.dart';
+import '../../compare/compare_screen.dart';
 import '../../favorites/favorites.dart';
 import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
@@ -444,7 +445,13 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                 )
               : isOwner
               ? BusyButton(label: l10n.startAuction, icon: AppIcons.gavel, onPressed: _startAuction)
-              : _SaveButton(id: item.id),
+              : Row(
+                  children: [
+                    Expanded(child: _SaveButton(id: item.id)),
+                    const SizedBox(width: Space.sm),
+                    Expanded(child: CompareButton(id: item.id)),
+                  ],
+                ),
         ),
       ],
     );

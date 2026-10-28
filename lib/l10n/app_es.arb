@@ -804,5 +804,14 @@
   "collectorValue": "En piezas",
   "collectorAuctions": "Sus subastas en vivo",
   "collectorPieces": "Sus piezas",
-  "collectorNoPieces": "Aún no publicó piezas."
+  "collectorNoPieces": "Aún no publicó piezas.",
+  "compareAction": "Comparar",
+  "compareTitle": "Comparar piezas",
+  "compareSubtitle": "Dos piezas lado a lado. Lo más fuerte se marca en oro.",
+  "comparePick": "Elegir una pieza",
+  "compareChange": "Cambiar",
+  "compareHint": "Elige otra pieza para ver la comparación.",
+  "compareRating": "Valoración",
+  "yes": "Sí",
+  "no": "No"
 }

@@ -791,5 +791,14 @@
   "collectorValue": "In pieces",
   "collectorAuctions": "Their live auctions",
   "collectorPieces": "Their pieces",
-  "collectorNoPieces": "No pieces published yet."
+  "collectorNoPieces": "No pieces published yet.",
+  "compareAction": "Compare",
+  "compareTitle": "Compare pieces",
+  "compareSubtitle": "Two pieces side by side. The stronger value is marked in gold.",
+  "comparePick": "Pick a piece",
+  "compareChange": "Change",
+  "compareHint": "Pick another piece to see the comparison.",
+  "compareRating": "Rating",
+  "yes": "Yes",
+  "no": "No"
 }

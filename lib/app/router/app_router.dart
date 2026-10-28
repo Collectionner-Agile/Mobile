@@ -18,6 +18,7 @@ import '../../features/collectors/collector_profile_screen.dart';
 import '../../features/communities/presentation/community_detail_screen.dart';
 import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
+import '../../features/compare/compare_screen.dart';
 import '../../features/explore/explore_screen.dart';
 import '../../features/favorites/favorites_screen.dart';
 import '../../features/help/help_screen.dart';
@@ -66,6 +67,7 @@ abstract final class Routes {
   static const about = '/about';
   static const trending = '/trending';
   static const achievements = '/profile/achievements';
+  static const compare = '/compare';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -136,6 +138,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.appearance, builder: (_, _) => const AppearanceScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.about, builder: (_, _) => const AboutScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.trending, builder: (_, _) => const TrendingScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.compare, builder: (_, _) => const CompareScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/collectors/:id',
