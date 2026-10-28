@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/activity/activity_screen.dart';
 import '../../features/auctions/presentation/auction_calendar_screen.dart';
 import '../../features/auctions/presentation/auction_detail_screen.dart';
+import '../../features/auctions/presentation/auction_results_screen.dart';
 import '../../features/auctions/presentation/auctions_screen.dart';
 import '../../features/auctions/presentation/my_bids_screen.dart';
 import '../../features/auctions/presentation/watchlist_screen.dart';
@@ -45,6 +46,7 @@ abstract final class Routes {
   static const success = '/success';
   static const myBids = '/profile/bids';
   static const auctionCalendar = '/auctions/calendar';
+  static const auctionResults = '/auctions/results';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -115,6 +117,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         path: Routes.auctionCalendar,
         builder: (_, _) => const AuctionCalendarScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: Routes.auctionResults,
+        builder: (_, _) => const AuctionResultsScreen(),
       ),
       GoRoute(
         parentNavigatorKey: _rootKey,

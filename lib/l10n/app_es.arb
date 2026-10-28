@@ -650,5 +650,12 @@
   "calendarEmptyDay": "Ese día no cierra ninguna subasta.",
   "calendarClosingThatDay": "{count, plural, =1{1 subasta cierra este día} other{{count} subastas cierran este día}}",
   "@calendarClosingThatDay": {"placeholders": {"count": {"type": "int"}}},
-  "calendarShort": "Agenda"
+  "calendarShort": "Agenda",
+  "resultsTitle": "Resultados",
+  "resultsEmptyBody": "Cuando una subasta termine, verás aquí su precio final.",
+  "resultsTotal": "Vendido en total",
+  "resultsClosed": "Terminadas",
+  "resultsSold": "Con pujas",
+  "resultsTop": "Mejor venta",
+  "resultsUnsold": "Sin pujas"
 }

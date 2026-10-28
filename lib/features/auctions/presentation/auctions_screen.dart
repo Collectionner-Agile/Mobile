@@ -81,6 +81,11 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
                       onTap: () => context.push(Routes.auctionCalendar),
                     ),
                     _Shortcut(
+                      icon: AppIcons.trophy,
+                      label: l10n.resultsTitle,
+                      onTap: () => context.push(Routes.auctionResults),
+                    ),
+                    _Shortcut(
                       icon: AppIcons.handCoins,
                       label: l10n.myBidsTitle,
                       onTap: () => context.push(Routes.myBids),

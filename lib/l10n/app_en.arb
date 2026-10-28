@@ -648,5 +648,12 @@
   "calendarTitle": "Auction calendar",
   "calendarEmptyDay": "No auction closes that day.",
   "calendarClosingThatDay": "{count, plural, =1{1 auction closes this day} other{{count} auctions close this day}}",
-  "calendarShort": "Calendar"
+  "calendarShort": "Calendar",
+  "resultsTitle": "Results",
+  "resultsEmptyBody": "When an auction ends, its final price shows up here.",
+  "resultsTotal": "Sold in total",
+  "resultsClosed": "Finished",
+  "resultsSold": "With bids",
+  "resultsTop": "Top sale",
+  "resultsUnsold": "No bids"
 }
