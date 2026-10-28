@@ -216,7 +216,7 @@ void main() {
     await settle(tester);
     expect(find.text('Te superaron'), findsOneWidget);
     expect(app.container.read(unreadNoticesProvider), greaterThan(0));
-    await tester.tap(find.text('Marcar leídos'));
+    await tester.tap(find.byTooltip('Marcar leídos'));
     await settle(tester, 3);
     expect(app.container.read(unreadNoticesProvider), 0);
   });

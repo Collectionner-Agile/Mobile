@@ -51,13 +51,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         title: Text(l10n.noticesTitle),
         actions: [
           if (unread.isNotEmpty)
-            TextButton.icon(
+            CircleIconButton(
+              icon: AppIcons.listChecks,
+              tooltip: l10n.markAllRead,
               onPressed: () {
                 HapticFeedback.selectionClick();
                 ref.read(readNoticesProvider.notifier).markAll(all.map((notice) => notice.id));
               },
-              icon: const Icon(AppIcons.listChecks, size: 18),
-              label: Text(l10n.markAllRead),
             ),
           const SizedBox(width: Space.xs),
         ],
@@ -221,17 +221,11 @@ class _NoticeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(title, style: context.text.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    ),
-                    const SizedBox(width: Space.xs),
-                    Text(timeAgo(context, notice.at), style: context.text.bodySmall),
-                  ],
-                ),
+                Text(title, style: context.text.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
                 Text(body, style: context.text.bodySmall?.copyWith(color: brand.ink.withValues(alpha: 0.75))),
+                const SizedBox(height: 4),
+                Text(timeAgo(context, notice.at), style: context.text.labelSmall?.copyWith(color: brand.muted)),
               ],
             ),
           ),
