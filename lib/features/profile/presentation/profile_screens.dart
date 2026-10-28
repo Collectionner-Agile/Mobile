@@ -229,6 +229,24 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: Space.lg),
                     MenuGroup(
+                      title: l10n.helpTitle,
+                      children: [
+                        MenuTile(
+                          icon: AppIcons.circleHelp,
+                          title: l10n.helpTitle,
+                          color: brand.info,
+                          onTap: () => context.push(Routes.help),
+                        ),
+                        MenuTile(
+                          icon: AppIcons.lightbulb,
+                          title: l10n.howItWorksTitle,
+                          color: brand.gold,
+                          onTap: () => context.push(Routes.howItWorks),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Space.lg),
+                    MenuGroup(
                       children: [
                         MenuTile(
                           icon: AppIcons.logOut,

@@ -19,6 +19,8 @@ import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
 import '../../features/explore/explore_screen.dart';
 import '../../features/favorites/favorites_screen.dart';
+import '../../features/help/help_screen.dart';
+import '../../features/help/how_it_works_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
@@ -53,6 +55,8 @@ abstract final class Routes {
   static const notifications = '/notifications';
   static const myCollection = '/profile/collection';
   static const categories = '/categories';
+  static const help = '/help';
+  static const howItWorks = '/help/how-it-works';
   static const auctions = '/auctions';
   static const communities = '/communities';
   static const login = '/auth/login';
@@ -116,6 +120,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.activity, builder: (_, _) => const ActivityScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.search, builder: (_, _) => const SearchScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.categories, builder: (_, _) => const CategoriesScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.help, builder: (_, _) => const HelpScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.howItWorks, builder: (_, _) => const HowItWorksScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/categories/:name',

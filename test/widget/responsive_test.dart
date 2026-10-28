@@ -45,6 +45,8 @@ void main() {
     Routes.auctionResults,
     Routes.categories,
     '/categories/Relojer%C3%ADa%20Vintage',
+    Routes.help,
+    Routes.howItWorks,
   ];
 
   for (final entry in sizes.entries) {

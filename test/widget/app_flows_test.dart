@@ -249,6 +249,25 @@ void main() {
     expect(find.text('Charizard Holo Base Set'), findsNothing);
   });
 
+  testWidgets('help search opens the matching answer and leads to the guides', (tester) async {
+    final app = await pumpApp(tester);
+    unawaited(app.container.read(routerProvider).push(Routes.help));
+    await settle(tester);
+    await tester.enterText(find.byType(TextField).first, 'supera');
+    await settle(tester, 4);
+    expect(find.textContaining('Puedes volver a pujar'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, '');
+    await settle(tester, 4);
+    await tester.ensureVisible(find.text('Cómo funciona'));
+    await settle(tester, 4);
+    await tester.tap(find.text('Cómo funciona'));
+    await settle(tester);
+    expect(find.text('Toma la foto'), findsOneWidget);
+    await tester.tap(find.text('Pujar'));
+    await settle(tester, 6);
+    expect(find.text('Haz tu oferta'), findsOneWidget);
+  });
+
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
     final backend = Fixtures.standardBackend()
       ..json('POST', '/api/v1/auth/login', {

@@ -186,7 +186,7 @@ final noticesProvider = Provider<List<Notice>>((ref) {
         kind: NoticeKind.welcome,
         at: user?.memberSince ?? DateTime(2026, 10),
         subject: user?.name.split(' ').first,
-        route: '/catalog',
+        route: '/help/how-it-works',
       ),
     )
     ..sort((a, b) => b.at.compareTo(a.at));
