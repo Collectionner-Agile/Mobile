@@ -748,5 +748,22 @@
   "guidePublish2Title": "Cuéntanos de ella",
   "guidePublish2Body": "Nombre, año, categoría y su valor.",
   "guidePublish3Title": "Súbela a subasta",
-  "guidePublish3Body": "Cuando quieras, conviértela en subasta desde su ficha."
+  "guidePublish3Body": "Cuando quieras, conviértela en subasta desde su ficha.",
+  "aboutTitle": "Acerca de Collectionner",
+  "themeTitle": "Tema",
+  "themeBody": "Elige cómo se ve la app. El cambio es inmediato.",
+  "languageSystemNote": "Sigue el idioma de tu teléfono",
+  "whatsNewTitle": "Novedades de esta versión",
+  "whatsNewDesign": "Nuevo diseño medianoche y oro, más simple y claro.",
+  "whatsNewCamera": "Cámara en vivo para escanear piezas.",
+  "whatsNewNotices": "Avisos de tus pujas y de las subastas que sigues.",
+  "whatsNewCalendar": "Agenda y resultados de subastas.",
+  "whatsNewAchievements": "Logros y tu colección en un vistazo.",
+  "whatsNewMotion": "Animaciones suaves en toda la app.",
+  "privacyTitle": "Tu privacidad",
+  "creditsTitle": "Créditos",
+  "creditsDesign": "Inspiración de diseño",
+  "creditsIcons": "Íconos",
+  "creditsFonts": "Tipografías",
+  "aboutFooter": "Hecho con cariño para coleccionistas."
 }

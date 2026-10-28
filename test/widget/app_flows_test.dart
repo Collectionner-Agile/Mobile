@@ -323,7 +323,7 @@ void main() {
 
   testWidgets('theme and language change live and persist', (tester) async {
     final app = await pumpApp(tester);
-    app.container.read(routerProvider).go(Routes.settings);
+    app.container.read(routerProvider).go(Routes.appearance);
     await settle(tester);
     await tester.tap(find.text('Oscuro'));
     await settle(tester, 4);

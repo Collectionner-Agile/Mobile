@@ -737,5 +737,22 @@
   "guidePublish2Title": "Describe it",
   "guidePublish2Body": "Name, year, category and its value.",
   "guidePublish3Title": "Put it up for auction",
-  "guidePublish3Body": "Whenever you like, turn it into an auction from its page."
+  "guidePublish3Body": "Whenever you like, turn it into an auction from its page.",
+  "aboutTitle": "About Collectionner",
+  "themeTitle": "Theme",
+  "themeBody": "Choose how the app looks. It changes right away.",
+  "languageSystemNote": "Follows your phone's language",
+  "whatsNewTitle": "What's new in this version",
+  "whatsNewDesign": "A new midnight and gold design, simpler and clearer.",
+  "whatsNewCamera": "A live camera to scan pieces.",
+  "whatsNewNotices": "Notices about your bids and the auctions you follow.",
+  "whatsNewCalendar": "Auction calendar and results.",
+  "whatsNewAchievements": "Achievements and your collection at a glance.",
+  "whatsNewMotion": "Smooth animations throughout the app.",
+  "privacyTitle": "Your privacy",
+  "creditsTitle": "Credits",
+  "creditsDesign": "Design inspiration",
+  "creditsIcons": "Icons",
+  "creditsFonts": "Typefaces",
+  "aboutFooter": "Made with care for collectors."
 }

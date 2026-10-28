@@ -2,25 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/config/app_config.dart';
 import '../../../app/preferences.dart';
 import '../../../app/providers.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_icons.dart';
+import '../../../core/widgets/kit.dart';
 import '../../../core/widgets/password_field.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../../launch/launch_scene.dart';
 
+/// Settings as a few plain groups: how the app looks, your account, help and
+/// about. Each row says what it does; destructive ones are red.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   Future<void> _signOut(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
-    final ok = await confirmDialog(context, title: l10n.signOut, body: l10n.signOutConfirm, confirmLabel: l10n.signOut);
-    if (!ok) return;
+    final ok = await confirmDialog(
+      context,
+      title: l10n.signOut,
+      body: l10n.signOutConfirm,
+      confirmLabel: l10n.signOut,
+      icon: AppIcons.logOut,
+    );
+    if (!ok || !context.mounted) return;
     final router = ref.read(routerProvider);
     await ref.read(sessionProvider.notifier).logout();
     if (!context.mounted) return;
@@ -32,11 +41,12 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
+  Future<void> _deleteAccount(BuildContext context) async {
     final deleted = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      useRootNavigator: true,
       builder: (_) => const _DeleteAccountSheet(),
     );
     if (deleted == true && context.mounted) {
@@ -49,125 +59,107 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final brand = context.brand;
-    final themeMode = ref.watch(themeModeProvider);
-    final locale = ref.watch(localeProvider);
     final user = ref.watch(currentUserProvider);
+    final theme = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
+    final themeName = switch (theme) {
+      ThemeMode.light => l10n.themeLight,
+      ThemeMode.dark => l10n.themeDark,
+      ThemeMode.system => l10n.themeSystem,
+    };
+    final languageName = switch (locale?.languageCode) {
+      'es' => 'Español',
+      'en' => 'English',
+      _ => l10n.languageSystem,
+    };
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
-        padding: EdgeInsets.only(bottom: Space.xxl + MediaQuery.paddingOf(context).bottom),
+        padding: EdgeInsets.fromLTRB(
+          Space.gutter,
+          Space.xs,
+          Space.gutter,
+          Space.xxl + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           ContentWidth(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SectionHeader(title: l10n.appearance),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                  child: SegmentedButton<ThemeMode>(
-                    showSelectedIcon: false,
-                    segments: [
-                      ButtonSegment(
-                        value: ThemeMode.system,
-                        icon: const Icon(Icons.brightness_auto_outlined),
-                        label: Text(l10n.themeSystem),
-                      ),
-                      ButtonSegment(
-                        value: ThemeMode.light,
-                        icon: const Icon(Icons.light_mode_outlined),
-                        label: Text(l10n.themeLight),
-                      ),
-                      ButtonSegment(
-                        value: ThemeMode.dark,
-                        icon: const Icon(Icons.dark_mode_outlined),
-                        label: Text(l10n.themeDark),
-                      ),
-                    ],
-                    selected: {themeMode},
-                    onSelectionChanged: (value) => ref.read(themeModeProvider.notifier).set(value.first),
-                  ),
-                ),
-                SectionHeader(title: l10n.language),
-                RadioGroup<String>(
-                  groupValue: locale?.languageCode ?? 'system',
-                  onChanged: (value) =>
-                      ref.read(localeProvider.notifier).set(value == null || value == 'system' ? null : Locale(value)),
-                  child: _Group(
-                    children: [
-                      RadioListTile<String>(value: 'system', title: Text(l10n.languageSystem)),
-                      const RadioListTile<String>(value: 'es', title: Text('Español')),
-                      const RadioListTile<String>(value: 'en', title: Text('English')),
-                    ],
-                  ),
-                ),
-                if (user != null) ...[
-                  SectionHeader(title: l10n.account),
-                  _Group(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.person_outline),
-                        title: Text(user.name),
-                        subtitle: Text(user.email ?? '@${user.username}'),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.password),
-                        title: Text(l10n.changePassword),
-                        subtitle: user.hasLocalPassword ? null : Text(l10n.externalAccountPassword),
-                        enabled: user.hasLocalPassword,
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => context.push(Routes.changePassword),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: Text(l10n.signOut),
-                        onTap: () => _signOut(context, ref),
-                      ),
-                      if (user.hasLocalPassword)
-                        ListTile(
-                          leading: Icon(Icons.delete_forever_outlined, color: brand.danger),
-                          title: Text(l10n.deleteAccount, style: TextStyle(color: brand.danger)),
-                          onTap: () => _deleteAccount(context, ref),
-                        ),
-                    ],
-                  ),
-                ] else ...[
-                  SectionHeader(title: l10n.account),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                    child: BusyButton(
-                      label: l10n.signIn,
-                      icon: Icons.login,
-                      onPressed: () => context.push(Routes.login),
-                    ),
-                  ),
-                ],
-                SectionHeader(title: l10n.about),
-                _Group(
+                MenuGroup(
+                  title: l10n.appearance,
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.auto_stories_outlined),
-                      title: Text(l10n.replayIntro),
-                      trailing: const Icon(Icons.chevron_right),
+                    MenuTile(
+                      icon: AppIcons.palette,
+                      title: l10n.appearance,
+                      subtitle: '$themeName · $languageName',
+                      color: brand.gold,
+                      onTap: () => context.push(Routes.appearance),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: Space.lg),
+                MenuGroup(
+                  title: l10n.account,
+                  children: [
+                    if (user != null) ...[
+                      MenuTile(
+                        icon: AppIcons.squarePen,
+                        title: l10n.editProfile,
+                        onTap: () => context.push(Routes.editProfile),
+                      ),
+                      MenuTile(
+                        icon: AppIcons.keyRound,
+                        title: l10n.changePassword,
+                        subtitle: user.hasLocalPassword ? null : l10n.externalAccountPassword,
+                        onTap: user.hasLocalPassword ? () => context.push(Routes.changePassword) : null,
+                      ),
+                      MenuTile(icon: AppIcons.logOut, title: l10n.signOut, onTap: () => _signOut(context, ref)),
+                      MenuTile(
+                        icon: AppIcons.trash2,
+                        title: l10n.deleteAccount,
+                        destructive: true,
+                        onTap: user.hasLocalPassword ? () => _deleteAccount(context) : null,
+                      ),
+                    ] else
+                      MenuTile(icon: AppIcons.logIn, title: l10n.signIn, onTap: () => context.push(Routes.login)),
+                  ],
+                ),
+                const SizedBox(height: Space.lg),
+                MenuGroup(
+                  title: l10n.helpTitle,
+                  children: [
+                    MenuTile(
+                      icon: AppIcons.circleHelp,
+                      title: l10n.helpTitle,
+                      color: brand.info,
+                      onTap: () => context.push(Routes.help),
+                    ),
+                    MenuTile(
+                      icon: AppIcons.lightbulb,
+                      title: l10n.howItWorksTitle,
+                      color: brand.gold,
+                      onTap: () => context.push(Routes.howItWorks),
+                    ),
+                    MenuTile(
+                      icon: AppIcons.circlePlay,
+                      title: l10n.replayIntro,
                       onTap: () => context.go(Routes.onboarding),
                     ),
                   ],
                 ),
-                const SizedBox(height: Space.md),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.privacySummary, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
-                      const SizedBox(height: Space.sm),
-                      Text(l10n.versionLabel('1.0.0'), style: context.text.bodySmall?.copyWith(color: brand.muted)),
-                      Text(
-                        AppConfig.demoMode ? l10n.demoServerLabel : l10n.serverLabel(AppConfig.apiBaseUrl),
-                        style: context.text.bodySmall?.copyWith(color: brand.muted),
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: Space.lg),
+                MenuGroup(
+                  title: l10n.about,
+                  children: [
+                    MenuTile(
+                      icon: AppIcons.info,
+                      title: l10n.aboutTitle,
+                      subtitle: l10n.versionLabel(appVersion),
+                      onTap: () => context.push(Routes.about),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -177,6 +169,9 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+/// Shown in About and Settings. Keep in step with pubspec.yaml.
+const appVersion = '2.0.0';
 
 class _DeleteAccountSheet extends ConsumerStatefulWidget {
   const _DeleteAccountSheet();
@@ -228,10 +223,16 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.deleteAccount, style: context.text.titleLarge?.copyWith(color: brand.danger)),
-              const SizedBox(height: Space.xs),
-              Text(l10n.deleteAccountBody, style: context.text.bodyMedium),
+              Center(child: IconBadge(AppIcons.triangleAlert, color: brand.danger, size: 56)),
               const SizedBox(height: Space.md),
+              Text(l10n.deleteAccount, textAlign: TextAlign.center, style: context.text.titleLarge),
+              const SizedBox(height: Space.xs),
+              Text(
+                l10n.deleteAccountBody,
+                textAlign: TextAlign.center,
+                style: context.text.bodyMedium?.copyWith(color: brand.muted),
+              ),
+              const SizedBox(height: Space.lg),
               PasswordField(
                 controller: _password,
                 label: l10n.currentPassword,
@@ -243,16 +244,12 @@ class _DeleteAccountSheetState extends ConsumerState<_DeleteAccountSheet> {
                 Text(_error!, style: context.text.bodySmall?.copyWith(color: brand.danger)),
               ],
               const SizedBox(height: Space.lg),
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: brand.danger, foregroundColor: Colors.white),
-                onPressed: _busy ? null : _submit,
-                child: _busy
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text(l10n.deleteAccountConfirm),
+              BusyButton(
+                label: l10n.deleteAccountConfirm,
+                icon: AppIcons.trash2,
+                busy: _busy,
+                color: brand.danger,
+                onPressed: _submit,
               ),
             ],
           ),
@@ -298,7 +295,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
       // Same rule as the web: saving a new password ends this session.
       await ref.read(sessionProvider.notifier).signOutLocally();
       if (!mounted) return;
-      showToast(context, l10n.passwordChanged);
+      showToast(context, l10n.passwordChanged, icon: AppIcons.shieldCheck);
       context.go(Routes.login);
     } catch (error) {
       if (mounted) setState(() => _error = describeError(error, l10n));
@@ -310,6 +307,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final brand = context.brand;
     final validators = Validators(l10n);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.changePassword)),
@@ -325,9 +323,12 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Center(child: IconBadge(AppIcons.keyRound, color: brand.gold, size: 56)),
+                    const SizedBox(height: Space.md),
                     Text(
                       l10n.changePasswordIntro,
-                      style: context.text.bodyMedium?.copyWith(color: context.brand.muted),
+                      textAlign: TextAlign.center,
+                      style: context.text.bodyMedium?.copyWith(color: brand.muted),
                     ),
                     const SizedBox(height: Space.lg),
                     PasswordField(
@@ -354,49 +355,14 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: Space.sm),
-                      Text(_error!, style: context.text.bodyMedium?.copyWith(color: context.brand.danger)),
+                      Text(_error!, style: context.text.bodyMedium?.copyWith(color: brand.danger)),
                     ],
                     const SizedBox(height: Space.lg),
-                    BusyButton(label: l10n.save, busy: _busy, onPressed: _submit),
+                    BusyButton(label: l10n.save, icon: AppIcons.check, busy: _busy, onPressed: _submit),
                   ],
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Grouped settings rows on one card, separated by hairlines.
-class _Group extends StatelessWidget {
-  const _Group({required this.children});
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final brand = context.brand;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: brand.surface,
-          borderRadius: BorderRadius.circular(Radii.md),
-          border: Border.all(color: brand.line),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(Radii.md - 1),
-          child: Material(
-            type: MaterialType.transparency,
-            child: Column(
-              children: [
-                for (final (index, child) in children.indexed) ...[
-                  if (index > 0) Divider(height: 1, indent: Space.md, endIndent: Space.md, color: brand.line),
-                  child,
-                ],
-              ],
-            ),
           ),
         ),
       ),

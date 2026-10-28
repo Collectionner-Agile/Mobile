@@ -47,6 +47,8 @@ void main() {
     '/categories/Relojer%C3%ADa%20Vintage',
     Routes.help,
     Routes.howItWorks,
+    Routes.appearance,
+    Routes.about,
   ];
 
   for (final entry in sizes.entries) {
