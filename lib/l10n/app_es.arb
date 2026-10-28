@@ -78,7 +78,7 @@
     }
   },
   "declaredValue": "Valor declarado",
-  "declaredValueNote": "Referencia personal del custodio; no constituye oferta ni tasación.",
+  "declaredValueNote": "Valor de referencia del dueño; no es una oferta ni una tasación.",
   "category": "Categoría",
   "year": "Año",
   "owner": "Aportado por",
@@ -600,5 +600,9 @@
   "noClosedAuctions": "Aún no hay subastas terminadas.",
   "yourBid": "Tu puja",
   "lowerBid": "Bajar puja",
-  "raiseBid": "Subir puja"
+  "raiseBid": "Subir puja",
+  "readMore": "Leer más",
+  "readLess": "Leer menos",
+  "savedInFavorites": "Guardada en favoritos",
+  "auctionBannerBody": "Está en subasta ahora. Puja antes de que cierre."
 }

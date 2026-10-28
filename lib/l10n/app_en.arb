@@ -78,7 +78,7 @@
     }
   },
   "declaredValue": "Declared value",
-  "declaredValueNote": "The keeper's personal reference; not an offer or an appraisal.",
+  "declaredValueNote": "The owner's reference value; not an offer or an appraisal.",
   "category": "Category",
   "year": "Year",
   "owner": "Contributed by",
@@ -600,5 +600,9 @@
   "noClosedAuctions": "No finished auctions yet.",
   "yourBid": "Your bid",
   "lowerBid": "Lower bid",
-  "raiseBid": "Raise bid"
+  "raiseBid": "Raise bid",
+  "readMore": "Read more",
+  "readLess": "Read less",
+  "savedInFavorites": "Saved in favourites",
+  "auctionBannerBody": "It's up for auction now. Bid before it closes."
 }
