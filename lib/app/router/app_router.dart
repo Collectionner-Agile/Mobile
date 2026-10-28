@@ -14,6 +14,7 @@ import '../../features/auth/presentation/auth_screens.dart';
 import '../../features/catalog/presentation/collectible_detail_screen.dart';
 import '../../features/catalog/presentation/publish_collectible_screen.dart';
 import '../../features/categories/categories_screen.dart';
+import '../../features/collectors/collector_profile_screen.dart';
 import '../../features/communities/presentation/community_detail_screen.dart';
 import '../../features/communities/presentation/community_forms.dart';
 import '../../features/communities/presentation/post_detail_screen.dart';
@@ -80,6 +81,8 @@ abstract final class Routes {
 
   static String collectible(int id) => '/catalog/item/$id';
   static String category(String name) => '/categories/${Uri.encodeComponent(name)}';
+  static String collector(int id, {String? name}) =>
+      Uri(path: '/collectors/$id', queryParameters: name == null ? null : {'name': name}).toString();
   static String auction(int id) => '/auctions/$id';
   static String community(int id) => '/communities/$id';
   static String newPost(int communityId) => '/communities/$communityId/post';
@@ -133,6 +136,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.appearance, builder: (_, _) => const AppearanceScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.about, builder: (_, _) => const AboutScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.trending, builder: (_, _) => const TrendingScreen()),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/collectors/:id',
+        builder: (_, state) => CollectorProfileScreen(id: _id(state), name: state.uri.queryParameters['name']),
+      ),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.achievements, builder: (_, _) => const AchievementsScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,

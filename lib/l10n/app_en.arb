@@ -787,5 +787,9 @@
   "achCommunity": "Community member",
   "achCommunityBody": "Join 2 communities.",
   "achProfile": "Complete profile",
-  "achProfileBody": "Add your bio and your city."
+  "achProfileBody": "Add your bio and your city.",
+  "collectorValue": "In pieces",
+  "collectorAuctions": "Their live auctions",
+  "collectorPieces": "Their pieces",
+  "collectorNoPieces": "No pieces published yet."
 }

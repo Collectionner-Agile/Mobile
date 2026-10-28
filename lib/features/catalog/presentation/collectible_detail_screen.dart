@@ -364,6 +364,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                           if (item.ownerName != null) ...[
                             const SizedBox(height: Space.lg),
                             AppCard(
+                              onTap: () => context.push(Routes.collector(item.ownerId, name: item.ownerName)),
                               padding: const EdgeInsets.all(Space.sm),
                               child: Row(
                                 children: [

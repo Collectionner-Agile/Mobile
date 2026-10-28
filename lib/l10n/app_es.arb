@@ -800,5 +800,9 @@
   "achCommunity": "Comunitario",
   "achCommunityBody": "Únete a 2 comunidades.",
   "achProfile": "Perfil completo",
-  "achProfileBody": "Añade tu biografía y tu ciudad."
+  "achProfileBody": "Añade tu biografía y tu ciudad.",
+  "collectorValue": "En piezas",
+  "collectorAuctions": "Sus subastas en vivo",
+  "collectorPieces": "Sus piezas",
+  "collectorNoPieces": "Aún no publicó piezas."
 }

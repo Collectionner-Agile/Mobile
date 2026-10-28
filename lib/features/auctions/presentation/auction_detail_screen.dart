@@ -246,19 +246,24 @@ class _AuctionBodyState extends ConsumerState<_AuctionBody> {
                             const SizedBox(height: Space.sm),
                             Reveal(
                               index: 1,
-                              child: Row(
-                                children: [
-                                  UserAvatar(name: auction.auctioneerName!, size: 28),
-                                  const SizedBox(width: Space.xs),
-                                  Expanded(
-                                    child: Text(
-                                      '${l10n.auctioneer} · ${auction.auctioneerName}',
-                                      style: context.text.bodyMedium?.copyWith(color: brand.muted),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(Radii.sm),
+                                onTap: () =>
+                                    context.push(Routes.collector(auction.auctioneerId, name: auction.auctioneerName)),
+                                child: Row(
+                                  children: [
+                                    UserAvatar(name: auction.auctioneerName!, size: 28),
+                                    const SizedBox(width: Space.xs),
+                                    Expanded(
+                                      child: Text(
+                                        '${l10n.auctioneer} · ${auction.auctioneerName}',
+                                        style: context.text.bodyMedium?.copyWith(color: brand.muted),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ],

@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:collectionner/app/preferences.dart';
 import 'package:collectionner/app/router/app_router.dart';
+import 'package:collectionner/core/widgets/kit.dart';
 import 'package:collectionner/features/auctions/application/watchlist.dart';
 import 'package:collectionner/features/auctions/presentation/watchlist_screen.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
 import 'package:collectionner/features/catalog/presentation/photo_viewer_screen.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
+import 'package:collectionner/features/collectors/collector_profile_screen.dart';
 import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/launch/launch_scene.dart';
 import 'package:collectionner/features/notifications/notices.dart';
@@ -291,6 +293,19 @@ void main() {
     await tester.tap(find.text('Primera puja'));
     await settle(tester, 4);
     expect(find.text('Conseguido'), findsOneWidget);
+  });
+
+  testWidgets("a piece's owner opens their collector page", (tester) async {
+    final backend = Fixtures.standardBackend()..json('GET', '/api/v1/users/2', Fixtures.user(id: 2));
+    final app = await pumpApp(tester, backend: backend);
+    app.container.read(routerProvider).go(Routes.collectible(1));
+    await settle(tester);
+    await tester.scrollUntilVisible(find.byType(UserAvatar).first, 200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.byType(UserAvatar).first);
+    await settle(tester);
+    expect(find.byType(CollectorProfileScreen), findsOneWidget);
+    expect(find.text('Diego Collector'), findsOneWidget);
+    expect(find.text('Sus piezas'), findsOneWidget);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
