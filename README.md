@@ -9,10 +9,12 @@ built with Flutter widgets. The Astro web app ([Collectionner-Agile/Frontend](ht
 | --- | --- |
 | Flutter / Dart | 3.47.8 stable / 3.13.7, strict analysis (`analysis_options.yaml`) |
 | State | Riverpod 3 (`Notifier`, `FutureProvider`), no code generation |
-| Navigation | go_router 18: `StatefulShellRoute` tabs, protected routes, deep links `collectionner://app/...` |
+| Navigation | go_router 18: five-tab `StatefulShellRoute` (Inicio, Explorar, Escanear, Subastas, Perfil) with cross-faded tabs, protected routes, deep links `collectionner://app/...` |
+| Design | "Vitrina" tokens (midnight navy + champagne gold, Fraunces/Archivo), Lucide icons subset into `assets/fonts/AppIcons.ttf` by `dart run tool/build_icons.dart`, motion kit after 21st.dev references (`lib/core/widgets/kit.dart`, `motion.dart`) |
 | HTTP | Dio wrapped in `ApiClient`; every failure becomes a typed `ApiException` (RFC 9457 aware) |
 | Session | JWT in Android Keystore / iOS Keychain (`flutter_secure_storage`), excluded from backups |
-| Images | `image_picker` (system pickers, no runtime permission held), `image_cropper`, re-encode on an isolate (EXIF stripped) |
+| Images | In-app live camera (`camera`, CameraX) for scanning, `image_picker` for the gallery, `image_cropper`, re-encode on an isolate (EXIF stripped) |
+| Sharing | `share_plus` for piece cards rendered to PNG |
 | i18n | `gen-l10n`, Spanish (template) + English, device language by default, persisted override |
 
 ```
@@ -23,6 +25,14 @@ lib/
               each with domain/ (models), application/ (state), presentation/ (screens)
   l10n/       app_es.arb, app_en.arb (+ generated)
 ```
+
+## Screens beyond the web
+
+Launch scene and farewell exit (`features/launch`), photo viewer, live camera, followed auctions, my bids,
+auction calendar and results, notices, my collection, categories and category pages, help centre and
+guides, appearance, about, trending, achievements, collector pages, compare, scan history, share piece and
+an animated success screen. Notices, achievements, followed auctions and scan history are derived from data
+the app already loads or kept on the device; none needs a new endpoint.
 
 ## Web → mobile migration matrix
 
