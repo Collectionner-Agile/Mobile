@@ -20,6 +20,7 @@ import '../../auth/application/session_controller.dart';
 import '../../favorites/favorites.dart';
 import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
+import 'photo_viewer_screen.dart';
 import 'widgets/collectible_card.dart';
 import 'widgets/social_sections.dart';
 
@@ -193,14 +194,13 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     }
   }
 
-  void _openGallery(List<String> urls, int initial) {
-    Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute<void>(
-        fullscreenDialog: true,
-        builder: (_) => _FullscreenGallery(urls: urls, initial: initial),
-      ),
-    );
-  }
+  void _openGallery(List<String> urls, int initial) => PhotoViewerScreen.open(
+    context,
+    urls: urls,
+    initial: initial,
+    heroTag: initial == 0 ? 'collectible-${item.id}' : null,
+    title: item.name,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -529,48 +529,6 @@ class _DetailSkeleton extends StatelessWidget {
       ),
     ],
   );
-}
-
-class _FullscreenGallery extends StatefulWidget {
-  const _FullscreenGallery({required this.urls, required this.initial});
-  final List<String> urls;
-  final int initial;
-
-  @override
-  State<_FullscreenGallery> createState() => _FullscreenGalleryState();
-}
-
-class _FullscreenGalleryState extends State<_FullscreenGallery> {
-  late final PageController _controller = PageController(initialPage: widget.initial);
-  late int _index = widget.initial;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        title: Text(context.l10n.photoCount(_index + 1, widget.urls.length)),
-      ),
-      body: PageView.builder(
-        controller: _controller,
-        itemCount: widget.urls.length,
-        onPageChanged: (value) => setState(() => _index = value),
-        itemBuilder: (_, index) => InteractiveViewer(
-          minScale: 1,
-          maxScale: 5,
-          child: Center(child: CollectibleImage(widget.urls[index], fit: BoxFit.contain)),
-        ),
-      ),
-    );
-  }
 }
 
 /// Other pieces of the same category, from the loaded catalogue.

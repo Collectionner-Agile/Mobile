@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collectionner/app/preferences.dart';
 import 'package:collectionner/app/router/app_router.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
+import 'package:collectionner/features/catalog/presentation/photo_viewer_screen.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/favorites/favorites.dart';
 import 'package:collectionner/features/launch/launch_scene.dart';
@@ -102,6 +103,18 @@ void main() {
     expect(find.text('Pieza impecable.'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('¿Incluye manual?'), 300, scrollable: find.byType(Scrollable).first);
     expect(find.text('Inicia sesión para participar.'), findsOneWidget);
+  });
+
+  testWidgets('photo viewer opens from the piece and closes with a downward drag', (tester) async {
+    final app = await pumpApp(tester);
+    app.container.read(routerProvider).go(Routes.collectible(1));
+    await settle(tester);
+    await tester.tap(find.byType(PageView).first);
+    await settle(tester, 4);
+    expect(find.byType(PhotoViewerScreen), findsOneWidget);
+    await tester.drag(find.byType(PhotoViewerScreen), const Offset(0, 420));
+    await settle(tester, 5);
+    expect(find.byType(PhotoViewerScreen), findsNothing);
   });
 
   testWidgets('protected route redirects to login and back after signing in', (tester) async {
