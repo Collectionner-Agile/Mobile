@@ -834,7 +834,26 @@
   "valueOverTime": "Cómo creció tu colección",
   "valueOverTimeNote": "Valor declarado sumado pieza a pieza, de la primera a la última.",
   "trainingConsentTitle": "Ayudar a mejorar el reconocimiento",
-  "trainingConsentBody": "Guardamos tus fotos de escaneo y tus correcciones para entrenar el modelo. Puedes desactivarlo cuando quieras.",
+  "trainingConsentBody": "Guardamos tus fotos de escaneo y tus correcciones para entrenar el modelo, hasta 24 meses. Si lo desactivas, borramos lo guardado.",
+  "trainingConsentLearnMore": "Cómo usamos tus fotos",
+  "trainingPrivacyTitle": "Fotos para entrenar el reconocimiento",
+  "trainingPrivacyWhat": "Qué guardamos: la foto que analizas y tu respuesta a «¿Acertamos?» o tu corrección. Solo si este interruptor está activado cuando confirmas el análisis.",
+  "trainingPrivacyWhy": "Para qué: para medir cuánto acierta el reconocimiento y entrenar un modelo propio. Las fotos no se publican, no se venden y solo las ve el equipo que revisa las etiquetas.",
+  "trainingPrivacyWhere": "Dónde: en un almacenamiento privado de Collectioneer, separado de tu perfil público.",
+  "trainingPrivacyRetention": "Cuánto tiempo: hasta 24 meses. Después se borran solas.",
+  "trainingPrivacyWithdraw": "Cómo retirarlo: desactiva el interruptor y borramos al instante tus fotos y correcciones guardadas. Si eliminas tu cuenta, también se borran.",
+  "trainingPrivacyTip": "Evita fotografiar caras, documentos o el interior de tu casa.",
+  "trainingDeletionDone": "{count, plural, =0{No había fotos guardadas para entrenamiento.} =1{Borramos 1 foto guardada para entrenamiento.} other{Borramos {count} fotos guardadas para entrenamiento.}}",
+  "@trainingDeletionDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingDeletionFailed": "No pudimos borrar tus fotos de entrenamiento. Lo intentaremos de nuevo al volver a esta pantalla.",
+  "trainingDeletionBeforeEnable": "Antes de volver a activarlo debemos terminar de borrar tus fotos anteriores. Inténtalo de nuevo.",
+  "scanHistoryFromOtherDevice": "Sin foto en este dispositivo",
   "recognitionSettings": "Reconocimiento",
   "feedbackQuestion": "¿Acertamos?",
   "feedbackBody": "Tu respuesta enseña al reconocimiento a acertar la próxima vez.",

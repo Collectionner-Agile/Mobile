@@ -332,4 +332,16 @@ class RecognitionRepository {
   /// server, so sending again for the same analysis replaces the earlier one.
   Future<void> sendFeedback(String analysisId, RecognitionFeedback feedback) =>
       _api.post('$_v1/recognition/${Uri.encodeComponent(analysisId)}/feedback', (_) {}, body: feedback.toJson());
+
+  /// The user's own analyses kept by the server, newest first.
+  Future<RecognitionHistoryPage> history({int page = 0, int size = 30}) => _api.get(
+    '$_v1/recognition/history',
+    (data) => parseObject(data, RecognitionHistoryPage.fromJson),
+    query: {'page': page, 'size': size},
+  );
+
+  /// Withdraws training consent on the server: deletes the photos and answers
+  /// kept for training. Safe to repeat.
+  Future<TrainingDataDeletion> deleteTrainingData() =>
+      _api.deleteParsed('$_v1/recognition/training-data', (data) => parseObject(data, TrainingDataDeletion.fromJson));
 }

@@ -820,7 +820,26 @@
   "valueOverTime": "How your collection grew",
   "valueOverTimeNote": "Declared value added up piece by piece, from first to latest.",
   "trainingConsentTitle": "Help improve recognition",
-  "trainingConsentBody": "We keep your scan photos and corrections to train the model. You can turn this off at any time.",
+  "trainingConsentBody": "We keep your scan photos and corrections to train the model, for up to 24 months. Turning this off deletes what we kept.",
+  "trainingConsentLearnMore": "How we use your photos",
+  "trainingPrivacyTitle": "Photos used to train recognition",
+  "trainingPrivacyWhat": "What we keep: the photo you analyse and your answer to “Did we get it right?” or your correction. Only if this switch is on when you confirm the analysis.",
+  "trainingPrivacyWhy": "Why: to measure how often recognition is right and to train our own model. Photos are never published or sold, and only the team that reviews labels sees them.",
+  "trainingPrivacyWhere": "Where: in Collectioneer's private storage, separate from your public profile.",
+  "trainingPrivacyRetention": "How long: up to 24 months. After that they are deleted automatically.",
+  "trainingPrivacyWithdraw": "How to withdraw: turn the switch off and we immediately delete the photos and corrections we kept. Deleting your account deletes them too.",
+  "trainingPrivacyTip": "Avoid photographing faces, documents or the inside of your home.",
+  "trainingDeletionDone": "{count, plural, =0{There were no photos kept for training.} =1{We deleted 1 photo kept for training.} other{We deleted {count} photos kept for training.}}",
+  "@trainingDeletionDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingDeletionFailed": "We couldn't delete your training photos. We'll try again when you come back to this screen.",
+  "trainingDeletionBeforeEnable": "We need to finish deleting your earlier photos before you turn this back on. Please try again.",
+  "scanHistoryFromOtherDevice": "No photo on this device",
   "recognitionSettings": "Recognition",
   "feedbackQuestion": "Did we get it right?",
   "feedbackBody": "Your answer teaches recognition to get it right next time.",

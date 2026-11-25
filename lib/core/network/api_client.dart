@@ -80,6 +80,10 @@ class ApiClient {
 
   Future<void> delete(String path, {Object? body}) => _send(() => _dio.delete<Object?>(path, data: body), (_) {});
 
+  /// DELETE whose response body matters (e.g. what was removed).
+  Future<T> deleteParsed<T>(String path, T Function(Object? data) parse) =>
+      _send(() => _dio.delete<Object?>(path), parse);
+
   Future<T> _send<T>(Future<Response<Object?>> Function() request, T Function(Object? data) parse) async {
     final Response<Object?> response;
     try {

@@ -13,11 +13,34 @@ import '../../auctions/application/bid_events.dart';
 import '../application/scan_history.dart';
 import '../domain/recognition_models.dart';
 
-/// Past identifications kept on this phone: the thumbnail, what it was,
-/// whether it can be bid on, and a way back to the piece or auction. Swipe
-/// one away to forget it, or clear them all.
-class ScanHistoryScreen extends ConsumerWidget {
+/// Past identifications: the ones made on this phone (with a thumbnail) plus
+/// the ones the server remembers from other phones or before a reinstall.
+/// Shows what it was, whether it can be bid on, and a way back to the piece or
+/// auction. Swipe one away to forget it, or clear them all. Pull to refresh.
+class ScanHistoryScreen extends ConsumerStatefulWidget {
   const ScanHistoryScreen({super.key});
+
+  @override
+  ConsumerState<ScanHistoryScreen> createState() => _ScanHistoryScreenState();
+}
+
+class _ScanHistoryScreenState extends ConsumerState<ScanHistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _sync();
+    });
+  }
+
+  /// Best effort: offline, signed out or the demo build simply keep the local list.
+  Future<void> _sync() async {
+    try {
+      await ref.read(scanHistoryProvider.notifier).syncFromServer();
+    } on Object {
+      // Nothing to add; the local history is still shown.
+    }
+  }
 
   Future<void> _clear(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
@@ -32,7 +55,7 @@ class ScanHistoryScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final history = ref.watch(scanHistoryProvider);
     return Scaffold(
@@ -48,58 +71,63 @@ class ScanHistoryScreen extends ConsumerWidget {
           const SizedBox(width: Space.sm),
         ],
       ),
-      body: history.isEmpty
-          ? Center(
-              child: SingleChildScrollView(
-                child: EmptyState(
-                  icon: Icons.history_rounded,
-                  message: l10n.scanHistoryEmpty,
-                  body: l10n.scanHistoryEmptyBody,
-                  actionLabel: l10n.openCamera,
-                  onAction: () => context.go(Routes.scan),
+      body: RefreshIndicator(
+        onRefresh: _sync,
+        child: history.isEmpty
+            ? Center(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: EmptyState(
+                    icon: Icons.history_rounded,
+                    message: l10n.scanHistoryEmpty,
+                    body: l10n.scanHistoryEmptyBody,
+                    actionLabel: l10n.openCamera,
+                    onAction: () => context.go(Routes.scan),
+                  ),
                 ),
-              ),
-            )
-          : ListView(
-              padding: EdgeInsets.fromLTRB(
-                Space.gutter,
-                Space.xs,
-                Space.gutter,
-                Space.xxl + MediaQuery.paddingOf(context).bottom,
-              ),
-              children: [
-                ContentWidth(child: Text(l10n.scanHistoryNote(history.length), style: context.text.bodySmall)),
-                const SizedBox(height: Space.md),
-                for (final (index, record) in history.indexed)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: Space.sm),
-                    child: ContentWidth(
-                      child: Reveal(
-                        index: index,
-                        child: Dismissible(
-                          key: ValueKey(record.id),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: Space.lg),
-                            decoration: BoxDecoration(
-                              color: context.brand.danger.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(Radii.lg),
+              )
+            : ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(
+                  Space.gutter,
+                  Space.xs,
+                  Space.gutter,
+                  Space.xxl + MediaQuery.paddingOf(context).bottom,
+                ),
+                children: [
+                  ContentWidth(child: Text(l10n.scanHistoryNote(history.length), style: context.text.bodySmall)),
+                  const SizedBox(height: Space.md),
+                  for (final (index, record) in history.indexed)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Space.sm),
+                      child: ContentWidth(
+                        child: Reveal(
+                          index: index,
+                          child: Dismissible(
+                            key: ValueKey(record.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: Space.lg),
+                              decoration: BoxDecoration(
+                                color: context.brand.danger.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(Radii.lg),
+                              ),
+                              child: Icon(Icons.delete_outline_rounded, color: context.brand.danger),
                             ),
-                            child: Icon(Icons.delete_outline_rounded, color: context.brand.danger),
+                            onDismissed: (_) {
+                              HapticFeedback.mediumImpact();
+                              ref.read(scanHistoryProvider.notifier).remove(record.id);
+                              showToast(context, l10n.scanHistoryRemoved, icon: Icons.delete_outline_rounded);
+                            },
+                            child: _RecordCard(record: record),
                           ),
-                          onDismissed: (_) {
-                            HapticFeedback.mediumImpact();
-                            ref.read(scanHistoryProvider.notifier).remove(record.id);
-                            showToast(context, l10n.scanHistoryRemoved, icon: Icons.delete_outline_rounded);
-                          },
-                          child: _RecordCard(record: record),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }
@@ -167,6 +195,8 @@ class _RecordCard extends StatelessWidget {
                   children: [
                     Tag(label, icon: icon, color: color),
                     Tag(timeAgo(context, record.at), color: brand.muted),
+                    if (record.fromServer)
+                      Tag(l10n.scanHistoryFromOtherDevice, icon: Icons.cloud_outlined, color: brand.muted),
                   ],
                 ),
               ],

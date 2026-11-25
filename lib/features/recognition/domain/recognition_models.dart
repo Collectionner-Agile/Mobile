@@ -189,3 +189,80 @@ class RecognitionFeedback {
     };
   }
 }
+
+/// One of the user's own analyses as the server remembers it
+/// (`GET /api/v1/recognition/history`). Photos are never returned.
+class RecognitionHistoryItem {
+  const RecognitionHistoryItem({
+    required this.analysisId,
+    required this.detected,
+    required this.purchaseStatus,
+    this.productName,
+    this.category,
+    this.catalogCategory,
+    this.matchedCollectibleId,
+    this.publishedCollectibleId,
+    this.analyzedAt,
+    this.trainingConsent = false,
+    this.photoKept = false,
+    this.verdict,
+  });
+
+  final String analysisId;
+  final bool detected;
+  final PurchaseStatus purchaseStatus;
+  final String? productName;
+  final String? category;
+  final String? catalogCategory;
+  final int? matchedCollectibleId;
+  final int? publishedCollectibleId;
+  final DateTime? analyzedAt;
+  final bool trainingConsent;
+
+  /// Whether the server still keeps the photo for training.
+  final bool photoKept;
+
+  /// The user's answer to "¿Acertamos?", if any.
+  final FeedbackVerdict? verdict;
+
+  factory RecognitionHistoryItem.fromJson(JsonMap json) {
+    final verdict = json.objectOrNull('feedback')?.stringOrNull('verdict');
+    return RecognitionHistoryItem(
+      analysisId: json.requireString('analysis_id'),
+      detected: json.boolOr('detected'),
+      purchaseStatus: PurchaseStatus.parse(json.stringOrNull('purchase_status')),
+      productName: json.stringOrNull('product_name'),
+      category: json.stringOrNull('category'),
+      catalogCategory: json.stringOrNull('catalog_category'),
+      matchedCollectibleId: json.intOrNull('matched_collectible_id'),
+      publishedCollectibleId: json.intOrNull('published_collectible_id'),
+      analyzedAt: json.dateOrNull('analyzed_at'),
+      trainingConsent: json.boolOr('training_consent'),
+      photoKept: json.boolOr('photo_kept'),
+      verdict: FeedbackVerdict.values.where((v) => v.wire == verdict).firstOrNull,
+    );
+  }
+}
+
+class RecognitionHistoryPage {
+  const RecognitionHistoryPage({required this.items, required this.hasMore});
+
+  final List<RecognitionHistoryItem> items;
+  final bool hasMore;
+
+  factory RecognitionHistoryPage.fromJson(JsonMap json) => RecognitionHistoryPage(
+    items: json.objects('items').map(RecognitionHistoryItem.fromJson).toList(growable: false),
+    hasMore: json.boolOr('has_more'),
+  );
+}
+
+/// What withdrawing training consent removed on the server.
+class TrainingDataDeletion {
+  const TrainingDataDeletion({required this.photos, required this.feedback});
+
+  final int photos;
+  final int feedback;
+
+  factory TrainingDataDeletion.fromJson(JsonMap json) =>
+      TrainingDataDeletion(photos: json.intOrNull('deleted_photos') ?? 0, feedback: json.intOrNull('deleted_feedback') ?? 0);
+}
