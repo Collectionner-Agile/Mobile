@@ -158,7 +158,7 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
     final brand = context.brand;
     final validators = Validators(l10n);
     final communities = ref.watch(communitiesProvider);
-    final categories = ref.watch(catalogCategoriesProvider);
+    final categories = ref.watch(categorySuggestionsProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.publishTitle)),
