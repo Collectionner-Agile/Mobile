@@ -19,11 +19,24 @@ import '../application/catalog_providers.dart';
 /// Values carried over from a recognition result, so a scanned object that is
 /// not in the catalogue can be registered without retyping.
 class PublishPrefill {
-  const PublishPrefill({this.name, this.category, this.description, this.photoPath});
+  const PublishPrefill({
+    this.name,
+    this.category,
+    this.description,
+    this.photoPath,
+    this.photoQuarterTurns = 0,
+    this.analysisId,
+  });
   final String? name;
   final String? category;
   final String? description;
   final String? photoPath;
+
+  /// Rotation the user applied to [photoPath] in the scanner.
+  final int photoQuarterTurns;
+
+  /// Recognition analysis that proposed this piece; sent with the new listing.
+  final String? analysisId;
 }
 
 class PublishCollectibleScreen extends ConsumerStatefulWidget {
@@ -46,7 +59,15 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
   final _categoryFocus = FocusNode();
   int? _communityId;
   late final List<String> _photos = [?widget.prefill?.photoPath];
+  // Rotation chosen in the scanner for the carried-over photo; others are upright.
+  late final Map<String, int> _turns = {?widget.prefill?.photoPath: widget.prefill?.photoQuarterTurns ?? 0};
   bool _busy = false;
+
+  String? get _analysisId {
+    final id = widget.prefill?.analysisId;
+    return id == null || id.isEmpty ? null : id;
+  }
+
   String? _progress;
   String? _error;
 
@@ -101,12 +122,13 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
         communityId: _communityId!,
         category: _category.text.trim().isEmpty ? null : _category.text.trim(),
         eraYear: int.tryParse(_year.text.trim()),
+        recognitionAnalysisId: _analysisId,
       );
       var failed = 0;
       for (var i = 0; i < _photos.length; i++) {
         if (mounted) setState(() => _progress = '${l10n.uploadingPhoto} ${l10n.photoCount(i + 1, _photos.length)}');
         try {
-          final bytes = await prepareJpeg(_photos[i]);
+          final bytes = await prepareJpeg(_photos[i], quarterTurns: _turns[_photos[i]] ?? 0);
           await catalog.uploadPhoto(created.id, bytes);
         } catch (_) {
           failed++;
@@ -168,12 +190,15 @@ class _PublishCollectibleScreenState extends ConsumerState<PublishCollectibleScr
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(Radii.sm),
-                                    child: Image.file(
-                                      File(_photos[i]),
-                                      width: 92,
-                                      height: 92,
-                                      fit: BoxFit.cover,
-                                      cacheWidth: 276,
+                                    child: RotatedBox(
+                                      quarterTurns: _turns[_photos[i]] ?? 0,
+                                      child: Image.file(
+                                        File(_photos[i]),
+                                        width: 92,
+                                        height: 92,
+                                        fit: BoxFit.cover,
+                                        cacheWidth: 276,
+                                      ),
                                     ),
                                   ),
                                   Positioned(

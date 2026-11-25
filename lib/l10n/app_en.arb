@@ -372,7 +372,7 @@
       }
     }
   },
-  "privacySummary": "Recognition photos are sent only when you confirm, and the server doesn't keep them. Your session is stored encrypted on the device.",
+  "privacySummary": "Recognition photos are sent only when you confirm, and the server keeps them only if you turn on “Help improve recognition”. Your session is stored encrypted on the device.",
   "serverLabel": "Server: {url}",
   "@serverLabel": {
     "placeholders": {
@@ -416,7 +416,7 @@
   "scanTip1": "Fit the whole piece in the frame.",
   "scanTip2": "Use good light and avoid glare.",
   "scanTip3": "If it has a box or label, include it.",
-  "scanPrivacy": "Your photo is only sent when you confirm, and it isn't stored.",
+  "scanPrivacy": "Your photo is only sent when you confirm. It's kept only if you turn on “Help improve recognition”.",
   "scanPreviewTitle": "Review the photo",
   "scanCrop": "Crop",
   "scanRotate": "Rotate",
@@ -700,7 +700,7 @@
   "faqScanQ1": "How do I identify a piece?",
   "faqScanA1": "Open Scan, take a clear photo of the piece and confirm. We'll tell you what it is and whether it's in the catalogue or up for auction.",
   "faqScanQ2": "Do you keep my photos?",
-  "faqScanA2": "No. The photo is only sent when you confirm and the server doesn't keep it.",
+  "faqScanA2": "Only if you allow it. The photo is sent only when you confirm, and the server keeps it only if you turn on “Help improve recognition” (in the scanner or in Settings).",
   "faqBidQ1": "How do I bid?",
   "faqBidA1": "Open the auction, tap Bid, choose the amount with − and + and confirm.",
   "faqBidQ2": "What if someone outbids me?",
@@ -818,5 +818,19 @@
   "copyLink": "Copy link",
   "shareText": "Share text",
   "valueOverTime": "How your collection grew",
-  "valueOverTimeNote": "Declared value added up piece by piece, from first to latest."
+  "valueOverTimeNote": "Declared value added up piece by piece, from first to latest.",
+  "trainingConsentTitle": "Help improve recognition",
+  "trainingConsentBody": "We keep your scan photos and corrections to train the model. You can turn this off at any time.",
+  "recognitionSettings": "Recognition",
+  "feedbackQuestion": "Did we get it right?",
+  "feedbackBody": "Your answer teaches recognition to get it right next time.",
+  "feedbackYes": "Yes, that's right",
+  "feedbackNo": "No, correct it",
+  "feedbackThanks": "Thanks. We'll use your answer to improve recognition.",
+  "feedbackFailed": "We couldn't send your answer. Please try again.",
+  "correctionTitle": "What is it really?",
+  "correctionBody": "If you know, type the correct name and category. You can also send it without filling anything in.",
+  "correctionName": "Correct name",
+  "correctionCategory": "Correct category",
+  "correctionSend": "Send correction"
 }

@@ -13,6 +13,7 @@ import '../../../core/widgets/password_field.dart';
 import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../../launch/launch_scene.dart';
+import '../../recognition/presentation/training_consent_tile.dart';
 import 'about_screen.dart' show appVersion;
 
 class SettingsScreen extends ConsumerWidget {
@@ -155,6 +156,8 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
+                SectionHeader(title: l10n.recognitionSettings),
+                const _Group(children: [TrainingConsentTile()]),
                 SectionHeader(title: l10n.about),
                 _Group(
                   children: [

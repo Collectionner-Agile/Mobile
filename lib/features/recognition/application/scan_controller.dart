@@ -9,6 +9,7 @@ import '../../../core/media/image_pipeline.dart';
 import '../../../core/network/api_exception.dart';
 import '../domain/recognition_models.dart';
 import 'scan_history.dart';
+import 'training_consent.dart';
 
 enum ScanStage { idle, preview, preparing, uploading, analyzing, done, failed }
 
@@ -39,12 +40,13 @@ class ScanState {
     RecognitionResult? result,
     Object? error,
     bool clearError = false,
+    bool clearResult = false,
   }) => ScanState(
     stage: stage ?? this.stage,
     imagePath: imagePath ?? this.imagePath,
     quarterTurns: quarterTurns ?? this.quarterTurns,
     uploadProgress: uploadProgress ?? this.uploadProgress,
-    result: result ?? this.result,
+    result: clearResult ? null : (result ?? this.result),
     error: clearError ? null : (error ?? this.error),
   );
 }
@@ -72,12 +74,18 @@ class ScanController extends Notifier<ScanState> {
 
   void replacePhoto(String path) {
     _idempotencyKey = null;
-    state = state.copyWith(imagePath: path, quarterTurns: 0, stage: ScanStage.preview, clearError: true);
+    state = state.copyWith(
+      imagePath: path,
+      quarterTurns: 0,
+      stage: ScanStage.preview,
+      clearError: true,
+      clearResult: true,
+    );
   }
 
   void rotate() {
     _idempotencyKey = null;
-    state = state.copyWith(quarterTurns: (state.quarterTurns + 1) % 4);
+    state = state.copyWith(quarterTurns: (state.quarterTurns + 1) % 4, clearResult: true);
   }
 
   void reset() {
@@ -97,20 +105,24 @@ class ScanController extends Notifier<ScanState> {
     // A retry of the same photo reuses the key, so the server can return the
     // earlier result instead of paying for a second analysis.
     _idempotencyKey ??= _newKey();
-    _cancel = CancelToken();
-    state = state.copyWith(stage: ScanStage.preparing, uploadProgress: 0, clearError: true);
+    // A local token: a cancel followed by a quick retry must not let the first
+    // call (still preparing the image) carry on with the second call's token.
+    final cancel = CancelToken();
+    _cancel = cancel;
+    state = state.copyWith(stage: ScanStage.preparing, uploadProgress: 0, clearError: true, clearResult: true);
     try {
       final bytes = await prepareJpeg(path, quarterTurns: state.quarterTurns);
-      if (_cancel!.isCancelled) return;
+      if (cancel.isCancelled) return;
       state = state.copyWith(stage: ScanStage.uploading);
       final result = await ref
           .read(recognitionRepositoryProvider)
           .analyze(
             bytes,
             idempotencyKey: _idempotencyKey!,
-            cancelToken: _cancel,
+            trainingConsent: ref.read(trainingConsentProvider),
+            cancelToken: cancel,
             onProgress: (sent, total) {
-              if (total <= 0) return;
+              if (cancel.isCancelled || total <= 0) return;
               final progress = sent / total;
               state = state.copyWith(
                 uploadProgress: progress,
@@ -118,6 +130,7 @@ class ScanController extends Notifier<ScanState> {
               );
             },
           );
+      if (cancel.isCancelled) return;
       state = state.copyWith(stage: ScanStage.done, result: result);
       // Keep it in the on-device history; a failure there never affects the result.
       unawaited(
@@ -130,6 +143,12 @@ class ScanController extends Notifier<ScanState> {
       if (error.kind == ApiErrorKind.cancelled) return;
       state = state.copyWith(stage: ScanStage.failed, error: error);
     } on ImageProcessingException catch (error) {
+      if (cancel.isCancelled) return;
+      state = state.copyWith(stage: ScanStage.failed, error: error);
+    } catch (error) {
+      // Anything else (e.g. the temporary photo was deleted) must still end the
+      // busy state, or the screen would spin forever with back blocked.
+      if (cancel.isCancelled) return;
       state = state.copyWith(stage: ScanStage.failed, error: error);
     }
   }

@@ -16,11 +16,13 @@ import 'package:collectionner/features/notifications/notices.dart';
 import 'package:collectionner/features/profile/presentation/achievements_screen.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
 import 'package:collectionner/features/recognition/application/scan_history.dart';
+import 'package:collectionner/features/recognition/application/training_consent.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:collectionner/features/recognition/presentation/camera_screen.dart';
 import 'package:collectionner/features/recognition/presentation/scan_result_screen.dart';
 import 'package:collectionner/features/search/search_screen.dart';
 import 'package:collectionner/features/success/success_screen.dart';
+import 'package:collectionner/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -429,6 +431,21 @@ void main() {
     expect(find.text('Dark'), findsOneWidget);
   });
 
+  testWidgets('training consent is off by default and can be turned on from settings', (tester) async {
+    final app = await pumpApp(tester);
+    app.container.read(routerProvider).go(Routes.settings);
+    await settle(tester);
+    final tile = find.widgetWithText(SwitchListTile, 'Ayudar a mejorar el reconocimiento');
+    await tester.ensureVisible(tile);
+    await settle(tester, 2);
+    expect(tester.widget<SwitchListTile>(tile).value, isFalse);
+    await tester.tap(tile);
+    await settle(tester, 2);
+    expect(tester.widget<SwitchListTile>(tile).value, isTrue);
+    expect(app.container.read(trainingConsentProvider), isTrue);
+    expect((await SharedPreferences.getInstance()).getBool(TrainingConsentController.key), isTrue);
+  });
+
   testWidgets('scan tab asks guests to sign in instead of uploading', (tester) async {
     await pumpApp(tester);
     await tester.tap(find.byTooltip('Escanear'));
@@ -452,7 +469,7 @@ void main() {
   });
 
   group('scan result', () {
-    Future<void> showResult(WidgetTester tester, Map<String, Object?> json) async {
+    Future<TestApp> showResult(WidgetTester tester, Map<String, Object?> json) async {
       final app = await pumpApp(tester, signedIn: true);
       final controller = app.container.read(scanControllerProvider.notifier);
       // Inject a finished analysis as the controller would after a real call.
@@ -463,6 +480,7 @@ void main() {
       );
       app.container.read(routerProvider).go(Routes.scanResult);
       await settle(tester);
+      return app;
     }
 
     testWidgets('open auction match offers bidding, never a direct purchase', (tester) async {
@@ -487,6 +505,71 @@ void main() {
       await tester.tap(alternative);
       await settle(tester, 3);
       expect(tester.widget<FilledButton>(continueButton).onPressed, isNotNull);
+    });
+
+    Map<String, dynamic> feedbackBody(TestApp app) =>
+        app.backend.requests.lastWhere((request) => request.uri.path == '/api/v1/recognition/a1/feedback').data
+            as Map<String, dynamic>;
+
+    testWidgets('confirming the result sends labelled feedback and thanks the user', (tester) async {
+      final app = await showResult(tester, Fixtures.recognition());
+      final yes = find.text('Sí, es correcto');
+      await tester.ensureVisible(yes);
+      await settle(tester, 2);
+      await tester.tap(yes);
+      await settle(tester);
+      expect(feedbackBody(app), {'verdict': 'correct', 'collectible_id': 4, 'implicit': false});
+      expect(find.text('Gracias. Usaremos tu respuesta para mejorar el reconocimiento.'), findsOneWidget);
+    });
+
+    testWidgets('a wrong result can be corrected with the real name and category', (tester) async {
+      final app = await showResult(tester, Fixtures.recognition());
+      final no = find.text('No, corregir');
+      await tester.ensureVisible(no);
+      await settle(tester, 2);
+      await tester.tap(no);
+      await settle(tester);
+      await tester.enterText(find.widgetWithText(TextField, 'Nombre correcto'), 'Lego Falcon 7965');
+      await tester.enterText(find.widgetWithText(TextField, 'Categoría correcta'), 'Lego & Sets');
+      await tester.tap(find.text('Enviar corrección'));
+      await settle(tester);
+      expect(feedbackBody(app), {
+        'verdict': 'incorrect',
+        'corrected_name': 'Lego Falcon 7965',
+        'corrected_category': 'Lego & Sets',
+        'implicit': false,
+      });
+    });
+
+    testWidgets('continuing with a chosen match is recorded as implicit feedback', (tester) async {
+      final app = await showResult(
+        tester,
+        Fixtures.recognition(status: 'requires_verification', action: 'review_matches', withAlternatives: true),
+      );
+      final alternative = find.text('Lego Falcon 7965');
+      await tester.ensureVisible(alternative);
+      await settle(tester, 2);
+      await tester.tap(alternative);
+      await settle(tester, 3);
+      final continueButton = find.widgetWithText(FilledButton, 'Ver ficha');
+      await tester.scrollUntilVisible(continueButton, 200, scrollable: find.byType(Scrollable).first);
+      await tester.tap(continueButton);
+      await settle(tester);
+      expect(feedbackBody(app), {'verdict': 'chose_match', 'collectible_id': 9, 'implicit': true});
+    });
+
+    testWidgets('a detected piece missing from the catalogue can be registered whatever the suggestion', (
+      tester,
+    ) async {
+      final json = Fixtures.recognition(status: 'not_in_catalog', action: 'retake_photo')..['catalog_match'] = null;
+      await showResult(tester, json);
+      expect(find.text('Registrar esta pieza'), findsOneWidget);
+    });
+
+    test('registering prefills what the form has no field for', () {
+      final result = RecognitionResult.fromJson(Fixtures.recognition());
+      final l10n = lookupAppLocalizations(const Locale('es'));
+      expect(prefillDescription(result, l10n), 'Marca: LEGO\nModelo: 75192\nPackaging: sealed box');
     });
 
     testWidgets('not in catalogue proposes registering the object', (tester) async {
