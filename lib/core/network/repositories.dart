@@ -125,6 +125,10 @@ class CatalogRepository {
   CatalogRepository(this._api);
   final ApiClient _api;
 
+  /// The fixed category taxonomy, names in the request's language.
+  Future<List<TaxonomyCategory>> taxonomy() =>
+      _api.get('$_v1/categories', (data) => parseList(data, TaxonomyCategory.fromJson));
+
   Future<List<Collectible>> collectibles({String? category, CancelToken? cancelToken}) => _api.get(
     '$_v1/collectibles',
     (data) => parseList(data, Collectible.fromJson),

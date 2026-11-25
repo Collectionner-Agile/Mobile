@@ -164,6 +164,7 @@ class RecognitionFeedback {
     this.collectibleId,
     this.correctedName,
     this.correctedCategory,
+    this.correctedCategorySlug,
     this.implicit = false,
   });
 
@@ -173,6 +174,9 @@ class RecognitionFeedback {
   final int? collectibleId;
   final String? correctedName;
   final String? correctedCategory;
+
+  /// Taxonomy slug the user picked; the server prefers it over the free text.
+  final String? correctedCategorySlug;
 
   /// True when inferred from what the user did (e.g. continuing with a match)
   /// rather than answered explicitly; the backend can weight it lower.
@@ -185,6 +189,7 @@ class RecognitionFeedback {
       'collectible_id': ?collectibleId,
       'corrected_name': ?clean(correctedName),
       'corrected_category': ?clean(correctedCategory),
+      'corrected_category_slug': ?clean(correctedCategorySlug),
       'implicit': implicit,
     };
   }

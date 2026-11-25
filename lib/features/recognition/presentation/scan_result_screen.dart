@@ -12,6 +12,8 @@ import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/ui.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../catalog/application/catalog_providers.dart';
+import '../../catalog/domain/catalog_models.dart';
 import '../../catalog/presentation/publish_collectible_screen.dart';
 import '../application/scan_controller.dart';
 import '../domain/recognition_models.dart';
@@ -555,16 +557,20 @@ class _FeedbackCard extends StatelessWidget {
   }
 }
 
-class _CorrectionSheet extends StatefulWidget {
+class _CorrectionSheet extends ConsumerStatefulWidget {
   const _CorrectionSheet();
 
   @override
-  State<_CorrectionSheet> createState() => _CorrectionSheetState();
+  ConsumerState<_CorrectionSheet> createState() => _CorrectionSheetState();
 }
 
-class _CorrectionSheetState extends State<_CorrectionSheet> {
+/// What it really is: a name (free text) and a category from the fixed
+/// taxonomy, so the answer becomes a usable training label. Falls back to a
+/// text field when the server does not offer the taxonomy.
+class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
   final _name = TextEditingController();
   final _category = TextEditingController();
+  TaxonomyCategory? _picked;
 
   @override
   void dispose() {
@@ -577,7 +583,8 @@ class _CorrectionSheetState extends State<_CorrectionSheet> {
     RecognitionFeedback(
       verdict: FeedbackVerdict.incorrect,
       correctedName: _name.text,
-      correctedCategory: _category.text,
+      correctedCategory: _picked?.name ?? _category.text,
+      correctedCategorySlug: _picked?.slug,
     ),
   );
 
@@ -585,6 +592,7 @@ class _CorrectionSheetState extends State<_CorrectionSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final brand = context.brand;
+    final taxonomy = ref.watch(taxonomyProvider).value ?? const <TaxonomyCategory>[];
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SingleChildScrollView(
@@ -604,13 +612,25 @@ class _CorrectionSheetState extends State<_CorrectionSheet> {
               decoration: InputDecoration(labelText: l10n.correctionName),
             ),
             const SizedBox(height: Space.sm),
-            TextField(
-              controller: _category,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _submit(),
-              decoration: InputDecoration(labelText: l10n.correctionCategory),
-            ),
+            if (taxonomy.isEmpty)
+              TextField(
+                controller: _category,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _submit(),
+                decoration: InputDecoration(labelText: l10n.correctionCategory),
+              )
+            else
+              DropdownButtonFormField<TaxonomyCategory>(
+                initialValue: _picked,
+                isExpanded: true,
+                decoration: InputDecoration(labelText: l10n.correctionCategory),
+                items: [
+                  for (final category in taxonomy)
+                    DropdownMenuItem(value: category, child: Text(category.name, overflow: TextOverflow.ellipsis)),
+                ],
+                onChanged: (category) => setState(() => _picked = category),
+              ),
             const SizedBox(height: Space.lg),
             BusyButton(label: l10n.correctionSend, icon: Icons.send_outlined, onPressed: _submit),
           ],

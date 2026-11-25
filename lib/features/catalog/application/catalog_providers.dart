@@ -43,6 +43,22 @@ class CatalogFilterController extends Notifier<CatalogFilter> {
   void clear() => state = CatalogFilter(sort: state.sort);
 }
 
+/// The fixed taxonomy; empty when the server does not offer it (older backend, demo).
+final taxonomyProvider = FutureProvider<List<TaxonomyCategory>>((ref) async {
+  try {
+    return await ref.watch(catalogRepositoryProvider).taxonomy();
+  } on Object {
+    return const [];
+  }
+});
+
+/// Names offered when typing a category: the taxonomy first, then what the catalogue already uses.
+final categorySuggestionsProvider = Provider<List<String>>((ref) {
+  final taxonomy = ref.watch(taxonomyProvider).value ?? const <TaxonomyCategory>[];
+  final used = ref.watch(catalogCategoriesProvider);
+  return {...taxonomy.map((category) => category.name), ...used}.toList();
+});
+
 final catalogCategoriesProvider = Provider<List<String>>((ref) {
   final items = ref.watch(collectiblesProvider).value ?? const <Collectible>[];
   final categories = items.map((item) => item.category).whereType<String>().toSet().toList()..sort();
