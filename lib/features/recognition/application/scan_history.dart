@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 
 import '../../../app/preferences.dart';
+import '../../../app/providers.dart';
 import '../domain/recognition_models.dart';
 
 /// One past identification, kept on the device with a small thumbnail.
@@ -21,6 +22,7 @@ class ScanRecord {
     this.collectibleId,
     this.auctionId,
     this.auctionOpen = false,
+    this.fromServer = false,
   });
 
   final String id;
@@ -35,6 +37,10 @@ class ScanRecord {
   final int? collectibleId;
   final int? auctionId;
   final bool auctionOpen;
+
+  /// Came from the server's history (another phone, a reinstall), so there is
+  /// no thumbnail on this device.
+  final bool fromServer;
 
   factory ScanRecord.fromResult(RecognitionResult result, {String? thumbnail}) {
     final match = result.catalogMatch;
@@ -52,6 +58,17 @@ class ScanRecord {
     );
   }
 
+  factory ScanRecord.fromHistoryItem(RecognitionHistoryItem item) => ScanRecord(
+    id: item.analysisId,
+    at: item.analyzedAt ?? DateTime.now(),
+    detected: item.detected,
+    status: item.purchaseStatus,
+    name: item.productName,
+    category: item.category ?? item.catalogCategory,
+    collectibleId: item.matchedCollectibleId ?? item.publishedCollectibleId,
+    fromServer: true,
+  );
+
   Map<String, Object?> toJson() => {
     'id': id,
     'at': at.toUtc().toIso8601String(),
@@ -63,6 +80,7 @@ class ScanRecord {
     'collectibleId': collectibleId,
     'auctionId': auctionId,
     'auctionOpen': auctionOpen,
+    'fromServer': fromServer,
   };
 
   static ScanRecord? fromJson(Object? raw) {
@@ -84,6 +102,7 @@ class ScanRecord {
       collectibleId: raw['collectibleId'] as int?,
       auctionId: raw['auctionId'] as int?,
       auctionOpen: raw['auctionOpen'] == true,
+      fromServer: raw['fromServer'] == true,
     );
   }
 }
@@ -93,7 +112,11 @@ final scanHistoryProvider = NotifierProvider<ScanHistory, List<ScanRecord>>(Scan
 
 class ScanHistory extends Notifier<List<ScanRecord>> {
   static const _key = 'pref.scanHistory';
+  // Entries the user removed here, so a server sync does not bring them back.
+  static const _hiddenKey = 'pref.scanHistoryHidden';
+  static const _clearedAtKey = 'pref.scanHistoryClearedAt';
   static const limit = 30;
+  static const _hiddenLimit = 200;
 
   @override
   List<ScanRecord> build() {
@@ -122,9 +145,37 @@ class ScanHistory extends Notifier<List<ScanRecord>> {
     await _save([entry, ...state.where((record) => record.id != entry.id)].take(limit).toList());
   }
 
-  Future<void> remove(String id) => _save(state.where((record) => record.id != id).toList());
+  Future<void> remove(String id) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final hidden = [id, ...?prefs.getStringList(_hiddenKey)?.where((h) => h != id)].take(_hiddenLimit).toList();
+    await prefs.setStringList(_hiddenKey, hidden);
+    await _save(state.where((record) => record.id != id).toList());
+  }
 
-  Future<void> clear() => _save(const []);
+  Future<void> clear() async {
+    await ref.read(sharedPreferencesProvider).setString(_clearedAtKey, DateTime.now().toUtc().toIso8601String());
+    await _save(const []);
+  }
+
+  /// Adds analyses the server remembers but this phone does not (another
+  /// phone, a reinstall). Entries removed or cleared here stay away.
+  Future<void> syncFromServer() async {
+    final page = await ref.read(recognitionRepositoryProvider).history(size: limit);
+    final prefs = ref.read(sharedPreferencesProvider);
+    final hidden = prefs.getStringList(_hiddenKey)?.toSet() ?? const <String>{};
+    final clearedAt = DateTime.tryParse(prefs.getString(_clearedAtKey) ?? '');
+    final known = {for (final record in state) record.id};
+    final additions = [
+      for (final item in page.items)
+        if (!known.contains(item.analysisId) &&
+            !hidden.contains(item.analysisId) &&
+            (clearedAt == null || (item.analyzedAt?.isAfter(clearedAt) ?? false)))
+          ScanRecord.fromHistoryItem(item),
+    ];
+    if (additions.isEmpty) return;
+    final merged = [...state, ...additions]..sort((a, b) => b.at.compareTo(a.at));
+    await _save(merged.take(limit).toList());
+  }
 
   Future<void> _save(List<ScanRecord> records) async {
     state = records;
