@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/preferences.dart';
+import '../../app/providers.dart';
+import '../../core/network/repositories.dart';
 import '../auctions/application/auction_providers.dart';
 import '../auctions/application/watchlist.dart';
 import '../auctions/domain/auction_models.dart';
@@ -9,9 +13,10 @@ import '../catalog/application/catalog_providers.dart';
 
 enum NoticeKind { outbid, leading, bidOnYours, closingSoon, ended, newPiece, welcome }
 
-/// Something worth telling the user, derived from the data the app already
-/// loads (auctions with their bids, the catalogue, the followed auctions).
-/// Nothing is pushed from a server: the list is rebuilt each time.
+/// Something worth telling the user. Signed in, bids and auction results come
+/// from the server (written where they happen, so they reach every phone);
+/// the rest (closing soon, new pieces, welcome) is derived from the data the
+/// app already loads.
 class Notice {
   const Notice({
     required this.id,
@@ -22,7 +27,19 @@ class Notice {
     this.who,
     this.route,
     this.image,
+    this.title,
+    this.body,
+    this.serverId,
+    this.readOnServer = false,
   });
+
+  /// Text written by the server; when set it is shown as is.
+  final String? title;
+  final String? body;
+
+  /// Id of the server notification, to mark it read there too.
+  final int? serverId;
+  final bool readOnServer;
 
   /// Stable id, so read marks survive rebuilds.
   final String id;
@@ -41,7 +58,40 @@ class Notice {
   final String? image;
 }
 
-/// Ids of the notices already read, kept on the device.
+/// The signed-in user's server notifications; null when signed out or when
+/// the server could not be reached (then notices are derived on the phone).
+final serverNoticesProvider = FutureProvider<List<Notice>?>((ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return null;
+  try {
+    final items = await ref.read(meRepositoryProvider).notifications();
+    return [for (final item in items) _fromServer(item)];
+  } catch (_) {
+    return null;
+  }
+});
+
+Notice _fromServer(ServerNotification n) => Notice(
+  id: 'srv-${n.id}',
+  kind: switch (n.type) {
+    'OUTBID' => NoticeKind.outbid,
+    'NEW_BID' || 'WATCHED_BID' => NoticeKind.bidOnYours,
+    _ => NoticeKind.ended,
+  },
+  at: n.createdAt,
+  title: n.title,
+  body: n.body,
+  route: n.targetType == 'auction' && n.targetId != null
+      ? '/auctions/${n.targetId}'
+      : n.targetType == 'collectible' && n.targetId != null
+      ? '/catalog/item/${n.targetId}'
+      : null,
+  serverId: n.id,
+  readOnServer: n.read,
+);
+
+/// Ids of the notices already read, kept on the device (server notices are
+/// also marked read on the server).
 final readNoticesProvider = NotifierProvider<ReadNotices, Set<String>>(ReadNotices.new);
 
 class ReadNotices extends Notifier<Set<String>> {
@@ -50,9 +100,18 @@ class ReadNotices extends Notifier<Set<String>> {
   @override
   Set<String> build() => (ref.read(sharedPreferencesProvider).getStringList(_key) ?? const []).toSet();
 
-  Future<void> markRead(String id) => _save({...state, id});
+  Future<void> markRead(String id) {
+    final serverId = id.startsWith('srv-') ? int.tryParse(id.substring(4)) : null;
+    if (serverId != null) unawaited(ref.read(meRepositoryProvider).markNotificationRead(serverId).catchError((_) {}));
+    return _save({...state, id});
+  }
 
-  Future<void> markAll(Iterable<String> ids) => _save({...state, ...ids});
+  Future<void> markAll(Iterable<String> ids) {
+    if (ids.any((id) => id.startsWith('srv-'))) {
+      unawaited(ref.read(meRepositoryProvider).markAllNotificationsRead().catchError((_) {}));
+    }
+    return _save({...state, ...ids});
+  }
 
   Future<void> _save(Set<String> ids) async {
     if (ids.length == state.length) return;
@@ -67,8 +126,11 @@ final noticesProvider = Provider<List<Notice>>((ref) {
   final auctions = ref.watch(auctionsProvider).value ?? const [];
   final pieces = ref.watch(collectiblesProvider).value ?? const [];
   final watched = ref.watch(watchedAuctionsProvider);
+  final server = ref.watch(serverNoticesProvider).value;
+  // The server already reports bids and results; deriving them again would duplicate them.
+  final fromServer = user != null && server != null;
   final now = DateTime.now();
-  final notices = <Notice>[];
+  final notices = <Notice>[...?server];
 
   for (final auction in auctions) {
     final live = auction.isLive(now);
@@ -79,7 +141,7 @@ final noticesProvider = Provider<List<Notice>>((ref) {
     final leader = auction.bids.isEmpty ? null : auction.bids.first;
 
     if (myBids.isNotEmpty && leader != null) {
-      if (live && leader.bidderId != user!.id) {
+      if (live && leader.bidderId != user!.id && !fromServer) {
         notices.add(
           Notice(
             id: 'outbid-${auction.id}-${leader.id}',
@@ -107,7 +169,7 @@ final noticesProvider = Provider<List<Notice>>((ref) {
       }
     }
 
-    if (mine) {
+    if (mine && !fromServer) {
       for (final bid in auction.bids.take(3)) {
         notices.add(
           Notice(
@@ -139,7 +201,7 @@ final noticesProvider = Provider<List<Notice>>((ref) {
         ),
       );
     }
-    if (!live && involved && auction.deadline != null) {
+    if (!live && involved && auction.deadline != null && !fromServer) {
       notices.add(
         Notice(
           id: 'ended-${auction.id}',
@@ -196,5 +258,5 @@ final noticesProvider = Provider<List<Notice>>((ref) {
 /// How many notices are still unread (for the bell's badge).
 final unreadNoticesProvider = Provider<int>((ref) {
   final read = ref.watch(readNoticesProvider);
-  return ref.watch(noticesProvider).where((notice) => !read.contains(notice.id)).length;
+  return ref.watch(noticesProvider).where((notice) => !notice.readOnServer && !read.contains(notice.id)).length;
 });

@@ -4,24 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/preferences.dart';
 import '../../app/theme/tokens.dart';
+import '../../core/sync/server_id_set.dart';
 import '../../core/widgets/ui.dart';
 
-/// Pieces the user saved, kept on the device (no account needed).
+/// Pieces the user saved: on the device without an account, and on the
+/// server (kept in sync) once signed in.
 final favoritesProvider = NotifierProvider<FavoritesController, Set<int>>(FavoritesController.new);
 
-class FavoritesController extends Notifier<Set<int>> {
-  static const _key = 'pref.favorites';
+class FavoritesController extends ServerIdSet {
+  @override
+  String get listName => 'favorites';
 
   @override
-  Set<int> build() =>
-      (ref.read(sharedPreferencesProvider).getStringList(_key) ?? const []).map(int.tryParse).whereType<int>().toSet();
-
-  Future<void> toggle(int id) async {
-    state = state.contains(id) ? ({...state}..remove(id)) : {...state, id};
-    await ref.read(sharedPreferencesProvider).setStringList(_key, [for (final id in state) '$id']);
-  }
+  String get prefsKey => 'pref.favorites';
 }
 
 /// Heart toggle with a pop and a burst of sparks when a piece is saved

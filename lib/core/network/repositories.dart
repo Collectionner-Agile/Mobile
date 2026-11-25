@@ -225,6 +225,71 @@ class CatalogRepository {
   );
 }
 
+/// The signed-in user's server-side lists and notifications.
+class MeRepository {
+  MeRepository(this._api);
+  final ApiClient _api;
+
+  List<int> _ids(Object? data) => data is Map<String, dynamic> && data['ids'] is List
+      ? [for (final id in data['ids'] as List) if (id is num) id.toInt()]
+      : const [];
+
+  /// [list] is `favorites` (piece ids) or `watchlist` (auction ids).
+  Future<List<int>> list(String list) => _api.get('$_v1/users/me/$list', _ids);
+
+  Future<void> add(String list, int id) => _api.put('$_v1/users/me/$list/$id', (_) {});
+
+  Future<void> remove(String list, int id) => _api.delete('$_v1/users/me/$list/$id');
+
+  /// Uploads what the phone saved and returns the merged server list.
+  Future<List<int>> sync(String list, Iterable<int> ids) =>
+      _api.post('$_v1/users/me/$list/sync', _ids, body: {'ids': ids.toList()});
+
+  Future<List<ServerNotification>> notifications({int page = 0, int size = 50}) => _api.get(
+    '$_v1/users/me/notifications',
+    (data) => data is Map<String, dynamic> ? parseList(data['items'], ServerNotification.fromJson) : const [],
+    query: {'page': page, 'size': size},
+  );
+
+  Future<void> markNotificationRead(int id) => _api.post('$_v1/users/me/notifications/$id/read', (_) {});
+
+  Future<void> markAllNotificationsRead() => _api.post('$_v1/users/me/notifications/read-all', (_) {});
+}
+
+/// A notification written by the server (bids, auction results).
+class ServerNotification {
+  const ServerNotification({
+    required this.id,
+    required this.type,
+    required this.title,
+    required this.body,
+    required this.createdAt,
+    required this.read,
+    this.targetType,
+    this.targetId,
+  });
+
+  final int id;
+  final String type;
+  final String title;
+  final String body;
+  final DateTime createdAt;
+  final bool read;
+  final String? targetType;
+  final int? targetId;
+
+  factory ServerNotification.fromJson(JsonMap json) => ServerNotification(
+    id: json.requireInt('id'),
+    type: json.stringOrNull('type') ?? '',
+    title: json.stringOrNull('title') ?? '',
+    body: json.stringOrNull('body') ?? '',
+    createdAt: json.dateOrNull('createdAt') ?? DateTime.now(),
+    read: json.boolOr('read'),
+    targetType: json.stringOrNull('targetType'),
+    targetId: json.intOrNull('targetId'),
+  );
+}
+
 class AuctionRepository {
   AuctionRepository(this._api);
   final ApiClient _api;

@@ -35,7 +35,8 @@ final myBidsProvider = Provider<AsyncValue<List<MyBid>>>((ref) {
       final bids = auction.bids.where((bid) => bid.bidderId == user.id).toList();
       if (bids.isEmpty) continue;
       final best = bids.map((bid) => bid.amount).reduce((a, b) => a > b ? a : b);
-      final leading = auction.bids.isNotEmpty && auction.bids.first.bidderId == user.id;
+      // Once the server settles the auction its winner is the answer, not the bid list.
+      final leading = auction.leaderId == user.id;
       final live = auction.isLive(now);
       mine.add(
         MyBid(
