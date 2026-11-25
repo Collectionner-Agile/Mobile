@@ -141,3 +141,51 @@ class RecognitionResult {
     );
   }
 }
+
+/// What the user told us about an analysis. Sent to the backend so confirmed
+/// and corrected scans become labelled training data.
+enum FeedbackVerdict {
+  /// The identification (and its catalogue match, if any) is right.
+  correct('correct'),
+
+  /// The user picked one of the proposed matches.
+  choseMatch('chose_match'),
+
+  /// The identification is wrong; the correction fields may say what it is.
+  incorrect('incorrect');
+
+  const FeedbackVerdict(this.wire);
+  final String wire;
+}
+
+class RecognitionFeedback {
+  const RecognitionFeedback({
+    required this.verdict,
+    this.collectibleId,
+    this.correctedName,
+    this.correctedCategory,
+    this.implicit = false,
+  });
+
+  final FeedbackVerdict verdict;
+
+  /// Catalogue piece the user confirmed or chose.
+  final int? collectibleId;
+  final String? correctedName;
+  final String? correctedCategory;
+
+  /// True when inferred from what the user did (e.g. continuing with a match)
+  /// rather than answered explicitly; the backend can weight it lower.
+  final bool implicit;
+
+  Map<String, Object?> toJson() {
+    String? clean(String? value) => value == null || value.trim().isEmpty ? null : value.trim();
+    return {
+      'verdict': verdict.wire,
+      'collectible_id': ?collectibleId,
+      'corrected_name': ?clean(correctedName),
+      'corrected_category': ?clean(correctedCategory),
+      'implicit': implicit,
+    };
+  }
+}

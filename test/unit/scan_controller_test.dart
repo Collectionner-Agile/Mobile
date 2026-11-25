@@ -6,6 +6,7 @@ import 'package:collectionner/core/media/image_pipeline.dart';
 import 'package:collectionner/core/network/api_client.dart';
 import 'package:collectionner/core/network/api_exception.dart';
 import 'package:collectionner/features/recognition/application/scan_controller.dart';
+import 'package:collectionner/features/recognition/application/training_consent.dart';
 import 'package:collectionner/features/recognition/domain/recognition_models.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,8 +32,8 @@ void main() {
 
   tearDownAll(() => temp.delete(recursive: true));
 
-  Future<(ProviderContainer, FakeBackend)> build() async {
-    SharedPreferences.setMockInitialValues({});
+  Future<(ProviderContainer, FakeBackend)> build({Map<String, Object> initialPrefs = const {}}) async {
+    SharedPreferences.setMockInitialValues(initialPrefs);
     final prefs = await SharedPreferences.getInstance();
     final backend = FakeBackend();
     final container = ProviderContainer(
@@ -139,5 +140,79 @@ void main() {
       ..reset();
     expect(container.read(scanControllerProvider).imagePath, isNull);
     expect(controller, isNotNull);
+  });
+
+  String? field(RequestOptions request, String name) =>
+      (request.data as FormData).fields.where((entry) => entry.key == name).map((entry) => entry.value).firstOrNull;
+
+  test('photos are not offered for training unless the user opted in', () async {
+    final (container, backend) = await build();
+    backend.json('POST', '/api/v1/recognition/analyze', Fixtures.recognition());
+    expect(container.read(trainingConsentProvider), isFalse);
+    await (container.read(scanControllerProvider.notifier)..usePhoto(photo)).analyze();
+    expect(field(backend.requests.single, 'training_consent'), 'false');
+  });
+
+  test('opting in is remembered and sent with the analysis', () async {
+    final (container, backend) = await build(initialPrefs: {TrainingConsentController.key: true});
+    backend.json('POST', '/api/v1/recognition/analyze', Fixtures.recognition());
+    expect(container.read(trainingConsentProvider), isTrue);
+    await (container.read(scanControllerProvider.notifier)..usePhoto(photo)).analyze();
+    expect(field(backend.requests.single, 'training_consent'), 'true');
+  });
+
+  test('an unexpected failure ends the busy state instead of spinning forever', () async {
+    final (container, backend) = await build();
+    final controller = container.read(scanControllerProvider.notifier)..usePhoto('${temp.path}/deleted.jpg');
+    await controller.analyze();
+    final state = container.read(scanControllerProvider);
+    expect(state.stage, ScanStage.failed);
+    expect(state.isBusy, isFalse);
+    expect(state.error, isNotNull);
+    expect(backend.requests, isEmpty);
+  });
+
+  test('a new analysis never shows the previous result', () async {
+    final (container, backend) = await build();
+    backend.json('POST', '/api/v1/recognition/analyze', Fixtures.recognition());
+    final controller = container.read(scanControllerProvider.notifier)..usePhoto(photo);
+    await controller.analyze();
+    expect(container.read(scanControllerProvider).result, isNotNull);
+
+    controller.rotate();
+    expect(container.read(scanControllerProvider).result, isNull, reason: 'rotating changes the photo analysed');
+
+    backend.json('POST', '/api/v1/recognition/analyze', {'detail': 'busy'}, status: 503);
+    await controller.analyze();
+    final state = container.read(scanControllerProvider);
+    expect(state.stage, ScanStage.failed);
+    expect(state.result, isNull);
+  });
+
+  test('feedback is posted to the analysis with only the fields that were given', () async {
+    final (container, backend) = await build();
+    backend.json('POST', '/api/v1/recognition/a%2F1/feedback', null, status: 204);
+    await container
+        .read(recognitionRepositoryProvider)
+        .sendFeedback(
+          'a/1',
+          const RecognitionFeedback(
+            verdict: FeedbackVerdict.incorrect,
+            correctedName: ' Game Boy Color ',
+            correctedCategory: '',
+          ),
+        );
+    final request = backend.requests.single;
+    expect(request.uri.path, '/api/v1/recognition/a%2F1/feedback');
+    expect(request.data, {'verdict': 'incorrect', 'corrected_name': 'Game Boy Color', 'implicit': false});
+  });
+
+  test('a piece published from a scan carries the analysis id', () async {
+    final (container, backend) = await build();
+    backend.json('POST', '/api/v1/collectibles', Fixtures.collectible(id: 12));
+    await container
+        .read(catalogRepositoryProvider)
+        .create(name: 'Falcon', description: 'Caja sellada', value: 900, communityId: 1, recognitionAnalysisId: 'a1');
+    expect((backend.requests.single.data as Map)['recognitionAnalysisId'], 'a1');
   });
 }

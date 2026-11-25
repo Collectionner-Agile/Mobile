@@ -198,6 +198,7 @@ abstract final class Fixtures {
       ..json('GET', '/api/v1/communities', [community(), community(id: 2, joined: true)])
       ..json('GET', '/api/v1/communities/search', [community()])
       ..json('GET', '/api/v1/recognition/status', {'enabled': true, 'model': 'gemini-3.8-flash'})
+      ..json('POST', '/api/v1/recognition/a1/feedback', null, status: 204)
       ..json('GET', '/api/v1/auth/me', user())
       ..json('GET', '/api/v1/communities/user/1', [community(id: 2, joined: true)]);
     for (final item in catalogue()) {

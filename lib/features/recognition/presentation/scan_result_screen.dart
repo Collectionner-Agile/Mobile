@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/providers.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/tokens.dart';
 import '../../../core/media/artwork.dart';
 import '../../../core/widgets/collectible_image.dart';
 import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/ui.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../catalog/presentation/publish_collectible_screen.dart';
 import '../application/scan_controller.dart';
 import '../domain/recognition_models.dart';
@@ -19,8 +23,62 @@ class ScanResultScreen extends ConsumerStatefulWidget {
   ConsumerState<ScanResultScreen> createState() => _ScanResultScreenState();
 }
 
+enum _FeedbackState { idle, sending, sent }
+
 class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
   int? _chosen;
+  _FeedbackState _feedback = _FeedbackState.idle;
+
+  Future<void> _sendFeedback(RecognitionResult result, RecognitionFeedback feedback) async {
+    setState(() => _feedback = _FeedbackState.sending);
+    try {
+      await ref.read(recognitionRepositoryProvider).sendFeedback(result.analysisId, feedback);
+      if (mounted) setState(() => _feedback = _FeedbackState.sent);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _feedback = _FeedbackState.idle);
+      showToast(context, context.l10n.feedbackFailed, error: true);
+    }
+  }
+
+  void _confirm(RecognitionResult result) {
+    final chosen = _chosen;
+    _sendFeedback(
+      result,
+      chosen != null
+          ? RecognitionFeedback(verdict: FeedbackVerdict.choseMatch, collectibleId: chosen)
+          : RecognitionFeedback(verdict: FeedbackVerdict.correct, collectibleId: result.catalogMatch?.collectibleId),
+    );
+  }
+
+  Future<void> _correct(RecognitionResult result) async {
+    final correction = await showModalBottomSheet<RecognitionFeedback>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => const _CorrectionSheet(),
+    );
+    if (correction != null && mounted) await _sendFeedback(result, correction);
+  }
+
+  /// Continuing with a proposed match is an answer too; it is sent quietly and
+  /// flagged as implicit, unless the user already answered explicitly.
+  void _recordChoice(RecognitionResult result, CatalogMatch match) {
+    if (result.analysisId.isEmpty || _feedback != _FeedbackState.idle) return;
+    unawaited(
+      ref
+          .read(recognitionRepositoryProvider)
+          .sendFeedback(
+            result.analysisId,
+            RecognitionFeedback(
+              verdict: FeedbackVerdict.choseMatch,
+              collectibleId: match.collectibleId,
+              implicit: true,
+            ),
+          )
+          .catchError((Object _) {}),
+    );
+  }
 
   void _newScan() {
     ref.read(scanControllerProvider.notifier).reset();
@@ -42,13 +100,16 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
   }
 
   void _register(RecognitionResult result) {
-    final path = ref.read(scanControllerProvider).imagePath;
+    final scan = ref.read(scanControllerProvider);
     context.push(
       Routes.publishCollectible,
       extra: PublishPrefill(
         name: result.productName,
         category: result.catalogCategory ?? result.category,
-        photoPath: path,
+        description: prefillDescription(result, context.l10n),
+        photoPath: scan.imagePath,
+        photoQuarterTurns: scan.quarterTurns,
+        analysisId: result.analysisId,
       ),
     );
   }
@@ -127,6 +188,10 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
                   ],
                   const SizedBox(height: Space.lg),
                   ..._actions(context, result, requiresChoice, selected),
+                  if (result.analysisId.isNotEmpty) ...[
+                    const SizedBox(height: Space.lg),
+                    _FeedbackCard(state: _feedback, onYes: () => _confirm(result), onNo: () => _correct(result)),
+                  ],
                   const SizedBox(height: Space.lg),
                   Text(l10n.resultDisclaimer, style: context.text.bodySmall?.copyWith(color: brand.muted)),
                   if (result.modelVersion != null) ...[
@@ -161,7 +226,12 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
       SuggestedAction.reviewMatches when requiresChoice => BusyButton(
         label: selected?.auctionOpen == true ? l10n.actionPlaceBid : l10n.actionViewRecord,
         icon: Icons.arrow_forward,
-        onPressed: selected == null ? null : () => _openMatch(selected),
+        onPressed: selected == null
+            ? null
+            : () {
+                _recordChoice(result, selected);
+                _openMatch(selected);
+              },
       ),
       SuggestedAction.registerItem => BusyButton(
         label: l10n.actionRegister,
@@ -170,9 +240,21 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
       ),
       _ => BusyButton(label: l10n.actionRetake, icon: Icons.photo_camera_outlined, onPressed: _retake),
     };
+    // A detected piece the catalogue doesn't know can always be registered,
+    // whatever action the server suggested first.
+    final canAlsoRegister =
+        result.detected &&
+        result.purchaseStatus == PurchaseStatus.notInCatalog &&
+        result.suggestedAction != SuggestedAction.registerItem;
     return [
       primary,
       const SizedBox(height: Space.xs),
+      if (canAlsoRegister)
+        OutlinedButton.icon(
+          onPressed: () => _register(result),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.actionRegister),
+        ),
       if (result.suggestedAction != SuggestedAction.retakePhoto)
         OutlinedButton.icon(onPressed: _retake, icon: const Icon(Icons.crop_rotate), label: Text(l10n.actionRetake)),
       TextButton.icon(onPressed: _newScan, icon: const Icon(Icons.refresh), label: Text(l10n.newScan)),
@@ -391,6 +473,148 @@ class _Reveal extends StatelessWidget {
       builder: (_, value, child) => Opacity(
         opacity: value,
         child: Transform.translate(offset: Offset(0, 12 * (1 - value)), child: child),
+      ),
+    );
+  }
+}
+
+/// Everything the scan saw that the publish form has no field for, as a
+/// starting description the user can edit.
+String? prefillDescription(RecognitionResult result, AppLocalizations l10n) {
+  final lines = [
+    if (result.brand case final brand?) '${l10n.brand}: $brand',
+    if (result.model case final model?) '${l10n.model}: $model',
+    for (final entry in result.attributes.entries) '${_humanize(entry.key)}: ${entry.value}',
+  ];
+  return lines.isEmpty ? null : lines.join('\n');
+}
+
+/// "packaging_type" → "Packaging type"; server attribute keys are not localised.
+String _humanize(String key) {
+  final words = key.replaceAll(RegExp(r'[_\-]+'), ' ').trim();
+  return words.isEmpty ? key : words[0].toUpperCase() + words.substring(1);
+}
+
+class _FeedbackCard extends StatelessWidget {
+  const _FeedbackCard({required this.state, required this.onYes, required this.onNo});
+  final _FeedbackState state;
+  final VoidCallback onYes;
+  final VoidCallback onNo;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final brand = context.brand;
+    final busy = state == _FeedbackState.sending;
+    return Container(
+      padding: const EdgeInsets.all(Space.md),
+      decoration: BoxDecoration(
+        color: brand.surfaceRaised,
+        borderRadius: BorderRadius.circular(Radii.md),
+        border: Border.all(color: brand.line),
+      ),
+      child: AnimatedSwitcher(
+        duration: Motion.of(context, Motion.fast),
+        child: state == _FeedbackState.sent
+            ? Row(
+                key: const ValueKey('sent'),
+                children: [
+                  Icon(Icons.check_circle_outline, color: brand.success),
+                  const SizedBox(width: Space.sm),
+                  Expanded(child: Text(l10n.feedbackThanks, style: context.text.bodyMedium)),
+                ],
+              )
+            : Column(
+                key: const ValueKey('ask'),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l10n.feedbackQuestion, style: context.text.titleMedium),
+                  const SizedBox(height: Space.xxs),
+                  Text(l10n.feedbackBody, style: context.text.bodySmall?.copyWith(color: brand.muted)),
+                  const SizedBox(height: Space.sm),
+                  Wrap(
+                    spacing: Space.xs,
+                    runSpacing: Space.xs,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: busy ? null : onYes,
+                        icon: const Icon(Icons.thumb_up_outlined),
+                        label: Text(l10n.feedbackYes),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: busy ? null : onNo,
+                        icon: const Icon(Icons.edit_outlined),
+                        label: Text(l10n.feedbackNo),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class _CorrectionSheet extends StatefulWidget {
+  const _CorrectionSheet();
+
+  @override
+  State<_CorrectionSheet> createState() => _CorrectionSheetState();
+}
+
+class _CorrectionSheetState extends State<_CorrectionSheet> {
+  final _name = TextEditingController();
+  final _category = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _category.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.of(context).pop(
+    RecognitionFeedback(
+      verdict: FeedbackVerdict.incorrect,
+      correctedName: _name.text,
+      correctedCategory: _category.text,
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final brand = context.brand;
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(Space.gutter, Space.lg, Space.gutter, Space.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.correctionTitle, style: context.text.titleLarge),
+            const SizedBox(height: Space.xs),
+            Text(l10n.correctionBody, style: context.text.bodyMedium?.copyWith(color: brand.muted)),
+            const SizedBox(height: Space.md),
+            TextField(
+              controller: _name,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(labelText: l10n.correctionName),
+            ),
+            const SizedBox(height: Space.sm),
+            TextField(
+              controller: _category,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+              decoration: InputDecoration(labelText: l10n.correctionCategory),
+            ),
+            const SizedBox(height: Space.lg),
+            BusyButton(label: l10n.correctionSend, icon: Icons.send_outlined, onPressed: _submit),
+          ],
+        ),
       ),
     );
   }

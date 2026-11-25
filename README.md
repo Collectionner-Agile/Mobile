@@ -53,6 +53,36 @@ the app already loads or kept on the device; none needs a new endpoint.
 | OAuth Google/GitHub buttons | — | disabled server-side, no credentials | Not shown |
 | Cookie banner, legal drafts, AI chat demo | — | web-only / demo | Not applicable |
 
+## Recognition training data (phase 1)
+
+The app collects the signals needed to train recognition later. The backend must implement the
+parts marked **new**; until it does, feedback calls fail quietly (the user sees a short "couldn't
+send" toast after an explicit answer, implicit signals are dropped).
+
+| What | Request | Backend contract |
+| --- | --- | --- |
+| Consent | `POST /api/v1/recognition/analyze`, extra multipart field `training_consent` = `"true"`/`"false"` | **new**: keep the photo (and later feedback) for training only when `"true"`; otherwise discard it after answering, as today. Off by default; toggled in the scanner and in Settings → Reconocimiento (`pref.recognitionTrainingConsent`). |
+| Feedback | `POST /api/v1/recognition/{analysis_id}/feedback`, JSON body below | **new**: store per analysis, last answer wins; `2xx` with any or no body. |
+| Listing ↔ scan | `POST /api/v1/collectibles`, extra field `recognitionAnalysisId` | **new**: persist the link; the published piece (name, category, photos) is the user's label for that analysis. |
+
+Feedback body (`RecognitionFeedback.toJson`, empty fields omitted):
+
+```json
+{
+  "verdict": "correct | chose_match | incorrect",
+  "collectible_id": 4,
+  "corrected_name": "Lego Millennium Falcon 75192",
+  "corrected_category": "Lego & Sets",
+  "implicit": false
+}
+```
+
+- `correct`: the user tapped "Sí, es correcto"; `collectible_id` is the catalogue match or the
+  alternative they had selected.
+- `chose_match`: the user picked an alternative. `implicit: true` when it was inferred from
+  continuing to that piece rather than answered.
+- `incorrect`: the user tapped "No, corregir"; the correction fields are optional.
+
 ## Run
 
 ```bash

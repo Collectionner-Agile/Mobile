@@ -142,6 +142,7 @@ class CatalogRepository {
     required int communityId,
     String? category,
     int? eraYear,
+    String? recognitionAnalysisId,
   }) => _api.post(
     '$_v1/collectibles',
     (data) => parseObject(data, Collectible.fromJson),
@@ -152,6 +153,9 @@ class CatalogRepository {
       'communityId': communityId,
       'category': ?category,
       'eraYear': ?eraYear,
+      // Links the new piece to the scan that proposed it: the published listing
+      // becomes a user-labelled example for that analysis.
+      'recognitionAnalysisId': ?recognitionAnalysisId,
     },
   );
 
@@ -304,6 +308,7 @@ class RecognitionRepository {
   Future<RecognitionResult> analyze(
     Uint8List jpegBytes, {
     required String idempotencyKey,
+    bool trainingConsent = false,
     CancelToken? cancelToken,
     void Function(int, int)? onProgress,
   }) => _api.post(
@@ -311,6 +316,8 @@ class RecognitionRepository {
     (data) => parseObject(data, RecognitionResult.fromJson),
     body: FormData.fromMap({
       'image': MultipartFile.fromBytes(jpegBytes, filename: 'scan.jpg', contentType: DioMediaType('image', 'jpeg')),
+      // Without it the server must discard the photo after answering.
+      'training_consent': trainingConsent.toString(),
     }),
     options: Options(
       headers: {'Idempotency-Key': idempotencyKey},
@@ -320,4 +327,9 @@ class RecognitionRepository {
     cancelToken: cancelToken,
     onSendProgress: onProgress,
   );
+
+  /// Tells the backend whether an analysis was right. Last answer wins on the
+  /// server, so sending again for the same analysis replaces the earlier one.
+  Future<void> sendFeedback(String analysisId, RecognitionFeedback feedback) =>
+      _api.post('$_v1/recognition/${Uri.encodeComponent(analysisId)}/feedback', (_) {}, body: feedback.toJson());
 }

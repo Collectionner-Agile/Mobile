@@ -372,7 +372,7 @@
       }
     }
   },
-  "privacySummary": "Las fotos para reconocimiento se envían solo cuando lo confirmas y el servidor no las guarda. Tu sesión se almacena cifrada en el dispositivo.",
+  "privacySummary": "Las fotos para reconocimiento se envían solo cuando lo confirmas y el servidor solo las guarda si activas «Ayudar a mejorar el reconocimiento». Tu sesión se almacena cifrada en el dispositivo.",
   "serverLabel": "Servidor: {url}",
   "@serverLabel": {
     "placeholders": {
@@ -416,7 +416,7 @@
   "scanTip1": "Encuadra la pieza completa.",
   "scanTip2": "Usa buena luz y evita reflejos.",
   "scanTip3": "Si tiene caja o etiqueta, inclúyela.",
-  "scanPrivacy": "Tu foto solo se envía cuando confirmas, y no se guarda.",
+  "scanPrivacy": "Tu foto solo se envía cuando confirmas. Solo se guarda si activas «Ayudar a mejorar el reconocimiento».",
   "scanPreviewTitle": "Revisa la foto",
   "scanCrop": "Recortar",
   "scanRotate": "Girar",
@@ -711,7 +711,7 @@
   "faqScanQ1": "¿Cómo identifico una pieza?",
   "faqScanA1": "Abre Escanear, toma una foto clara de la pieza y confirma el envío. Te diremos qué es y si está en el catálogo o en una subasta.",
   "faqScanQ2": "¿Guardan mis fotos?",
-  "faqScanA2": "No. La foto solo se envía cuando confirmas y el servidor no la guarda.",
+  "faqScanA2": "Solo si tú lo permites. La foto se envía únicamente cuando confirmas, y el servidor la guarda solo si activas «Ayudar a mejorar el reconocimiento» (en el escáner o en Ajustes).",
   "faqBidQ1": "¿Cómo pujo?",
   "faqBidA1": "Abre la subasta, toca Pujar, elige el monto con − y + y confirma.",
   "faqBidQ2": "¿Qué pasa si alguien me supera?",
@@ -832,5 +832,19 @@
   "copyLink": "Copiar enlace",
   "shareText": "Compartir texto",
   "valueOverTime": "Cómo creció tu colección",
-  "valueOverTimeNote": "Valor declarado sumado pieza a pieza, de la primera a la última."
+  "valueOverTimeNote": "Valor declarado sumado pieza a pieza, de la primera a la última.",
+  "trainingConsentTitle": "Ayudar a mejorar el reconocimiento",
+  "trainingConsentBody": "Guardamos tus fotos de escaneo y tus correcciones para entrenar el modelo. Puedes desactivarlo cuando quieras.",
+  "recognitionSettings": "Reconocimiento",
+  "feedbackQuestion": "¿Acertamos?",
+  "feedbackBody": "Tu respuesta enseña al reconocimiento a acertar la próxima vez.",
+  "feedbackYes": "Sí, es correcto",
+  "feedbackNo": "No, corregir",
+  "feedbackThanks": "Gracias. Usaremos tu respuesta para mejorar el reconocimiento.",
+  "feedbackFailed": "No pudimos enviar tu respuesta. Inténtalo de nuevo.",
+  "correctionTitle": "¿Qué es en realidad?",
+  "correctionBody": "Si lo sabes, escribe el nombre y la categoría correctos. También puedes enviarlo sin completar nada.",
+  "correctionName": "Nombre correcto",
+  "correctionCategory": "Categoría correcta",
+  "correctionSend": "Enviar corrección"
 }

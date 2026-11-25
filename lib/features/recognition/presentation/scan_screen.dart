@@ -16,6 +16,7 @@ import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../application/scan_controller.dart';
 import '../application/scan_history.dart';
+import 'training_consent_tile.dart';
 
 class ScanScreen extends ConsumerWidget {
   const ScanScreen({super.key});
@@ -533,6 +534,8 @@ class _Preview extends ConsumerWidget {
                       onPressed: enabled ? () => _analyze(context, ref) : null,
                     ),
                     const SizedBox(height: Space.sm),
+                    const TrainingConsentTile(),
+                    const SizedBox(height: Space.xs),
                     Text(
                       l10n.scanPrivacy,
                       style: context.text.bodySmall?.copyWith(color: brand.muted),
