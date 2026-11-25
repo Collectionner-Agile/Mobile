@@ -126,7 +126,7 @@ class AuctionResultsScreen extends ConsumerWidget {
                                     children: [
                                       if (auction.bids.isNotEmpty)
                                         Tag(
-                                          auction.bids.first.bidderName ?? '—',
+                                          auction.winnerName ?? auction.bids.first.bidderName ?? '—',
                                           icon: Icons.workspace_premium_outlined,
                                           color: brand.gold,
                                         )

@@ -32,7 +32,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final brand = context.brand;
     final read = ref.watch(readNoticesProvider);
     final all = ref.watch(noticesProvider);
-    final unread = all.where((notice) => !read.contains(notice.id)).toList();
+    final unread = all.where((notice) => !notice.readOnServer && !read.contains(notice.id)).toList();
     final shown = _unreadOnly ? unread : all;
     final loading = ref.watch(auctionsProvider).isLoading && ref.watch(auctionsProvider).value == null;
 
@@ -65,7 +65,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         onRefresh: () async {
           ref
             ..invalidate(auctionsProvider)
-            ..invalidate(collectiblesProvider);
+            ..invalidate(collectiblesProvider)
+            ..invalidate(serverNoticesProvider);
           await ref.read(auctionsProvider.future).catchError((Object _) => const <Never>[]);
         },
         child: ListView(
@@ -117,7 +118,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             index: index,
                             child: _NoticeCard(
                               notice: notice,
-                              unread: !read.contains(notice.id),
+                              unread: !notice.readOnServer && !read.contains(notice.id),
                               onTap: () {
                                 ref.read(readNoticesProvider.notifier).markRead(notice.id);
                                 if (notice.route != null) context.push(notice.route!);
@@ -150,7 +151,7 @@ class _NoticeCard extends StatelessWidget {
     final subject = notice.subject ?? '';
     final amount = notice.amount == null ? '' : context.money(notice.amount!);
     final who = notice.who ?? '—';
-    final (icon, color, title, body) = switch (notice.kind) {
+    final (icon, color, derivedTitle, derivedBody) = switch (notice.kind) {
       NoticeKind.outbid => (
         Icons.warning_amber_rounded,
         brand.live,
@@ -194,6 +195,9 @@ class _NoticeCard extends StatelessWidget {
         l10n.noticeWelcomeBody,
       ),
     };
+    // Server notices bring their own words (with the piece and the amounts already in them).
+    final title = notice.title ?? derivedTitle;
+    final body = notice.body ?? derivedBody;
     return AppCard(
       onTap: onTap,
       padding: const EdgeInsets.all(Space.sm),

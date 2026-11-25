@@ -6,6 +6,7 @@ import 'package:collectionner/core/widgets/kit.dart';
 import 'package:collectionner/features/auctions/application/watchlist.dart';
 import 'package:collectionner/features/auctions/presentation/watchlist_screen.dart';
 import 'package:collectionner/features/auth/application/session_controller.dart';
+import 'package:collectionner/features/catalog/domain/catalog_models.dart';
 import 'package:collectionner/features/catalog/presentation/photo_viewer_screen.dart';
 import 'package:collectionner/features/catalog/presentation/widgets/collectible_card.dart';
 import 'package:collectionner/features/collectors/collector_profile_screen.dart';
@@ -537,6 +538,32 @@ void main() {
         'verdict': 'incorrect',
         'corrected_name': 'Lego Falcon 7965',
         'corrected_category': 'Lego & Sets',
+        'implicit': false,
+      });
+    });
+
+    testWidgets('with the taxonomy available a correction carries the category slug', (tester) async {
+      final app = await showResult(tester, Fixtures.recognition());
+      app.backend.json('GET', '/api/v1/categories', [
+        {'slug': 'lego-set', 'name': 'LEGO y sets de construcción'},
+        {'slug': 'reloj', 'name': 'Relojes'},
+      ]);
+      final no = find.text('No, corregir');
+      await tester.ensureVisible(no);
+      await settle(tester, 2);
+      await tester.tap(no);
+      await settle(tester);
+      expect(find.widgetWithText(TextField, 'Categoría correcta'), findsNothing, reason: 'a picker, not free text');
+      await tester.tap(find.byType(DropdownButtonFormField<TaxonomyCategory>));
+      await settle(tester);
+      await tester.tap(find.text('Relojes').last);
+      await settle(tester);
+      await tester.tap(find.text('Enviar corrección'));
+      await settle(tester);
+      expect(feedbackBody(app), {
+        'verdict': 'incorrect',
+        'corrected_category': 'Relojes',
+        'corrected_category_slug': 'reloj',
         'implicit': false,
       });
     });

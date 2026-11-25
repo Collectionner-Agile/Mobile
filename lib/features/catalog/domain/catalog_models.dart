@@ -187,3 +187,21 @@ String _fold(String value) {
   }
   return buffer.toString();
 }
+
+/// One entry of the fixed taxonomy (`GET /api/v1/categories`). The slug is
+/// permanent and is what recognition learns; the name follows the language.
+class TaxonomyCategory {
+  const TaxonomyCategory({required this.slug, required this.name});
+
+  final String slug;
+  final String name;
+
+  factory TaxonomyCategory.fromJson(JsonMap json) =>
+      TaxonomyCategory(slug: json.requireString('slug'), name: json.stringOrNull('name') ?? json.requireString('slug'));
+
+  @override
+  bool operator ==(Object other) => other is TaxonomyCategory && other.slug == slug;
+
+  @override
+  int get hashCode => slug.hashCode;
+}

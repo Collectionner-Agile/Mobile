@@ -35,6 +35,10 @@ class Auction {
     this.deadline,
     this.createdAt,
     this.bids = const [],
+    this.closedAt,
+    this.winnerId,
+    this.winnerName,
+    this.winningBid,
   });
 
   final int id;
@@ -51,6 +55,19 @@ class Auction {
   final DateTime? createdAt;
   final bool isOpen;
   final List<Bid> bids;
+
+  /// Set once the server has closed the auction and fixed its result.
+  final DateTime? closedAt;
+
+  /// Official winner from the server (null while open, or when nobody bid).
+  final int? winnerId;
+  final String? winnerName;
+  final double? winningBid;
+
+  bool get settled => closedAt != null;
+
+  /// Who is ahead, or who won once settled.
+  int? get leaderId => settled ? winnerId : (bids.isEmpty ? null : bids.first.bidderId);
 
   /// Image for the lot: the piece's photo, else its curated artwork.
   String get artwork => artworkFor(name: collectibleName ?? '', url: collectibleImage);
@@ -95,5 +112,9 @@ class Auction {
     createdAt: json.dateOrNull('createdAt'),
     isOpen: json.boolOr('isOpen', fallback: json.boolOr('open')),
     bids: json.objects('bids').map(Bid.fromJson).toList(growable: false)..sort((a, b) => b.amount.compareTo(a.amount)),
+    closedAt: json.dateOrNull('closedAt'),
+    winnerId: json.intOrNull('winnerId'),
+    winnerName: json.stringOrNull('winnerName'),
+    winningBid: json.doubleOrNull('winningBid'),
   );
 }
