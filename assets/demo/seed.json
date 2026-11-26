@@ -108,9 +108,9 @@
    "ownerName": "horology_master",
    "value": 2900.0,
    "description": "Primer cronógrafo automático en el espacio. Esfera amarilla original sin decoloración, bisel Pepsi pepita intacto y movimiento 6139B recientemente revisado con amplitud de 240°.",
-   "isLinkedToProcess": false,
+   "isLinkedToProcess": true,
    "auctionId": null,
-   "saleId": null,
+   "saleId": 40,
    "exchangeId": null,
    "rating": 4.9,
    "reviewCount": 14,
@@ -541,5 +541,22 @@
  "myCommunities": [
   1,
   2
+ ],
+ "sales": [
+  {
+   "id": 40,
+   "collectibleId": 4,
+   "collectibleName": "Seiko 6139-6002 \"Pogue\" Chronograph Automatic 1974",
+   "collectibleImage": "/assets/collectibles/watches/mechanical-watch.svg",
+   "sellerId": 4,
+   "sellerName": "horology_master",
+   "buyerId": null,
+   "buyerName": null,
+   "price": 3100.0,
+   "status": "active",
+   "sellerConfirmed": false,
+   "buyerConfirmed": false,
+   "createdAt": "2026-11-24T15:00:00Z"
+  }
  ]
 }

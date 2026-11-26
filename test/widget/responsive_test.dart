@@ -41,6 +41,8 @@ void main() {
     Routes.watchlist,
     Routes.myBids,
     Routes.myCollection,
+    Routes.mySales,
+    '/sales/30',
     Routes.auctionCalendar,
     Routes.auctionResults,
     Routes.categories,

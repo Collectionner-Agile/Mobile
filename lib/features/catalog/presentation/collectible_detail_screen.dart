@@ -18,6 +18,9 @@ import '../../auctions/presentation/create_auction_sheet.dart';
 import '../../auth/application/session_controller.dart';
 import '../../compare/compare_screen.dart';
 import '../../favorites/favorites.dart';
+import '../../sales/application/sale_providers.dart';
+import '../../sales/presentation/create_sale_sheet.dart';
+import '../../sales/presentation/sale_panel.dart';
 import '../application/catalog_providers.dart';
 import '../domain/catalog_models.dart';
 import 'photo_viewer_screen.dart';
@@ -151,6 +154,16 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
     context.go(Routes.auction(created.id));
   }
 
+  Future<void> _startSale() async {
+    final created = await showCreateSaleSheet(context, collectible: widget.item);
+    if (created == null || !mounted) return;
+    ref
+      ..invalidate(collectibleProvider(widget.item.id))
+      ..invalidate(collectiblesProvider)
+      ..invalidate(mySalesProvider);
+    showToast(context, context.l10n.saleCreated);
+  }
+
   void _openGallery(List<String> urls, int initial) => PhotoViewerScreen.open(
     context,
     urls: urls,
@@ -221,6 +234,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                   onSelected: (value) => switch (value) {
                     'photo' => _addPhoto(),
                     'auction' => _startAuction(),
+                    'sale' => _startSale(),
                     'delete' => _delete(),
                     _ => null,
                   },
@@ -233,6 +247,11 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                       PopupMenuItem(
                         value: 'auction',
                         child: ListTile(leading: const Icon(Icons.gavel_outlined), title: Text(l10n.startAuction)),
+                      ),
+                    if (!item.isLinkedToProcess && item.auctionId == null && item.saleId == null)
+                      PopupMenuItem(
+                        value: 'sale',
+                        child: ListTile(leading: const Icon(Icons.sell_outlined), title: Text(l10n.sellPiece)),
                       ),
                     PopupMenuItem(
                       value: 'delete',
@@ -345,12 +364,14 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (item.auctionId != null || isOwner) ...[
+                      if (item.auctionId != null || item.saleId != null || isOwner) ...[
                         Wrap(
                           spacing: Space.xs,
                           runSpacing: Space.xs,
                           children: [
                             if (item.auctionId != null) LiveBadge(label: l10n.inAuction),
+                            if (item.saleId != null)
+                              InfoChip(label: l10n.forSale, icon: Icons.sell_outlined, color: brand.success),
                             if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
                           ],
                         ),
@@ -377,6 +398,10 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                       if (item.auctionId != null) ...[
                         const SizedBox(height: Space.lg),
                         _AuctionBanner(auctionId: item.auctionId!),
+                      ],
+                      if (item.saleId != null) ...[
+                        const SizedBox(height: Space.lg),
+                        SalePanelLoader(saleId: item.saleId!),
                       ],
                       const SizedBox(height: Space.lg),
                       _Particulars(

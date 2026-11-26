@@ -194,6 +194,8 @@ class _NoticeCard extends StatelessWidget {
         subject.isEmpty ? l10n.noticeWelcomeTitleGuest : l10n.noticeWelcomeTitle(subject),
         l10n.noticeWelcomeBody,
       ),
+      // Sale notices always come from the server with their own title and body.
+      NoticeKind.sale => (Icons.handshake_outlined, brand.success, l10n.saleDetailTitle, subject),
     };
     // Server notices bring their own words (with the piece and the amounts already in them).
     final title = notice.title ?? derivedTitle;

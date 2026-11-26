@@ -9,6 +9,7 @@ import '../../features/auth/domain/user.dart';
 import '../../features/catalog/domain/catalog_models.dart';
 import '../../features/communities/domain/community_models.dart';
 import '../../features/recognition/domain/recognition_models.dart';
+import '../../features/sales/domain/sale_models.dart';
 import '../utils/json.dart';
 import 'api_client.dart';
 
@@ -317,6 +318,35 @@ class AuctionRepository {
   );
 
   Future<void> cancel(int auctionId) => _api.delete('$_v1/auctions/$auctionId');
+}
+
+/// HU05: fixed-price sales. No payment goes through the app: the server records the purchase and
+/// both confirmations, and the piece changes owner when both sides have confirmed.
+class SaleRepository {
+  SaleRepository(this._api);
+  final ApiClient _api;
+
+  Future<List<Sale>> active() => _api.get('$_v1/sales', (data) => parseList(data, Sale.fromJson));
+
+  Future<Sale> sale(int id) => _api.get('$_v1/sales/$id', (data) => parseObject(data, Sale.fromJson));
+
+  /// [role] is `buyer` (bought or reserved) or `seller` (listed).
+  Future<List<Sale>> mine(String role) =>
+      _api.get('$_v1/sales/mine', (data) => parseList(data, Sale.fromJson), query: {'role': role});
+
+  Future<Sale> create({required int collectibleId, required double price}) => _api.post(
+    '$_v1/sales',
+    (data) => parseObject(data, Sale.fromJson),
+    body: {'collectibleId': collectibleId, 'price': price},
+  );
+
+  Future<Sale> purchase(int id) => _transition(id, 'purchase');
+  Future<Sale> confirmDelivery(int id) => _transition(id, 'confirm-delivery');
+  Future<Sale> confirmReceipt(int id) => _transition(id, 'confirm-receipt');
+  Future<Sale> cancel(int id) => _transition(id, 'cancel');
+
+  Future<Sale> _transition(int id, String action) =>
+      _api.post('$_v1/sales/$id/$action', (data) => parseObject(data, Sale.fromJson));
 }
 
 class CommunityRepository {

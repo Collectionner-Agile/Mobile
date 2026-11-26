@@ -33,6 +33,7 @@ class Collectible {
     this.reviewCount = 0,
     this.isLinkedToProcess = false,
     this.auctionId,
+    this.saleId,
     this.primaryImageUrl,
     this.media = const [],
     this.conditionEstimated,
@@ -52,6 +53,9 @@ class Collectible {
   final int reviewCount;
   final bool isLinkedToProcess;
   final int? auctionId;
+
+  /// The piece's open fixed-price sale (active or reserved), if any.
+  final int? saleId;
   final String? primaryImageUrl;
   final List<MediaAsset> media;
   final double? conditionEstimated;
@@ -82,6 +86,7 @@ class Collectible {
     reviewCount: json.intOrNull('reviewCount') ?? 0,
     isLinkedToProcess: json.boolOr('isLinkedToProcess'),
     auctionId: json.intOrNull('auctionId'),
+    saleId: json.intOrNull('saleId'),
     primaryImageUrl: json.stringOrNull('primaryImageUrl'),
     media: json.objects('media').map(MediaAsset.fromJson).toList(growable: false),
     conditionEstimated: json.doubleOrNull('conditionEstimated'),

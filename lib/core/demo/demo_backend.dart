@@ -187,6 +187,60 @@ class DemoBackend implements HttpClientAdapter {
         byId('auctions', idAt(1))?['isOpen'] = false;
         return (204, null);
 
+      // Fixed-price sales (HU05), with the server's rules: no buying your own piece or one that
+      // is taken; both confirmations complete the sale and hand the piece to the buyer.
+      case ('GET', ['sales']):
+        final status = query['status'] ?? 'active';
+        return (200, (db['sales'] as List<dynamic>? ?? const []).where((s) => (s as Map)['status'] == status).toList());
+      case ('GET', ['sales', 'mine']):
+        final key = query['role'] == 'seller' ? 'sellerId' : 'buyerId';
+        return (200, (db['sales'] as List<dynamic>? ?? const []).where((s) => (s as Map)[key] == me['id']).toList());
+      case ('GET', ['sales', _]):
+        final sale = _sale(db, idAt(1));
+        return sale == null ? _notFound() : (200, sale);
+      case ('POST', ['sales']):
+        final piece = byId('collectibles', (body['collectibleId'] as num?)?.toInt());
+        if (piece == null) return _notFound();
+        if (piece['ownerId'] != me['id']) {
+          return (
+            403,
+            {'detail': 'Solo el propietario puede poner esta pieza en venta.', 'errorCode': 'ACCESS_DENIED'},
+          );
+        }
+        if (piece['isLinkedToProcess'] == true || piece['auctionId'] != null || piece['saleId'] != null) {
+          return (
+            400,
+            {
+              'detail': 'La pieza ya se encuentra vinculada a un proceso de subasta o venta activa.',
+              'errorCode': 'ALREADY_IN_PROCESS',
+            },
+          );
+        }
+        final sale = <String, dynamic>{
+          'id': ++_nextId,
+          'collectibleId': piece['id'],
+          'collectibleName': piece['name'],
+          'collectibleImage': piece['primaryImageUrl'],
+          'sellerId': me['id'],
+          'sellerName': me['username'],
+          'buyerId': null,
+          'buyerName': null,
+          'price': body['price'],
+          'status': 'active',
+          'sellerConfirmed': false,
+          'buyerConfirmed': false,
+          'createdAt': now(),
+        };
+        ((db['sales'] ??= <dynamic>[]) as List<dynamic>).insert(0, sale);
+        piece
+          ..['saleId'] = sale['id']
+          ..['isLinkedToProcess'] = true;
+        return (201, sale);
+      case ('POST', ['sales', _, final action]):
+        final sale = _sale(db, idAt(1));
+        if (sale == null) return _notFound();
+        return _saleTransition(db, sale, action, me, now());
+
       // Communities.
       case ('GET', ['communities']):
         return (200, list('communities').map((c) => _withJoined(db, c)).toList());
@@ -309,6 +363,74 @@ class DemoBackend implements HttpClientAdapter {
     'body': text,
     'createdAt': createdAt,
   };
+
+  Map<String, dynamic>? _sale(Map<String, dynamic> db, int? id) =>
+      (db['sales'] as List<dynamic>? ?? const []).cast<Map<String, dynamic>>().where((s) => s['id'] == id).firstOrNull;
+
+  (int, Object?) _saleTransition(
+    Map<String, dynamic> db,
+    Map<String, dynamic> sale,
+    String action,
+    Map<String, dynamic> me,
+    String now,
+  ) {
+    (int, Object?) rule(int status, String code, String detail) => (status, {'detail': detail, 'errorCode': code});
+    final mine = me['id'];
+    final seller = sale['sellerId'] == mine;
+    final buyer = sale['buyerId'] == mine;
+    final piece = (db['collectibles'] as List<dynamic>).cast<Map<String, dynamic>>().firstWhere(
+      (c) => c['id'] == sale['collectibleId'],
+      orElse: () => <String, dynamic>{},
+    );
+    void release() => piece
+      ..['saleId'] = null
+      ..['isLinkedToProcess'] = false;
+
+    switch (action) {
+      case 'purchase':
+        if (sale['status'] != 'active') {
+          return rule(409, 'SALE_NOT_AVAILABLE', 'Esta pieza ya no está disponible para la compra.');
+        }
+        if (seller) return rule(400, 'SELF_PURCHASE_FORBIDDEN', 'No puedes comprar una pieza que publicaste tú.');
+        sale
+          ..['status'] = 'reserved'
+          ..['buyerId'] = mine
+          ..['buyerName'] = me['username']
+          ..['reservedAt'] = now;
+      case 'confirm-delivery' || 'confirm-receipt':
+        if (sale['status'] != 'reserved') {
+          return rule(400, 'SALE_NOT_RESERVED', 'La operación no está pendiente de confirmación.');
+        }
+        final delivery = action == 'confirm-delivery';
+        if (delivery ? !seller : !buyer) return rule(403, 'ACCESS_DENIED', 'Esa confirmación le toca a la otra parte.');
+        sale[delivery ? 'sellerConfirmed' : 'buyerConfirmed'] = true;
+        if (sale['sellerConfirmed'] == true && sale['buyerConfirmed'] == true) {
+          sale
+            ..['status'] = 'completed'
+            ..['completedAt'] = now;
+          release();
+          piece
+            ..['ownerId'] = sale['buyerId']
+            ..['ownerName'] = sale['buyerName'];
+        }
+      case 'cancel':
+        final status = sale['status'];
+        final allowed = status == 'active'
+            ? seller
+            : status == 'reserved' &&
+                  (seller || buyer) &&
+                  sale['sellerConfirmed'] != true &&
+                  sale['buyerConfirmed'] != true;
+        if (!allowed) return rule(400, 'SALE_NOT_CANCELLABLE', 'Esta operación ya no se puede anular.');
+        sale
+          ..['status'] = 'cancelled'
+          ..['cancelledAt'] = now;
+        release();
+      default:
+        return _notFound();
+    }
+    return (200, sale);
+  }
 
   (int, Object?) _notFound() => (404, {'title': 'No encontrado', 'detail': 'No existe o ya no está disponible.'});
 
