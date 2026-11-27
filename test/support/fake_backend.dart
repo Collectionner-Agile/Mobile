@@ -190,6 +190,21 @@ abstract final class Fixtures {
   };
 
   /// Stubs every read the main screens perform.
+  static Map<String, Object?> sale({int id = 30, String status = 'reserved'}) => {
+    'id': id,
+    'collectibleId': 2,
+    'collectibleName': 'Charizard Holo Base Set',
+    'sellerId': 2,
+    'sellerName': 'galaxy_builder',
+    'buyerId': 1,
+    'buyerName': 'collector_prime',
+    'price': 2100,
+    'status': status,
+    'sellerConfirmed': true,
+    'buyerConfirmed': false,
+    'createdAt': '2026-11-20T10:00:00Z',
+  };
+
   static FakeBackend standardBackend() {
     final backend = FakeBackend();
     backend
@@ -200,7 +215,9 @@ abstract final class Fixtures {
       ..json('GET', '/api/v1/recognition/status', {'enabled': true, 'model': 'gemini-3.8-flash'})
       ..json('POST', '/api/v1/recognition/a1/feedback', null, status: 204)
       ..json('GET', '/api/v1/auth/me', user())
-      ..json('GET', '/api/v1/communities/user/1', [community(id: 2, joined: true)]);
+      ..json('GET', '/api/v1/communities/user/1', [community(id: 2, joined: true)])
+      ..json('GET', '/api/v1/sales/mine', [sale()])
+      ..json('GET', '/api/v1/sales/30', sale());
     for (final item in catalogue()) {
       final id = item['id']! as int;
       backend

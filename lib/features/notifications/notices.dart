@@ -11,7 +11,7 @@ import '../auctions/domain/auction_models.dart';
 import '../auth/application/session_controller.dart';
 import '../catalog/application/catalog_providers.dart';
 
-enum NoticeKind { outbid, leading, bidOnYours, closingSoon, ended, newPiece, welcome }
+enum NoticeKind { outbid, leading, bidOnYours, closingSoon, ended, newPiece, welcome, sale }
 
 /// Something worth telling the user. Signed in, bids and auction results come
 /// from the server (written where they happen, so they reach every phone);
@@ -76,6 +76,7 @@ Notice _fromServer(ServerNotification n) => Notice(
   kind: switch (n.type) {
     'OUTBID' => NoticeKind.outbid,
     'NEW_BID' || 'WATCHED_BID' => NoticeKind.bidOnYours,
+    final type when type.startsWith('SALE_') => NoticeKind.sale,
     _ => NoticeKind.ended,
   },
   at: n.createdAt,
@@ -85,6 +86,8 @@ Notice _fromServer(ServerNotification n) => Notice(
       ? '/auctions/${n.targetId}'
       : n.targetType == 'collectible' && n.targetId != null
       ? '/catalog/item/${n.targetId}'
+      : n.targetType == 'sale' && n.targetId != null
+      ? '/sales/${n.targetId}'
       : null,
   serverId: n.id,
   readOnServer: n.read,

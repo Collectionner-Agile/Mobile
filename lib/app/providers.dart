@@ -25,6 +25,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 final authRepositoryProvider = Provider((ref) => AuthRepository(ref.watch(apiClientProvider)));
 final catalogRepositoryProvider = Provider((ref) => CatalogRepository(ref.watch(apiClientProvider)));
 final auctionRepositoryProvider = Provider((ref) => AuctionRepository(ref.watch(apiClientProvider)));
+final saleRepositoryProvider = Provider((ref) => SaleRepository(ref.watch(apiClientProvider)));
 final communityRepositoryProvider = Provider((ref) => CommunityRepository(ref.watch(apiClientProvider)));
 final recognitionRepositoryProvider = Provider((ref) => RecognitionRepository(ref.watch(apiClientProvider)));
 final meRepositoryProvider = Provider((ref) => MeRepository(ref.watch(apiClientProvider)));
