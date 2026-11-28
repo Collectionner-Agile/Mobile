@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/launch/launch_scene.dart';
+import '../features/notifications/notices.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'preferences.dart';
 import 'router/app_router.dart';
@@ -14,6 +15,7 @@ class CollectionnerApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    ref.watch(serverNoticesRefreshProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       debugShowCheckedModeBanner: false,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/preferences.dart';
@@ -58,16 +59,20 @@ class Notice {
   final String? image;
 }
 
+/// The last list the server sent each user, kept for when a refresh fails.
+final _lastServerNoticesProvider = Provider<Map<int, List<Notice>>>((ref) => {});
+
 /// The signed-in user's server notifications; null when signed out or when
-/// the server could not be reached (then notices are derived on the phone).
+/// the server has not been reached yet (then notices are derived on the phone).
 final serverNoticesProvider = FutureProvider<List<Notice>?>((ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) return null;
+  final last = ref.read(_lastServerNoticesProvider);
   try {
     final items = await ref.read(meRepositoryProvider).notifications();
-    return [for (final item in items) _fromServer(item)];
+    return last[user.id] = [for (final item in items) _fromServer(item)];
   } catch (_) {
-    return null;
+    return last[user.id];
   }
 });
 
@@ -92,6 +97,48 @@ Notice _fromServer(ServerNotification n) => Notice(
   serverId: n.id,
   readOnServer: n.read,
 );
+
+/// How often the server notices are asked for while the app is on screen.
+const serverNoticesRefreshEvery = Duration(seconds: 60);
+
+/// Keeps the signed-in user's server notices, and with them the bell's badge,
+/// current: asks again every [serverNoticesRefreshEvery] while the app is on
+/// screen and as soon as the user comes back to it. A notice not seen before
+/// means an auction changed, so the auctions are reloaded too; otherwise the
+/// notices derived from them could contradict the new one. The app keeps this
+/// alive.
+final serverNoticesRefreshProvider = Provider<void>((ref) {
+  if (ref.watch(currentUserProvider) == null) return;
+
+  void refresh() => ref.invalidate(serverNoticesProvider);
+  Timer? timer;
+  void start() => timer ??= Timer.periodic(serverNoticesRefreshEvery, (_) => refresh());
+  void stop() {
+    timer?.cancel();
+    timer = null;
+  }
+
+  final lifecycle = AppLifecycleListener(
+    onHide: stop,
+    onShow: () {
+      refresh();
+      start();
+    },
+  );
+  start();
+  ref.onDispose(() {
+    stop();
+    lifecycle.dispose();
+  });
+
+  ref.listen(serverNoticesProvider, (previous, next) {
+    final before = previous?.value;
+    final after = next.value;
+    if (before == null || after == null) return;
+    final known = {for (final notice in before) notice.id};
+    if (after.any((notice) => !known.contains(notice.id))) ref.invalidate(auctionsProvider);
+  });
+});
 
 /// Ids of the notices already read, kept on the device (server notices are
 /// also marked read on the server).
@@ -143,8 +190,9 @@ final noticesProvider = Provider<List<Notice>>((ref) {
     final myBids = user == null ? const <Bid>[] : auction.bids.where((bid) => bid.bidderId == user.id).toList();
     final leader = auction.bids.isEmpty ? null : auction.bids.first;
 
-    if (myBids.isNotEmpty && leader != null) {
-      if (live && leader.bidderId != user!.id && !fromServer) {
+    if (live && myBids.isNotEmpty && leader != null) {
+      final ahead = leader.bidderId == user!.id;
+      if (!ahead && !fromServer) {
         notices.add(
           Notice(
             id: 'outbid-${auction.id}-${leader.id}',
@@ -157,7 +205,7 @@ final noticesProvider = Provider<List<Notice>>((ref) {
             image: auction.artwork,
           ),
         );
-      } else if (live) {
+      } else if (ahead) {
         notices.add(
           Notice(
             id: 'leading-${auction.id}-${leader.id}',

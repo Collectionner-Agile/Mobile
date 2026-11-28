@@ -27,6 +27,15 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   bool _unreadOnly = false;
 
   @override
+  void initState() {
+    super.initState();
+    // What arrived since the last refresh shows as soon as the screen opens.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.invalidate(serverNoticesProvider);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final brand = context.brand;
