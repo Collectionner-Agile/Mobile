@@ -136,7 +136,8 @@ void main() {
       expect(validators.email('nope'), isNotNull);
       expect(validators.username('ab'), isNotNull);
       expect(validators.username('collector_prime'), isNull);
-      expect(validators.password('12345'), isNotNull);
+      expect(validators.password('1234567'), 'La contraseña debe tener al menos 8 caracteres.');
+      expect(validators.password('12345678'), isNull);
       expect(validators.optionalYear(''), isNull);
       expect(validators.optionalYear('1700'), isNotNull);
       expect(validators.positiveAmount('0'), isNotNull);

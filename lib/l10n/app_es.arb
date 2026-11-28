@@ -173,7 +173,7 @@
     }
   },
   "errEmail": "Introduce un correo válido.",
-  "errPasswordLength": "La contraseña debe tener al menos 6 caracteres.",
+  "errPasswordLength": "La contraseña debe tener al menos 8 caracteres.",
   "errPasswordMatch": "Las contraseñas no coinciden.",
   "errUsername": "Entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.",
   "auctionsTitle": "Subastas",
