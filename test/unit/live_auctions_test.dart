@@ -126,5 +126,24 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 2200));
       expect(count('GET', '/api/v1/auctions/6/events'), 2);
     });
+
+    test('the list reloads after every (re)connection, so nothing missed stays stale', () async {
+      backend
+        ..json('GET', '/api/v1/auctions', [Fixtures.auction()])
+        // Subscribes and is then ended by the server, without any bid in between.
+        ..on('GET', '/api/v1/auctions/events', (_) => const FakeReply.text(200, 'event:ready\ndata:{"auctionIds":[7]}\n\n'));
+      final sub = container.listen(auctionsLiveProvider, (_, _) {}, fireImmediately: true);
+      addTearDown(sub.close);
+
+      // First connection: the list, then once more when subscribed (after the 800 ms grouping).
+      await Future<void>.delayed(const Duration(milliseconds: 1300));
+      expect(count('GET', '/api/v1/auctions/events'), 1, reason: 'reloading must not reconnect');
+      expect(count('GET', '/api/v1/auctions'), 2);
+
+      // The app comes back 2 s after the stream ended, and reloads what it may have missed.
+      await Future<void>.delayed(const Duration(milliseconds: 2300));
+      expect(count('GET', '/api/v1/auctions/events'), 2);
+      expect(count('GET', '/api/v1/auctions'), 3);
+    });
   });
 }

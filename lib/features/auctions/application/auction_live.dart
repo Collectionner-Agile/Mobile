@@ -152,8 +152,8 @@ final auctionsLiveProvider = StreamProvider.autoDispose<AuctionLive>((ref) {
   return _follow(
     ref,
     (cancel) => ref.read(auctionRepositoryProvider).liveEvents(ids, cancelToken: cancel),
-    (update) {
-      if (update == null) return;
+    (_) {
+      // Events and every (re)subscription alike: what happened while not connected was missed.
       // Several bids in a burst cause one reload.
       pending?.cancel();
       pending = Timer(const Duration(milliseconds: 800), () => ref.invalidate(auctionsProvider));
