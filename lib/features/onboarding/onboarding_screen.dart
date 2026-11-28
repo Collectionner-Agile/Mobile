@@ -237,35 +237,39 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Single
                                         );
                                       },
                                     ),
-                                    const Spacer(),
-                                    Flexible(
-                                      child: TapScale(
-                                        child: FilledButton(
-                                          style: FilledButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            foregroundColor: BrandColors.light.ink,
-                                            shape: const StadiumBorder(),
-                                            padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-                                          ),
-                                          onPressed: _next,
-                                          child: AnimatedSwitcher(
-                                            duration: Motion.of(context, Motion.fast),
-                                            child: Row(
-                                              key: ValueKey(last),
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Flexible(
-                                                  child: Text(
-                                                    last ? l10n.onboardingStart : l10n.onboardingNext,
-                                                    overflow: TextOverflow.ellipsis,
+                                    // All the room the dots leave: sharing it with a Spacer gave the
+                                    // button half, and its label was cut short.
+                                    Expanded(
+                                      child: Align(
+                                        alignment: AlignmentDirectional.centerEnd,
+                                        child: TapScale(
+                                          child: FilledButton(
+                                            style: FilledButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                              foregroundColor: BrandColors.light.ink,
+                                              shape: const StadiumBorder(),
+                                              padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+                                            ),
+                                            onPressed: _next,
+                                            child: AnimatedSwitcher(
+                                              duration: Motion.of(context, Motion.fast),
+                                              child: Row(
+                                                key: ValueKey(last),
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      last ? l10n.onboardingStart : l10n.onboardingNext,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                ),
-                                                const SizedBox(width: Space.xs),
-                                                Icon(
-                                                  last ? Icons.check_rounded : Icons.arrow_forward_rounded,
-                                                  size: 18,
-                                                ),
-                                              ],
+                                                  const SizedBox(width: Space.xs),
+                                                  Icon(
+                                                    last ? Icons.check_rounded : Icons.arrow_forward_rounded,
+                                                    size: 18,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
