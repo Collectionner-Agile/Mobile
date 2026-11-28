@@ -12,6 +12,7 @@ import '../../features/recognition/domain/recognition_models.dart';
 import '../../features/sales/domain/sale_models.dart';
 import '../utils/json.dart';
 import 'api_client.dart';
+import 'sse.dart';
 
 const _v1 = '/api/v1';
 
@@ -318,6 +319,11 @@ class AuctionRepository {
   );
 
   Future<void> cancel(int auctionId) => _api.delete('$_v1/auctions/$auctionId');
+
+  /// Live updates (Server-Sent Events) for one auction or several (up to 50).
+  Stream<SseEvent> liveEvents(List<int> ids, {bool single = false, CancelToken? cancelToken}) => single
+      ? _api.events('$_v1/auctions/${ids.single}/events', cancelToken: cancelToken)
+      : _api.events('$_v1/auctions/events', query: {'ids': ids.join(',')}, cancelToken: cancelToken);
 }
 
 /// HU05: fixed-price sales. No payment goes through the app: the server records the purchase and

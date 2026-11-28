@@ -7,6 +7,7 @@ import '../../../app/theme/tokens.dart';
 import '../../../core/widgets/account_button.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/ui.dart';
+import '../application/auction_live.dart';
 import '../application/auction_providers.dart';
 import '../application/watchlist.dart';
 import '../domain/auction_models.dart';
@@ -26,6 +27,8 @@ class _AuctionsScreenState extends ConsumerState<AuctionsScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final auctions = ref.watch(auctionsProvider);
+    // Prices of the open lots update by themselves while the list is on screen.
+    ref.watch(auctionsLiveProvider);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {

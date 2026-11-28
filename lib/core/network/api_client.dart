@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import '../../app/config/app_config.dart';
 import '../utils/json.dart';
 import 'api_exception.dart';
+import 'sse.dart';
 
 typedef TokenReader = String? Function();
 typedef LanguageReader = String Function();
@@ -79,6 +80,34 @@ class ApiClient {
       _send(() => _dio.put<Object?>(path, data: body), parse);
 
   Future<void> delete(String path, {Object? body}) => _send(() => _dio.delete<Object?>(path, data: body), (_) {});
+
+  /// A Server-Sent Events stream. It ends when the server closes it; failures
+  /// (including a non-2xx answer) surface as [ApiException]. Heartbeats arrive
+  /// every 25 s, so a minute without data means the connection is dead.
+  Stream<SseEvent> events(String path, {Map<String, dynamic>? query, CancelToken? cancelToken}) async* {
+    final Response<ResponseBody> response;
+    try {
+      response = await _dio.get<ResponseBody>(
+        path,
+        queryParameters: query,
+        cancelToken: cancelToken,
+        options: Options(
+          responseType: ResponseType.stream,
+          receiveTimeout: const Duration(seconds: 60),
+          headers: {HttpHeaders.acceptHeader: 'text/event-stream'},
+        ),
+      );
+    } on DioException catch (error) {
+      throw mapDioError(error);
+    }
+    final body = response.data;
+    if (body == null) return;
+    try {
+      yield* parseSse(body.stream);
+    } on DioException catch (error) {
+      throw mapDioError(error);
+    }
+  }
 
   /// DELETE whose response body matters (e.g. what was removed).
   Future<T> deleteParsed<T>(String path, T Function(Object? data) parse) =>
