@@ -17,6 +17,7 @@ import '../../../core/widgets/ui.dart';
 import '../../auth/application/session_controller.dart';
 import '../../catalog/application/catalog_providers.dart';
 import '../../success/success_screen.dart';
+import '../application/auction_live.dart';
 import '../application/auction_providers.dart';
 import '../application/watchlist.dart';
 import '../domain/auction_models.dart';
@@ -30,10 +31,26 @@ class AuctionDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auction = ref.watch(auctionProvider(id));
     final l10n = context.l10n;
+    // Kept open while this screen is: bids from others and the result arrive by themselves.
+    final live = ref.watch(auctionLiveProvider(id)).value;
+    ref.listen(auctionLiveProvider(id).select((value) => value.value?.update), (previous, update) {
+      if (update == null || identical(previous, update) || !context.mounted) return;
+      final me = ref.read(currentUserProvider)?.username;
+      switch (update.type) {
+        case 'bid' when update.bidderName != me && update.amount != null:
+          showToast(context, l10n.liveNewBid('@${update.bidderName ?? '—'}', context.money(update.amount!)),
+              icon: Icons.bolt_rounded);
+        case 'closed':
+          showToast(context, l10n.liveAuctionClosed, icon: Icons.emoji_events_outlined);
+        case 'cancelled':
+          showToast(context, l10n.liveAuctionCancelled, icon: Icons.block_rounded);
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.lotNumber(id)),
         actions: [
+          if (live?.state == LiveState.live) const _LiveBadge(),
           FollowAuctionButton(auctionId: id),
           const SizedBox(width: Space.xs),
         ],
@@ -47,6 +64,35 @@ class AuctionDetailScreen extends ConsumerWidget {
             await ref.read(auctionProvider(id).future).catchError((Object _) => data);
           },
           child: _AuctionBody(auction: data),
+        ),
+      ),
+    );
+  }
+}
+
+/// Small red dot + "Live" while the stream is connected.
+class _LiveBadge extends StatelessWidget {
+  const _LiveBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final brand = context.brand;
+    return Semantics(
+      label: context.l10n.liveBadge,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Space.xs),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(color: brand.live, shape: BoxShape.circle),
+              child: const SizedBox.square(dimension: 8),
+            ),
+            const SizedBox(width: 6),
+            ExcludeSemantics(
+              child: Text(context.l10n.liveBadge, style: context.text.labelMedium?.copyWith(color: brand.live)),
+            ),
+          ],
         ),
       ),
     );

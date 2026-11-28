@@ -851,5 +851,9 @@
   "correctionBody": "If you know, type the correct name and category. You can also send it without filling anything in.",
   "correctionName": "Correct name",
   "correctionCategory": "Correct category",
-  "correctionSend": "Send correction"
+  "correctionSend": "Send correction",
+  "liveBadge": "Live",
+  "liveNewBid": "New bid from {who}: {amount}",
+  "liveAuctionClosed": "The auction has ended",
+  "liveAuctionCancelled": "The seller withdrew this auction"
 }

@@ -865,5 +865,10 @@
   "correctionBody": "Si lo sabes, escribe el nombre y la categoría correctos. También puedes enviarlo sin completar nada.",
   "correctionName": "Nombre correcto",
   "correctionCategory": "Categoría correcta",
-  "correctionSend": "Enviar corrección"
+  "correctionSend": "Enviar corrección",
+  "liveBadge": "En vivo",
+  "liveNewBid": "Nueva oferta de {who}: {amount}",
+  "@liveNewBid": {"placeholders": {"who": {"type": "String"}, "amount": {"type": "String"}}},
+  "liveAuctionClosed": "La subasta terminó",
+  "liveAuctionCancelled": "El vendedor retiró esta subasta"
 }

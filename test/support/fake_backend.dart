@@ -5,9 +5,14 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
 class FakeReply {
-  const FakeReply(this.status, [this.body, this.headers = const {}]);
+  const FakeReply(this.status, [this.body, this.headers = const {}]) : text = null;
+
+  /// A non-JSON body sent as is (e.g. a `text/event-stream`).
+  const FakeReply.text(this.status, String this.text, {this.headers = const {}}) : body = null;
+
   final int status;
   final Object? body;
+  final String? text;
   final Map<String, String> headers;
 }
 
@@ -39,12 +44,12 @@ class FakeBackend implements HttpClientAdapter {
     }
     final handler = routes['${options.method} ${options.uri.path}'];
     final reply = handler == null ? const FakeReply(404, {'detail': 'not stubbed'}) : handler(options);
-    final payload = reply.body == null ? '' : jsonEncode(reply.body);
+    final payload = reply.text ?? (reply.body == null ? '' : jsonEncode(reply.body));
     return ResponseBody.fromString(
       payload,
       reply.status,
       headers: {
-        Headers.contentTypeHeader: ['application/json'],
+        Headers.contentTypeHeader: [reply.text != null ? 'text/event-stream' : 'application/json'],
         for (final entry in reply.headers.entries) entry.key: [entry.value],
       },
     );
