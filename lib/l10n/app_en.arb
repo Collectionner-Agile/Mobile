@@ -173,7 +173,7 @@
     }
   },
   "errEmail": "Enter a valid email.",
-  "errPasswordLength": "The password must have at least 6 characters.",
+  "errPasswordLength": "The password must have at least 8 characters.",
   "errPasswordMatch": "Passwords don't match.",
   "errUsername": "3 to 30 characters: letters, numbers, dot, hyphen or underscore.",
   "auctionsTitle": "Auctions",

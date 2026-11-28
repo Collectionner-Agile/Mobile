@@ -29,7 +29,8 @@ class Validators {
     return _username.hasMatch(value!.trim()) ? null : l10n.errUsername;
   }
 
-  String? password(String? value) => (value == null || value.length < 6) ? l10n.errPasswordLength : null;
+  /// For new passwords only. Signing in takes any length: older accounts may have shorter ones.
+  String? password(String? value) => (value == null || value.length < 8) ? l10n.errPasswordLength : null;
 
   String? matches(String? value, String other) => value == other ? null : l10n.errPasswordMatch;
 
