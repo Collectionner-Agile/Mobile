@@ -370,8 +370,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
                           runSpacing: Space.xs,
                           children: [
                             if (item.auctionId != null) LiveBadge(label: l10n.inAuction),
-                            if (item.saleId != null)
-                              InfoChip(label: l10n.forSale, icon: Icons.sell_outlined, color: brand.success),
+                            if (item.saleId != null) SaleStatusChip(saleId: item.saleId!),
                             if (isOwner) InfoChip(label: l10n.yourItem, icon: Icons.person_outline, color: brand.info),
                           ],
                         ),
