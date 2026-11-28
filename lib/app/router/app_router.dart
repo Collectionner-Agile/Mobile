@@ -39,6 +39,7 @@ import '../../features/recognition/presentation/camera_screen.dart';
 import '../../features/recognition/presentation/scan_history_screen.dart';
 import '../../features/recognition/presentation/scan_result_screen.dart';
 import '../../features/recognition/presentation/scan_screen.dart';
+import '../../features/sales/presentation/my_sales_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/success/success_screen.dart';
 import '../../features/trending/trending_screen.dart';
@@ -63,6 +64,7 @@ abstract final class Routes {
   static const auctionResults = '/auctions/results';
   static const notifications = '/notifications';
   static const myCollection = '/profile/collection';
+  static const mySales = '/profile/sales';
   static const categories = '/categories';
   static const help = '/help';
   static const howItWorks = '/help/how-it-works';
@@ -91,6 +93,7 @@ abstract final class Routes {
   static String collector(int id, {String? name}) =>
       Uri(path: '/collectors/$id', queryParameters: name == null ? null : {'name': name}).toString();
   static String auction(int id) => '/auctions/$id';
+  static String sale(int id) => '/sales/$id';
   static String community(int id) => '/communities/$id';
   static String newPost(int communityId) => '/communities/$communityId/post';
   static String post(int id) => '/posts/$id';
@@ -101,7 +104,8 @@ abstract final class Routes {
       location == publishCollectible ||
       location == newCommunity ||
       RegExp(r'^/communities/\d+/post$').hasMatch(location) ||
-      location == changePassword;
+      location == changePassword ||
+      RegExp(r'^/sales/\d+$').hasMatch(location);
 }
 
 final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -251,6 +255,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.insights, builder: (_, _) => const InsightsScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.myBids, builder: (_, _) => const MyBidsScreen()),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.myCollection, builder: (_, _) => const MyCollectionScreen()),
+      GoRoute(parentNavigatorKey: _rootKey, path: Routes.mySales, builder: (_, _) => const MySalesScreen()),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/sales/:id',
+        builder: (_, state) => SaleScreen(id: int.parse(state.pathParameters['id']!)),
+      ),
       GoRoute(parentNavigatorKey: _rootKey, path: Routes.settings, builder: (_, _) => const SettingsScreen()),
       GoRoute(
         parentNavigatorKey: _rootKey,

@@ -870,5 +870,70 @@
   "liveNewBid": "Nueva oferta de {who}: {amount}",
   "@liveNewBid": {"placeholders": {"who": {"type": "String"}, "amount": {"type": "String"}}},
   "liveAuctionClosed": "La subasta terminó",
-  "liveAuctionCancelled": "El vendedor retiró esta subasta"
+  "liveAuctionCancelled": "El vendedor retiró esta subasta",
+  "sellPiece": "Vender a precio fijo",
+  "createSaleTitle": "Vender a precio fijo",
+  "createSaleBody": "Quien compre la reserva y coordinan la entrega entre ustedes. La pieza pasa a su colección cuando ambos confirman.",
+  "salePrice": "Precio de venta",
+  "createSaleSubmit": "Publicar venta",
+  "saleCreated": "Pieza en venta.",
+  "forSale": "En venta",
+  "saleReserved": "Reservada",
+  "saleCompleted": "Vendida",
+  "saleCancelled": "Venta anulada",
+  "buyNow": "Comprar",
+  "confirmPurchaseTitle": "Confirmar compra",
+  "confirmPurchaseBody": "Vas a reservar «{piece}» por {amount}. La app no cobra: acuerdas el pago y la entrega con quien vende, y ambos confirman al terminar.",
+  "@confirmPurchaseBody": {
+    "placeholders": {
+      "piece": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "purchaseDone": "Pieza reservada. Coordina la entrega con quien vende.",
+  "saleYouBought": "La reservaste tú",
+  "saleBoughtBy": "Reservada por {name}",
+  "@saleBoughtBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "saleSoldBy": "Vende {name}",
+  "@saleSoldBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "saleWaitingBuyer": "Esperando a quien compra",
+  "saleStepDelivery": "Entrega confirmada por quien vende",
+  "saleStepReceipt": "Recepción confirmada por quien compra",
+  "confirmDelivery": "Confirmar entrega",
+  "confirmDeliveryBody": "Confirma solo si ya entregaste la pieza. Después no podrás anular la operación.",
+  "confirmReceipt": "Confirmar recepción",
+  "confirmReceiptBody": "Confirma solo si ya tienes la pieza. Después no podrás anular la operación.",
+  "saleConfirmed": "Confirmación registrada.",
+  "saleNowYours": "La pieza ya es tuya.",
+  "withdrawSale": "Retirar venta",
+  "withdrawSaleBody": "La pieza dejará de estar en venta. ¿Retirarla?",
+  "cancelPurchase": "Anular operación",
+  "cancelPurchaseBody": "La pieza vuelve a quedar libre y se avisa a la otra parte. ¿Anularla?",
+  "saleWithdrawn": "Venta retirada.",
+  "saleCancelledToast": "Operación anulada.",
+  "saleNotAvailable": "Esta pieza ya no está disponible. Mira otras parecidas más abajo.",
+  "saleNoPayment": "Sin pagos en la app: el monto es el acordado entre coleccionistas.",
+  "mySalesTitle": "Mis compras y ventas",
+  "mySalesBought": "Compras",
+  "mySalesSold": "Ventas",
+  "mySalesEmptyBought": "Aún no compraste piezas",
+  "mySalesEmptySold": "Aún no pusiste piezas en venta",
+  "mySalesEmptyBody": "Las operaciones a precio fijo aparecen aquí con su estado.",
+  "saleDetailTitle": "Operación"
 }

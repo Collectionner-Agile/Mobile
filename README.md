@@ -121,9 +121,11 @@ sideloading, rejected by Google Play.
 
 ## Known gaps
 
-- **Sales / exchanges:** the web's buy-now checkout and exchange proposals only exist in its
-  local fake API; the Spring backend has no endpoints for them, so they were not migrated
-  rather than faked.
+- **Sales (HU05)** run against the backend's `/api/v1/sales`: buy a listed piece, list your own,
+  confirm delivery or receipt, call it off before anyone confirms; "Mis compras y ventas" in the
+  profile. No payment goes through the app.
+- **Exchanges** still only exist in the web's local fake API; the Spring backend has no endpoints
+  for them yet, so they were not migrated rather than faked.
 - **AI recognition** needs `GEMINI_API_KEY` on the backend; without it the server reports
   `enabled: false` and the app says so instead of pretending.
 - **iOS** project is configured (permissions, URL scheme, icons, splash) but was not built:

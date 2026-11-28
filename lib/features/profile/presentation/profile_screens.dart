@@ -67,6 +67,7 @@ class ProfileScreen extends ConsumerWidget {
                     (Icons.insights_rounded, l10n.insightsTitle, l10n.insightsSubtitle, Routes.insights),
                     (Icons.inventory_2_outlined, l10n.myCollectionTitle, null, Routes.myCollection),
                     (Icons.gavel_outlined, l10n.myBidsTitle, null, Routes.myBids),
+                    (Icons.handshake_outlined, l10n.mySalesTitle, null, Routes.mySales),
                     (Icons.notifications_active_outlined, l10n.watchlistTitle, null, Routes.watchlist),
                     (Icons.notifications_none_rounded, l10n.noticesTitle, null, Routes.notifications),
                     (Icons.emoji_events_outlined, l10n.achievementsTitle, null, Routes.achievements),
