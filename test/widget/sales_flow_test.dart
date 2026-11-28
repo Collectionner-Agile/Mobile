@@ -63,6 +63,28 @@ void main() {
     await settle(tester);
   }
 
+  /// The top of the piece's page, where its labels are, before scrolling to the sale panel.
+  Future<void> openPieceTop(TestApp app, WidgetTester tester) async {
+    app.container.read(routerProvider).go(Routes.collectible(2));
+    await settle(tester);
+  }
+
+  testWidgets('a reserved piece is labelled as reserved, not as for sale', (tester) async {
+    final app = await pumpApp(tester, backend: backendWith(sale(status: 'reserved', buyerId: 3)), signedIn: true);
+    await openPieceTop(app, tester);
+
+    expect(find.text('Reservada'), findsWidgets);
+    expect(find.text('En venta'), findsNothing);
+  });
+
+  testWidgets('a piece on sale is labelled as for sale', (tester) async {
+    final app = await pumpApp(tester, backend: backendWith(sale()), signedIn: true);
+    await openPieceTop(app, tester);
+
+    expect(find.text('En venta'), findsWidgets);
+    expect(find.text('Reservada'), findsNothing);
+  });
+
   testWidgets('HU05-E1: a collector buys an active piece and sees it reserved for them', (tester) async {
     var current = sale();
     final backend = backendWith(current)
@@ -82,7 +104,7 @@ void main() {
     await confirmDialog(tester);
 
     expect(backend.requests.where((r) => r.method == 'POST' && r.uri.path.endsWith('/purchase')), hasLength(1));
-    expect(find.text('Reservada'), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const Key('sale-panel')), matching: find.text('Reservada')), findsOneWidget);
     expect(find.text('La reservaste tú'), findsOneWidget);
     expect(find.byKey(const Key('sale-buy')), findsNothing);
     expect(find.byKey(const Key('sale-confirm-receipt')), findsOneWidget);

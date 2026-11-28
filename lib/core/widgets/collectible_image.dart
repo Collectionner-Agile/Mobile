@@ -31,14 +31,7 @@ class CollectibleImage extends StatelessWidget {
 
     if (source.startsWith('/assets/') || source.startsWith('assets/')) {
       final asset = _bundledAsset(source);
-      if (asset.endsWith('.svg')) {
-        return SvgPicture.asset(
-          asset,
-          fit: fit,
-          semanticsLabel: semanticLabel,
-          placeholderBuilder: (_) => _Placeholder(label: semanticLabel),
-        );
-      }
+      if (asset.endsWith('.svg')) return _BundledSvg(asset, fit: fit, semanticLabel: semanticLabel);
       return Image.asset(
         asset,
         fit: fit,
@@ -104,6 +97,55 @@ class CollectibleImage extends StatelessWidget {
     } on FormatException {
       return null;
     }
+  }
+}
+
+/// A drawing carried by the app. The file is read here, not by `SvgPicture.asset`: for one the app
+/// does not carry, flutter_svg leaves the failure unhandled even when it is given an error builder.
+class _BundledSvg extends StatefulWidget {
+  const _BundledSvg(this.asset, {required this.fit, this.semanticLabel});
+
+  final String asset;
+  final BoxFit fit;
+  final String? semanticLabel;
+
+  @override
+  State<_BundledSvg> createState() => _BundledSvgState();
+}
+
+class _BundledSvgState extends State<_BundledSvg> {
+  late Future<String> _source;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _read();
+  }
+
+  @override
+  void didUpdateWidget(_BundledSvg old) {
+    super.didUpdateWidget(old);
+    if (old.asset != widget.asset) _read();
+  }
+
+  void _read() => _source = DefaultAssetBundle.of(context).loadString(widget.asset);
+
+  @override
+  Widget build(BuildContext context) {
+    final placeholder = _Placeholder(label: widget.semanticLabel);
+    return FutureBuilder<String>(
+      future: _source,
+      builder: (context, snapshot) {
+        final source = snapshot.data;
+        if (source == null) return placeholder;
+        return SvgPicture.string(
+          source,
+          fit: widget.fit,
+          semanticsLabel: widget.semanticLabel,
+          placeholderBuilder: (_) => placeholder,
+        );
+      },
+    );
   }
 }
 

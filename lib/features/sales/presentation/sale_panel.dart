@@ -82,12 +82,7 @@ class _SalePanelState extends ConsumerState<SalePanel> {
     final role = sale.roleOf(user?.id);
     final repo = ref.read(saleRepositoryProvider);
 
-    final (statusLabel, statusColor, statusIcon) = switch (sale.status) {
-      SaleStatus.active => (l10n.forSale, brand.success, Icons.sell_outlined),
-      SaleStatus.reserved => (l10n.saleReserved, brand.warning, Icons.hourglass_top_rounded),
-      SaleStatus.completed => (l10n.saleCompleted, brand.info, Icons.verified_outlined),
-      SaleStatus.cancelled => (l10n.saleCancelled, brand.muted, Icons.block_outlined),
-    };
+    final (statusLabel, statusColor, statusIcon) = _statusBadge(context, sale.status);
 
     final who = switch ((sale.status, role)) {
       (SaleStatus.active, _) when sale.sellerName != null => l10n.saleSoldBy(sale.sellerName!),
@@ -241,6 +236,33 @@ class _Step extends StatelessWidget {
 }
 
 /// Loads the sale by id and shows its [SalePanel]; used on the piece's detail.
+/// How a sale's status is named and marked.
+(String, Color, IconData) _statusBadge(BuildContext context, SaleStatus status) {
+  final l10n = context.l10n;
+  final brand = context.brand;
+  return switch (status) {
+    SaleStatus.active => (l10n.forSale, brand.success, Icons.sell_outlined),
+    SaleStatus.reserved => (l10n.saleReserved, brand.warning, Icons.hourglass_top_rounded),
+    SaleStatus.completed => (l10n.saleCompleted, brand.info, Icons.verified_outlined),
+    SaleStatus.cancelled => (l10n.saleCancelled, brand.muted, Icons.block_outlined),
+  };
+}
+
+/// A piece's label for its open sale. A reserved sale is still open, so having a sale does not mean
+/// the piece is for sale: nothing is shown until the sale's status is known.
+class SaleStatusChip extends ConsumerWidget {
+  const SaleStatusChip({super.key, required this.saleId});
+  final int saleId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final status = ref.watch(saleProvider(saleId)).value?.status;
+    if (status == null) return const SizedBox.shrink();
+    final (label, color, icon) = _statusBadge(context, status);
+    return InfoChip(label: label, icon: icon, color: color);
+  }
+}
+
 class SalePanelLoader extends ConsumerWidget {
   const SalePanelLoader({super.key, required this.saleId});
   final int saleId;
